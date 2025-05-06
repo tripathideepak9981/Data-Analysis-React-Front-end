@@ -1,0 +1,49 @@
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+
+/* From Uiverse.io by Leoodaviid */
+@keyframes loading_49100 {
+  0% {
+    transform: translateX(25px);
+  }
+  100% {
+    transform: translateX(-30px);
+  }
+}
+
+.loading::before,
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 300%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+
+.loading::before {
+  background: #79efff repeating-linear-gradient(50deg, transparent, transparent 10px, #71e0ef 10px, #71e0ef 20px);
+  z-index: 1;
+}
+
+.loading::after {
+  background: linear-gradient(#79efff 30%, transparent 100%);
+  z-index: 2;
+}
+.loading.loading::before,
+.loading.loading::after {
+  opacity: 1;
+}
+
+.loading.loading::before {
+  animation: loading_49100 0.6s infinite linear;
+}

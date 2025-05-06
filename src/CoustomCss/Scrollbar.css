@@ -1,0 +1,41 @@
+/* Reusable X-axis scrollbar only */
+.scrollbar-x-only {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.scrollbar-x-only::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scrollbar-x-only::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 4px;
+}
+
+.scrollbar-x-only::-webkit-scrollbar-track {
+  background-color: #f3f4fb;
+}
+
+.scrollbar-x-only::-webkit-scrollbar:vertical {
+  display: none;
+}
+
+/* Reusable both X and Y-axis scrollbar */
+.scrollbar-xy {
+  overflow: auto;
+}
+
+.scrollbar-xy::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-xy::-webkit-scrollbar-thumb {
+  background-color: #c0c0c0;
+  border-radius: 4px;
+}
+
+.scrollbar-xy::-webkit-scrollbar-track {
+  background-color: #f3f4fb;
+}

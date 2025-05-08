@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import SingleValueChart from "./SingleValueChart";
 import PieChart from "./PieChart";
-import MultiValueChart from "./multiValueChart";
+import MultiValueChart from "./MultiValueChart";
 import html2canvas from "html2canvas";
 import { AreaChart } from "lucide-react";
 import DoughnutChart from "./DoughnutChart";

@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 
 // Deployed backend url: http://35.154.165.174
 // Localhost url : http://127.0.0.1:8000
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "http://35.154.165.174";
 
 const axiosConfig = {
   timeout: 100000,
@@ -37,7 +37,7 @@ export const uploadFilesAPI = async (selectedFiles) => {
 
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/api/upload`,
+      `${API_BASE_URL}/api/upload/upload`,
       formData,
       {
         headers: {
@@ -58,7 +58,7 @@ export const exceuteQuery = async (query) => {
     console.log("Query:", query);
     console.log("Token:", token);
 
-    const response = await axios.post(`${API_BASE_URL}/api/execute_query`,
+    const response = await axios.post(`${API_BASE_URL}/api/query/execute_query`,
       { "query": query },
       {
         headers: {
@@ -78,7 +78,7 @@ export const exceuteQuery = async (query) => {
 export const chartGenerator = async (query) => {
   try {
     console.log("Query : " + query)
-    const response = await axios.post(`${API_BASE_URL}/chart/chart`, {query }, {
+    const response = await axios.post(`${API_BASE_URL}/api/chart/chart`, {query }, {
       headers: {
         "Content-Type": "application/json"
       },
@@ -96,7 +96,7 @@ export const cleanFile = async (table_name) => {
   console.log("Access token: " + token)
    try{
        console.log("Table Name : " + table_name)
-       const response = await axios.post(`${API_BASE_URL}/api/clean_file?table_name=${encodeURIComponent(table_name)}`, {}, {
+       const response = await axios.post(`${API_BASE_URL}/api/upload/clean_file?table_name=${encodeURIComponent(table_name)}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -112,7 +112,7 @@ export const cancel_clean_file = async (table_name) => {
   const token = localStorage.getItem("access_token");
    try{
       console.log("Table name:", table_name);
-      const response = await axios.post( `${API_BASE_URL}/api/cancel_clean?table_name=${encodeURIComponent(table_name)}`, {},  {
+      const response = await axios.post( `${API_BASE_URL}/api/upload/cancel_clean?table_name=${encodeURIComponent(table_name)}`, {},  {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -128,7 +128,7 @@ export const cancel_clean_file = async (table_name) => {
 
 export const connectToDatabase = async (dbParams) => {
    try{
-      const response = await axios.post(`${API_BASE_URL}/api/connect_db`, dbParams, axiosConfig);
+      const response = await axios.post(`${API_BASE_URL}/api/db/connect_db`, dbParams, axiosConfig);
       console.log("Database connection response:", response.data);
       return response.data;
    }catch (error){
@@ -141,7 +141,7 @@ export const connectToDatabase = async (dbParams) => {
 export const loadTablesApi = async (table_name) => {
   try{
     console.log("Loading Tables : "+ table_name);
-    const response = await axios.post(`${API_BASE_URL}/api/load_tables`, table_name, {
+    const response = await axios.post(`${API_BASE_URL}/api/db/load_tables`, table_name, {
       headers: {
         "Content-Type": "application/json"
       },

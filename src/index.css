@@ -1,6 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* 
-@import 'bootstrap/dist/css/bootstrap.min.css'; */
 
+@layer utilities {
+  .text-header {
+    @apply text-[24px] leading-[32px] font-bold;
+  }
+  .text-subheader {
+    @apply text-[22px] leading-[30px] font-semibold;
+  }
+  .text-label {
+    @apply text-[15px] leading-[24px] font-normal;
+  }
+  .text-message {
+    @apply text-[14px] leading-[20px] font-normal;
+  }
+  .text-query {
+    @apply text-[13px] leading-[18px] font-medium;
+  }
+
+  .btn-standard {
+    @apply px-3 py-2; /* Instead of using undefined px-btn-pad-x */
+  }
+}

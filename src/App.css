@@ -1,0 +1,20 @@
+/* index.css */
+.text-header {
+  @apply text-header font-bold;
+}
+.text-subheader {
+  @apply text-subheader font-semibold;
+}
+.text-label {
+  @apply text-label;
+}
+.text-message {
+  @apply text-message;
+}
+.text-query {
+  @apply text-query font-medium;
+}
+
+.btn-standard {
+  @apply px-btn-pad-x py-btn-pad-y;
+}

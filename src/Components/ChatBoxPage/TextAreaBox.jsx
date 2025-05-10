@@ -36,13 +36,13 @@ const TextAreaBox = ({
 
   return (
     <div
-      className={`w-full mt-2 mx-auto p-3 bg-white rounded-2xl shadow-md resize-none transition-all duration-200
+      className={`w-full mt-2 mx-auto p-3 bg-white rounded-2xl  shadow-md resize-none transition-all duration-200
       ${
         isFocused
           ? "border-[#3f2675] ring-1 ring-[#43287e]"
           : "border-[#5298f4] ring-1 ring-[#5298f4]"
       }
-      ${isSliderVisible ? "max-w-[72vw]" : "max-w-[92%]"}`}
+      ${isSliderVisible ? "max-w-[75vw]" : "max-w-[95%]"}`}
     >
       <TextareaAutosize
         minRows={1}
@@ -64,7 +64,7 @@ const TextAreaBox = ({
         <div className="flex gap-2">
           <button
             onClick={openAddDataPopup}
-            className="flex items-center gap-2 px-8 py-2 bg-[#3a2565] text-sm font-medium text-gray-50 rounded-xl border border-gray-300 hover:bg-[#43287a] transition-shadow shadow-sm"
+            className="flex items-center gap-2 px-6 py-2 bg-[#3a2565] text-sm font-medium text-gray-50 rounded-xl border border-gray-300 hover:bg-[#43287a] transition-shadow shadow-sm"
           >
             <Paperclip className="w-4 h-4" />
             Add data
@@ -72,7 +72,7 @@ const TextAreaBox = ({
 
           <button
             onClick={handlePreviewDataButton}
-            className="flex items-center gap-2 px-8 py-2 bg-white text-sm font-medium text-gray-700 rounded-xl border border-gray-300 hover:bg-gray-200 transition-shadow shadow-sm"
+            className="flex items-center gap-2 px-6 py-2 bg-white text-sm font-medium text-gray-700 rounded-xl border border-gray-300 hover:bg-gray-200 transition-shadow shadow-sm"
           >
             <VscPreview className="w-4 h-4" />
             Data Preview
@@ -83,7 +83,7 @@ const TextAreaBox = ({
           onClick={sendMessage}
           className="bg-gray-200 hover:bg-gray-300 p-2 rounded-full"
         >
-          <ArrowUp className="w-6 h-6 text-gray-700" />
+          <ArrowUp className="w-5 h-5 text-gray-700" />
         </button>
       </div>
     </div>

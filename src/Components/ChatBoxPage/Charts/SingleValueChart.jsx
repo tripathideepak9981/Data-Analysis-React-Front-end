@@ -34,7 +34,6 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
       console.warn("Invalid chart response.");
       return;
     }
-    console.log("From singleValue Chart");
 
     setChartData(() => {
       let { labels, data } = chartResponse;
@@ -155,11 +154,44 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
   };
 
   // const maxDataValue = Math.max(...(chartResponse?.data || []));
+  // const maxDataValue = Math.max(
+  //   ...(Array.isArray(chartResponse?.data) ? chartResponse.data : [0])
+  // );
+  // const stepSize = 500;
+  // const adjustedMax = Math.ceil(maxDataValue / stepSize) * stepSize + stepSize;
+
   const maxDataValue = Math.max(
     ...(Array.isArray(chartResponse?.data) ? chartResponse.data : [0])
   );
-  const stepSize = 1000;
-  const adjustedMax = Math.ceil(maxDataValue / stepSize) * stepSize + stepSize;
+
+  const getDynamicYAxisScale = (data, minSteps = 4, maxSteps = 8) => {
+    const maxDataValue = Math.max(...(Array.isArray(data) ? data : [0]));
+
+    if (maxDataValue === 0) {
+      return { adjustedMax: 100, stepSize: 20 };
+    }
+
+    // Determine rough step size to keep steps between minSteps and maxSteps
+    const rawStep = Math.pow(8, Math.floor(Math.log10(maxDataValue)));
+    let stepSize = rawStep;
+
+    for (let factor of [1, 2, 5, 10]) {
+      const candidateStep = rawStep * factor;
+      const steps = Math.ceil(maxDataValue / candidateStep);
+      if (steps >= minSteps && steps <= maxSteps) {
+        stepSize = candidateStep;
+        break;
+      }
+    }
+
+    // Round the max up to nearest multiple of stepSize
+    const adjustedMax =
+      Math.ceil(maxDataValue / stepSize) * stepSize + stepSize;
+
+    return { adjustedMax };
+  };
+
+  const { adjustedMax } = getDynamicYAxisScale(chartResponse?.data);
 
   const chartOptions = {
     bar: {
@@ -183,7 +215,13 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
             font: { size: 14, weight: "bold" },
             color: "#1e293b",
           },
-          ticks: { color: "#1e293b", font: { size: 14 } },
+          ticks: {
+            color: "#1e293b",
+            font: { size: 14 },
+            maxRotation: 20,
+            minRotation: 20,
+            autoSkip: false,
+          },
           grid: { color: "#e2e8f0" },
           offset: true,
         },
@@ -231,7 +269,13 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
             font: { size: 14, weight: "bold" },
             color: "#1e293b",
           },
-          ticks: { color: "#1e293b", font: { size: 14 } },
+          ticks: {
+            color: "#1e293b",
+            font: { size: 14 },
+            maxRotation: 20,
+            minRotation: 20,
+            autoSkip: false,
+          },
           grid: { color: "#e2e8f0" },
           offset: true,
         },

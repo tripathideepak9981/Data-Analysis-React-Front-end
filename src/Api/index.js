@@ -221,29 +221,3 @@ export const logoutUser = async () => {
     window.location.href = '/';
   }
 };
-
-
-// export const logoutUser = async () => {
-//   localStorage.removeItem("token");
-//   localStorage.removeItem("username");
-//   localStorage.removeItem("access_token")
-//   localStorage.removeItem("token_type");
-//   localStorage.removeItem("userEmail");
-//   try {
-//     const response = await axios.post(
-//       `${API_BASE_URL}/api/auth/logout`, 
-//       {},
-//       {
-//         withCredentials: true,
-//         headers: {
-//           Authorization: `Bearer ${localStorage.getItem("access_token")}`
-//         }
-//       }
-//     );
-
-//     if (response.status === 200) {
-//       window.location.href = '/';
-//     }
-//   } catch (error) {
-//   }
-// }

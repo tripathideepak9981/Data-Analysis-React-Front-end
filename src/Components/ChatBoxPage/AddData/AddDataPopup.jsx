@@ -20,6 +20,7 @@ import DbDataPreviewPopup from "../PopupForm/DbDataPreviewPopup";
 import CustomNotificationCard from "../../Cards/CustomNotificationCard";
 import ConfirmCleanModal from "../../Cards/ConfirmCleanModal";
 import { CheckCircle, Loader2 } from "lucide-react";
+import excel from "../../../assets/excel.svg";
 
 const steps = [
   "Execution is in Progress",
@@ -97,7 +98,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
 
     return (
       <div className="w-full max-w-md mx-auto mt-16 p-8 bg-gradient-to-br from-white to-indigo-50 shadow-2xl rounded-3xl border border-indigo-200">
-        <h2 className="text-3xl font-bold text-center text-indigo-700 tracking-wide mb-6">
+        <h2 className="text-2xl font-bold text-center text-indigo-700 tracking-wide mb-6">
           Data Processing
         </h2>
 
@@ -274,18 +275,24 @@ const AddDataPopup = ({ setByDataPreview }) => {
       [data.table_name]: data.preview,
     }));
   };
-
   const handleRemoveFile = (indexToRemove) => {
     const fileToRemove = uploadedFiles[indexToRemove].name;
+
     Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      title: '<span class="text-2xl text-gray-900">Are you sure?</span>',
+      html: '<span class="text-message text-gray-700">You won\'t be able to revert this!</span>',
       icon: "warning",
       showCancelButton: true,
       width: "30vw",
+      height: "30vh",
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, remove it!",
+      customClass: {
+        popup: "rounded-lg p-4",
+        confirmButton: "text-label bg-blue-600 text-white hover:bg-blue-700",
+        cancelButton: "text-label bg-red-500 text-white hover:bg-red-600",
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         setUploadedFiles((prevFiles) =>
@@ -295,6 +302,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
         setSelectedFiles((prevFiles) =>
           prevFiles.filter((_, index) => index !== indexToRemove)
         );
+
         setTablePreview((prevPreview) => {
           if (!prevPreview || typeof prevPreview !== "object") {
             return {};
@@ -306,6 +314,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
       }
     });
   };
+
   const handleFileUpload = async (event) => {
     const files = Array.from(event.target.files || event.dataTransfer.files);
     const newFiles = files.filter(
@@ -339,7 +348,6 @@ const AddDataPopup = ({ setByDataPreview }) => {
       setErrorMessage(error.message);
     } finally {
       setIsLoading(false);
-      setUploadStatus("idle");
     }
   };
   const getPreviewByFileName = (fileName) => {
@@ -530,7 +538,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
       <div className="flex flex-row m-2 border-b">
         <button
           onClick={() => setActiveTab("static")}
-          className={`px-4 py-1 font-semibold ${
+          className={`px-4 py-1 btn-standard ${
             activeTab === "static"
               ? "border-b-2 border-black text-gray-800"
               : "text-gray-400"
@@ -540,7 +548,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
         </button>
         <button
           onClick={() => setActiveTab("connected")}
-          className={`px-4 py-2 font-semibold ${
+          className={`px-4 py-2 btn-standard ${
             activeTab === "connected"
               ? "border-b-2 border-black text-gray-800"
               : "text-gray-400"
@@ -568,25 +576,23 @@ const AddDataPopup = ({ setByDataPreview }) => {
               onClick={handleDropBoxClick}
               className="flex flex-col border-2 border-dashed border-purple-400 rounded-md p-6 text-center text-purple-600 hover:bg-purple-50 transition-all w-full max-w-md cursor-pointer"
             >
-              <p className="mb-2 font-medium">
+              <p className="mb-2 text-label">
                 <span className="underline">Click to upload</span> or drag and
                 drop
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-message text-gray-500">
                 Supports multiple files: CSV, XLSX, XLS
               </p>
             </div>
           </div>
 
           <div>
-            <p className="text-sm text-purple-500 mb-2">
+            <p className="text-message text-purple-500 mb-2">
               For optimal results, follow best practices when uploading files
             </p>
             <div className="flex justify-between items-center px-4 py-3 bg-gray-100 rounded-md shadow-sm">
               <div>
-                <h2 className="text-sm font-semibold text-gray-800">
-                  Available Files
-                </h2>
+                <h2 className="text-label text-gray-800">Available Files</h2>
                 <p className="text-xs text-gray-500">
                   Select static files to associate with your analysis
                 </p>
@@ -631,7 +637,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
 
             <div>
               {uploadedFiles.length === 0 ? (
-                <div className="text-center text-gray-600 font-medium py-4">
+                <div className="text-center text-gray-600 text-label py-4">
                   No files uploaded yet!
                 </div>
               ) : (
@@ -647,7 +653,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
                         : ""
                     }`}
                   >
-                    <table className="min-w-full table-fixed bg-white border border-gray-300 text-sm text-left">
+                    <table className="min-w-full table-fixed bg-white border border-gray-300 text-message text-left">
                       <thead className="bg-gray-300 text-gray-800 sticky top-0 z-10">
                         <tr>
                           <th className="px-4 py-2 w-[45%] pl-10">File Name</th>
@@ -670,7 +676,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
                             >
                               <td className="px-4 py-3 w-[45%] pl-4 break-words whitespace-pre-wrap">
                                 <div className="flex items-start gap-2">
-                                  <img src="\src\assets\excel.svg" />
+                                  <img src={excel} />
                                   <span className="text-gray-800">
                                     {file.name}
                                   </span>

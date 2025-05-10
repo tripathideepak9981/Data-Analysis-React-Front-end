@@ -5,7 +5,7 @@ import image4 from "../../assets/image2.png";
 
 const About = () => {
   return (
-    <section id="about" className="bg-white py-20 text-white">
+    <section id="about" className="bg-white py-0 text-white">
       <div className="max-w-6xl mx-auto px-4 py-2 font-sans">
         {/* Intro Header */}
         <div className="mb-2 flex flex-col md:flex-row items-center justify-center">

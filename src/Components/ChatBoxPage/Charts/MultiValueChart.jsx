@@ -79,7 +79,7 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
   };
 
   const maxDataValue = Math.max(
-    ...Object.values(chartResponse?.data || {}).flat()
+    ...(Array.isArray(chartResponse?.data) ? chartResponse.data : [0])
   );
   const stepSize = 500;
   const adjustedMax = Math.ceil(maxDataValue / stepSize) * stepSize + stepSize;
@@ -89,8 +89,14 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
       scales: {
         x: {
           categoryPercentage: 0.4, // Reduces total width of the grouped bars
-          barPercentage: 0.2, // Reduces width of individual bars = increases space between them
-          ticks: { color: "#1e293b", font: { size: 17 } },
+          barPercentage: 0.2,
+          ticks: {
+            color: "#1e293b",
+            font: { size: 14 },
+            maxRotation: 20,
+            minRotation: 20,
+            autoSkip: false,
+          },
           grid: { color: "#e2e8f0" },
         },
 
@@ -189,12 +195,18 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
       },
       scales: {
         x: {
-          ticks: { color: "#080808", font: { size: 17 }, padding: 10 },
+          ticks: {
+            color: "#1e293b",
+            font: { size: 14 },
+            maxRotation: 20,
+            minRotation: 20,
+            autoSkip: false,
+          },
           grid: { color: "#e2e8f0" },
           offset: true,
         },
         y: {
-          ticks: { color: "#1e293b", font: { size: 12 }, stepSize: stepSize },
+          ticks: { color: "#1e293b", font: { size: 12 } },
           grid: { color: "#e2e8f0" },
           beginAtZero: true,
           suggestedMax: adjustedMax,

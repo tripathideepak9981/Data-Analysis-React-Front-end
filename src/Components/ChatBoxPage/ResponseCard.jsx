@@ -40,7 +40,6 @@ const ResponseCard = ({ response }) => {
 
   useEffect(() => {
     if (!response?.aiResponse) return;
-    // setAnimatedText("");
 
     const hasResponse =
       response.aiResponse.summary ||
@@ -52,18 +51,11 @@ const ResponseCard = ({ response }) => {
       (Array.isArray(response.aiResponse.analysis) &&
         response.aiResponse.analysis.length > 0);
 
-    // if (!hasResponse) {
-    //   setLoading(false);
-    //   return;
-    // }
-
     setTimeout(() => {
-      setLoading(false);
       if (typeof response.aiResponse.summary === "string") {
         let index = 0;
         const summaryText = response.aiResponse.summary;
         const interval = setInterval(() => {
-          setAnimatedText((prev) => prev + summaryText[index]);
           index++;
           if (index >= summaryText.length) clearInterval(interval);
         }, 50);
@@ -79,29 +71,26 @@ const ResponseCard = ({ response }) => {
     const paragraphs = summary.split("\n").filter((para) => para.trim() !== "");
 
     return (
-      <div className="bg-white p-6 space-y-4 text-gray-800">
+      <div className="bg-white py-2 px-4 space-y-3 text-gray-800">
         {paragraphs.map((para, index) => {
           if (/^# /.test(para)) {
             return (
               <h2
                 key={index}
-                className="text-3xl font-bold text-[#2d1b54] border-b pb-1"
+                className="text-label text-gray-800 border-b pb-1"
               >
                 {para.replace(/^# /, "")}
               </h2>
             );
           } else if (/^## /.test(para)) {
             return (
-              <h3
-                key={index}
-                className="text-2xl font-semibold text-[#2d1b54] mt-4"
-              >
+              <h3 key={index} className="text-label text-gray-800 mt-3">
                 {para.replace(/^## /, "")}
               </h3>
             );
           } else if (/^\*\*(.*?)\*\*/.test(para)) {
             return (
-              <h4 key={index} className="text-xl font-medium text-[#2d1b54]">
+              <h4 key={index} className="text-lg font-medium text-gray-800">
                 {para.replace(/\*\*/g, "")}
               </h4>
             );
@@ -113,7 +102,7 @@ const ResponseCard = ({ response }) => {
             return (
               <ul
                 key={index}
-                className="list-disc ml-6 text-base text-gray-700"
+                className="list-disc ml-6 text-label text-gray-800"
               >
                 <li
                   dangerouslySetInnerHTML={{
@@ -145,6 +134,7 @@ const ResponseCard = ({ response }) => {
       response?.aiResponse?.sql_query ||
       response?.aiResponse?.result ||
       response?.aiResponse?.analysis ||
+      response?.aiResponse?.response ||
       response?.aiResponse?.optimizations;
 
     if (hasStartedRendering) {
@@ -156,6 +146,7 @@ const ResponseCard = ({ response }) => {
     response?.aiResponse?.result,
     response?.aiResponse?.analysis,
     response?.aiResponse?.optimizations,
+    response?.aiResponse?.response,
   ]);
 
   useEffect(() => {
@@ -265,11 +256,11 @@ const ResponseCard = ({ response }) => {
           {/* User message box */}
           <div
             className="relative bg-[#dbeafe] border border-[#e0e3f3] right-10
-      px-4 py-3 max-w-[30vw] rounded-tr-sm rounded-xl shadow-lg text-left
+      px-2 py-2 max-w-[30vw] rounded-tr-sm rounded-xl shadow-lg text-left
       transition-all duration-300 "
           >
             <p
-              className="text-[#1a1f36] text-sm font-medium rounded-xl  leading-snug break-words whitespace-pre-wrap font-sans"
+              className="text-gray-900 text-label rounded-xl  leading-snug break-words whitespace-pre-wrap font-sans"
               style={{ fontSize: "clamp(12px, 2vw, 15px)" }}
             >
               {response?.userQuery}
@@ -280,7 +271,7 @@ const ResponseCard = ({ response }) => {
               <img
                 src={user1}
                 alt="User Avatar"
-                className="h-11 w-11 rounded-full bg-white border border-gray-300 shadow"
+                className="h-10 w-10 rounded-full bg-white border border-gray-300 shadow"
               />
             </div>
           </div>
@@ -288,8 +279,8 @@ const ResponseCard = ({ response }) => {
       </div>
 
       <div className="flex flex-row items-start space-x-3">
-        <div className="w-11 h-11 flex items-center justify-center bg-white rounded-full shadow-sm">
-          <img src={Bot} className="h-7 w-7 text-[rgb(244,242,250)]" />
+        <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm">
+          <img src={Bot} className="h-6 w-6 text-[rgb(244,242,250)]" />
         </div>
         {showLoading && (
           <div className="flex absolute left-16 mt-3 w-[90%] items-center  space-x-3 animate-blink bg-[#f0f1f9]">
@@ -308,7 +299,7 @@ const ResponseCard = ({ response }) => {
                   AI Response :
                 </div>
                 <div className="flex justify-end">
-                  <div className="flex relative bg-white text-sm font-medium text-gray-700 z-10">
+                  <div className="flex relative bg-white text-message text-gray-700 z-10">
                     {/* SQL Icon */}
                     <div
                       className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-8 h-8"
@@ -448,14 +439,14 @@ const ResponseCard = ({ response }) => {
                 {Array.isArray(response.aiResponse.result) &&
                 typeof response.aiResponse.result[0] === "object" ? (
                   <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded  space-y-2 my-3 mx-2">
-                    <table className="min-w-full text-left border-collapse text-sm text-gray-800">
+                    <table className="min-w-full text-left border-collapse text-message text-gray-800">
                       <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
                         <tr>
                           {Object.keys(response.aiResponse.result[0]).map(
                             (key, index) => (
                               <th
                                 key={index}
-                                className="px-4 py-2 border border-gray-400 whitespace-nowrap font-medium bg-gray-200"
+                                className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
                               >
                                 {key}
                               </th>
@@ -472,7 +463,7 @@ const ResponseCard = ({ response }) => {
                             {Object.values(row).map((value, colIndex) => (
                               <td
                                 key={colIndex}
-                                className="px-4 py-2 border border-gray-300 whitespace-nowrap"
+                                className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
                               >
                                 {value}
                               </td>
@@ -483,10 +474,23 @@ const ResponseCard = ({ response }) => {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-base text-gray-700 px-2 pb-2">
+                  <p className="text-label text-gray-800 px-2 pb-2">
                     {response.aiResponse.result}
                   </p>
                 )}
+              </motion.div>
+            )}
+
+            {response?.aiResponse?.response && showResult && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="bg-white rounded-tl-sm  font-sans"
+              >
+                <p className="text-label text-gray-800 px-2 pb-2">
+                  {response.aiResponse.response}
+                </p>
               </motion.div>
             )}
 
@@ -510,7 +514,7 @@ const ResponseCard = ({ response }) => {
                       Structured Query Language (SQL)
                     </h2>
                   </div>
-                  <pre className="bg-gray-100 p-4 h-[19vw] rounded-lg text-gray-800 text-base whitespace-pre-wrap overflow-x-auto border border-blue-400">
+                  <pre className="bg-gray-100 p-4 h-[19vw] rounded-lg text-gray-800 text-label whitespace-pre-wrap overflow-x-auto border border-blue-400">
                     {response.aiResponse.sql_query}
                   </pre>
                 </div>
@@ -524,7 +528,6 @@ const ResponseCard = ({ response }) => {
                 transition={{ delay: 0.3, duration: 0.5 }}
                 className="space-y-2"
               >
-                <h2 className="text-xl font-bold text-blue-800">Analysis:</h2>
                 {formatSummary(response.aiResponse.analysis)}
               </motion.div>
             )}
@@ -538,9 +541,6 @@ const ResponseCard = ({ response }) => {
                   transition={{ delay: 0.5, duration: 0.5 }}
                   className="bg-white p-2 rounded-xl shadow border border-gray-300 space-y-2"
                 >
-                  <h2 className="text-xl font-bold text-[#2d1b54]">
-                    Optimizations:
-                  </h2>
                   <ul className="list-disc ml-10 text-gray-700 space-y-2">
                     {response.aiResponse.optimizations.map((opt, idx) => (
                       <li key={idx}>{opt}</li>
@@ -554,9 +554,8 @@ const ResponseCard = ({ response }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
-                className="space-y-2"
+                className=""
               >
-                <h2 className="text-xl font-bold text-[#2d1b54]">Summary:</h2>
                 {formatSummary(response.aiResponse.summary)}
               </motion.div>
             )}

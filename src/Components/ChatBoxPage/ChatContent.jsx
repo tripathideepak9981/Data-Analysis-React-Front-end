@@ -56,40 +56,6 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
         ${isSliderVisible ? "lg:max-w-[100%]" : "lg:max-w-[100%]"}
       `}
     >
-      {/* Header Section */}
-      <div
-        className="
-          flex 
-          flex-col 
-          items-center 
-          text-center
-          w-full 
-          animate-fadeIn
-        "
-        style={{ fontSize: "clamp(14px, 2vw, 22px)" }}
-      >
-        <h1
-          className="
-            flex 
-            items-center
-            gap-2 mr-14
-          "
-          style={{ fontSize: "clamp(18px, 4vw, 30px)" }}
-        >
-          <span
-            className="relative inline-block font-extrabold text-[#3a2663]"
-            style={{
-              fontSize: "clamp(18px, 2.2vw, 35px)",
-              WebkitTextStroke: "0.3px #cabffd",
-              textShadow: "0px 0px 0px rgba(58, 38, 99, 0.1)",
-            }}
-          >
-            Analyze Data with Modern AI
-          </span>
-          <img src={main} className="text-white w-14 h-14" />
-        </h1>
-      </div>
-
       <div
         ref={chatContainerRef}
         className={`
@@ -104,22 +70,16 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
           ${isSliderVisible ? "lg:max-w-[100vw]" : "lg:max-w-[100vw]"}
         `}
       >
-        <div className="flex flex-row justify-start mt-2">
+        <div className="flex flex-row justify-start">
           <div className="flex flex-row gap-3 ">
-            <div className="w-11 h-11 flex items-center justify-center bg-white rounded-full shadow-sm">
+            <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm">
               <img src={Bot} className="h-8 w-8 text-[rgb(244,242,250)]" />
             </div>
-            <div
-              className="bg-white border border-gray-200 shadow-md rounded-xl rounded-tl-sm py-2 px-4 max-w-[40vw] font-sans"
-              style={{ fontSize: "clamp(14px, 2vw, 16px)" }}
-            >
+            <div className="bg-white border border-gray-200 shadow-md rounded-xl rounded-tl-sm py-2 px-4 max-w-[40vw] font-sans">
               <h2
-                className="font-medium text-gray-800 "
-                style={{ fontSize: "clamp(12px, 2vw, 15px)" }}
+                className="text-sm font-medium text-gray-800 "
                 ref={aiResponseRef}
-              >
-                {/* Your text here */}
-              </h2>
+              ></h2>
             </div>
           </div>
         </div>

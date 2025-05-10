@@ -6,6 +6,13 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        header: ['1.5rem', { lineHeight: '2rem' }], // ~24px
+        subheader: ['1.375rem', { lineHeight: '1.875rem' }], // ~22px
+        label: ['1rem', { lineHeight: '1.5rem' }], // ~16px
+        message: ['0.875rem', { lineHeight: '1.25rem' }], // ~14px
+        query: ['0.8125rem', { lineHeight: '1.125rem' }], // ~13px
+      },
       animation: {
         gradientMove: 'gradientMove 1.2s linear infinite',
         bounceSlow: 'bounceSlow 1s infinite ease-in-out', 

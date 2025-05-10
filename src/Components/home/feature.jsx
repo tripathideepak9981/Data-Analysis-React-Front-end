@@ -8,7 +8,7 @@ import icon5 from "../../assets/icons/presentation.png";
 import featureDecoration from "../../assets/graphs.png";
 import card1 from "../../assets/image2.png";
 import card2 from "../../assets/image1.png";
-import card3 from "../../assets/main1.png";
+import card3 from "../../assets/Main1.png";
 import card4 from "../../assets/header.png";
 import card5 from "../../assets/bg.png";
 

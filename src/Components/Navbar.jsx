@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaRobot } from "react-icons/fa";
-import { FaRegCircleUser } from "react-icons/fa6";
-import { FaSignOutAlt } from "react-icons/fa";
 import { logoutUser } from "../Api"; // Adjust path if needed
-import user2 from "../assets/icons/User2.jpg";
+import user2 from "../assets/icons/user2.jpg";
 
 const Navbar = ({ isLoggedIn, username, setUsername }) => {
   const [scrolled, setScrolled] = useState(false);

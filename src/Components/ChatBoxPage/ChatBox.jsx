@@ -16,7 +16,7 @@ import { IoIosArrowForward } from "react-icons/io";
 
 const ChatBox = () => {
   const [query, setQuery] = useState("");
-  const [isSliderVisible, setIsSliderVisible] = useState(true);
+  const [isSliderVisible, setIsSliderVisible] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [byDataPreview, setByDataPreview] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -127,12 +127,12 @@ const ChatBox = () => {
   };
 
   return (
-    <div className=" bg-gradient-to-br from-[#2d1b45] to-[#2d1b45]  text-white min-h-screen w-full fixed overflow-hidden pt-1">
-      <div className="flex flex-col md:flex-row h-full md:h-[99vh] w-full rounded-lg item-streched">
+    <div className=" bg-gradient-to-br from-[#2d1b45] to-[#2d1b45]  text-white min-h-screen w-full fixed overflow-hidden">
+      <div className="flex flex-col md:flex-row h-full md:h-[100vh] w-full rounded-lg item-streched">
         {/* Slider Section - Responsive Width and Behavior */}
         <div
           className={`h-full transition-all duration-300 ease-in-out z-50
-  ${isSliderVisible ? "w-[26vw] shadow-md" : "w-[6vw] shadow-md"}
+  ${isSliderVisible ? "w-[24vw] shadow-md" : "w-[6vw] shadow-md"}
   bg-gradient-to-b from-white to-white  
       text-gray-800 flex flex-col justify-between px-3`}
         >
@@ -141,12 +141,12 @@ const ChatBox = () => {
           <div className="">
             <div className="flex flex-row justify-between">
               {isSliderVisible && (
-                <div className=" flex flex-row justify-center mt-3 ml-1">
+                <div className=" flex flex-row justify-center mt-2 ml-1">
                   <img
                     src={updatedColor}
                     className="w-6 h-6 text-[#2d1b54]"
                   ></img>
-                  <span className="text-lg font-semibold text-gray-800 ml-2">
+                  <span className="text-lg font-semibold text-gray-800 ml-2 mb-1">
                     Data Aanlysis
                   </span>
                 </div>
@@ -199,7 +199,7 @@ const ChatBox = () => {
                 {/* New Chat Button */}
                 <button
                   onClick={handleNewChatClick}
-                  className="group flex items-center justify-center w-full rounded-md border border-blue-800 text-blue-800 hover:bg-blue-50 transition-all duration-200 px-4 py-2 gap-2 "
+                  className="group flex items-center justify-center w-full rounded-md border border-blue-800 text-blue-800 hover:bg-blue-50 transition-all duration-200 px-4 py-1 gap-2 "
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -222,33 +222,43 @@ const ChatBox = () => {
                   )}
                 </button>
                 <div
-                  className="mt-2 ml-2 flex flex-row items-center hover:scale-105"
+                  className="mt-2 ml-2 flex flex-row items-center hover:scale-105 relative group"
                   onClick={() => (window.location.href = "/")}
                 >
-                  <div className="bg-white p-2 rounded flex items-center justify-center  transition duration-200 ease-in-out cursor-pointer">
-                    <IoHomeOutline className="h-[18px] w-[18px]" />
+                  <div className="bg-white p-2 rounded flex items-center justify-center transition duration-200 ease-in-out cursor-pointer">
+                    <IoHomeOutline className="h-[17px] w-[17px]" />
                   </div>
-                  {isSliderVisible && (
-                    <button className="ml-2 text-label text-gray-700 ">
+
+                  {isSliderVisible ? (
+                    <button className="ml-2 text-label text-gray-700">
                       Home Page
                     </button>
+                  ) : (
+                    <span className="absolute left-[25px] ml-2 w-[6vw] px-1.5 py-1 bg-gray-100 border border-gray-800 text-gray-800 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      Home Page
+                    </span>
                   )}
                 </div>
-
-                <div className="ml-2 flex flex-row items-center hover:scale-105">
+                <div className="ml-2 flex flex-row items-center hover:scale-105 relative group">
                   <div className="bg-white p-2 rounded flex items-center justify-center transition duration-200 ease-in-out cursor-pointer">
                     <svg
                       viewBox="0 0 32 32"
-                      className="w-4 h-4 stroke-gray-800 fill-none"
+                      className="w-[15px] h-[15px] stroke-gray-800 fill-none"
                       strokeWidth="3"
                     >
                       <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z" />
                     </svg>
                   </div>
-                  {isSliderVisible && (
+
+                  {isSliderVisible ? (
                     <button className="ml-2 text-label text-gray-700">
                       Saved Cards
                     </button>
+                  ) : (
+                    // Tooltip shown on hover
+                    <span className="absolute left-[25px] ml-2 w-[7vw] px-2 py-1 bg-gray-100 border border-gray-800 text-gray-800 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                      Saved Cards
+                    </span>
                   )}
                 </div>
               </div>
@@ -268,10 +278,10 @@ const ChatBox = () => {
                     Upgrade Plan
                   </p> */}
                   <button className="group border-none w-full rounded-[10px] shadow-sm transition active:scale-100">
-                    <span className="flex items-center justify-center bg-[#f6f3f3] rounded-[5px] px-[2px] py-2  gap-[30px] transition group-active:scale-[0.97]">
+                    <span className="flex items-center justify-center bg-[#f6f3f3] rounded-[5px] px-[2px] py-[6px]  gap-[30px] transition group-active:scale-[0.97]">
                       <span className="flex items-center gap-[5px] text-base font-semibold text-[#8c8c8c]">
                         <p>Upgrade to</p>
-                        <p className="bg-black text-white px-2 py-1 rounded-[5px]">
+                        <p className="bg-black text-white px-2 py-[2px] rounded-[5px]">
                           PRO
                         </p>
                       </span>
@@ -339,10 +349,10 @@ const ChatBox = () => {
           >
             {showIcon && (
               <div
-                className="right-2 top-2 cursor-pointer p-2 rounded-full transition text-gray-800 fixed"
+                className="right-2 top-2 cursor-pointer p-1 rounded-full transition text-gray-800 fixed"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <MoreVertIcon />
+                <MoreVertIcon className="w-[5px] h-[5px]" />
               </div>
             )}
             {isDropdownOpen && (

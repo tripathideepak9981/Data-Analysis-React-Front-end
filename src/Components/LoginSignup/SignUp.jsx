@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { sendSignUpData } from "../../Api";
@@ -15,6 +15,19 @@ const SignUpPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setFullName("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
   const Spinner = () => (
     <svg
       viewBox="25 25 50 50"
@@ -51,9 +64,11 @@ const SignUpPage = () => {
     try {
       const response = await sendSignUpData(formData);
       console.log("Signup successful:", response);
-      navigate("/");
+      if (!error) {
+        navigate("/");
+      }
     } catch (err) {
-      setError(err.message || "Something went wrong. Try again!");
+      setError("Network Error. Try again later!");
     } finally {
       setLoading(false);
     }
@@ -65,15 +80,14 @@ const SignUpPage = () => {
       style={{ background: "#e8efff" }}
     >
       <div className="w-full max-w-md bg-gray-50 p-5  rounded-[30px] shadow-[0_0_40px_rgba(0,0,0,0.2)]">
-        <div className="text-center mt-4 mb-6">
-          <h2 className="text-3xl font-bold text-gray-800">Sign up</h2>
-        </div>
-
         {error && (
-          <div className="bg-red-100 text-red-700 p-3 rounded-xl mb-4 text-sm border border-red-300">
+          <div className="bg-red-100 text-red-700 p-3 rounded-xl mb-4 text-sm border flex text-center justify-center border-red-300">
             {error}
           </div>
         )}
+        <div className="text-center mt-4 mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">Sign up</h2>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 mt-5 px-2">
           <div>

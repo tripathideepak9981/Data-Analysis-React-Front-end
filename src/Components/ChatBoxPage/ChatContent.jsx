@@ -66,7 +66,7 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
           overflow-y-auto
           scrollbar-hide
           w-full
-          mt-2
+          mt-0
           ${isSliderVisible ? "lg:max-w-[100vw]" : "lg:max-w-[100vw]"}
         `}
       >

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LogIn, Eye, EyeOff } from "lucide-react";
 import { sendSignInData } from "../../Api";
@@ -25,6 +25,17 @@ export default function Login() {
     </svg>
   );
 
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError("");
+        setEmail("");
+        setPassword("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -43,10 +54,12 @@ export default function Login() {
     try {
       const response = await sendSignInData(email, password);
       console.log(response);
-      navigate("/");
+      if (!response.error) {
+        navigate("/");
+      }
     } catch (err) {
       console.error(err.message);
-      setError(err.message);
+      setError("Incorrect Email Or Password");
     } finally {
       setLoading(false);
     }
@@ -62,7 +75,13 @@ export default function Login() {
           onSubmit={handleSubmit}
           className="w-[400px] h-[450px] bg-white py-10 px-5  rounded-[30px] shadow-[0_0_40px_rgba(0,0,0,0.2)] flex flex-col space-y-8 items-center"
         >
-          <p className="text-3xl font-bold text-gray-700  my-3 mt-5">
+          {error && (
+            <div className="bg-red-100 text-red-700 p-3 rounded-xl flex text-center justify-center text-sm border border-red-300">
+              {error}
+            </div>
+          )}
+
+          <p className="text-3xl font-bold text-gray-700  mt-5">
             Welcome to Login
           </p>
 

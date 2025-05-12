@@ -29,7 +29,6 @@ const handleError = (error, action = "processing-request") => {
 
 export const uploadFilesAPI = async (selectedFiles) => {
   if (!selectedFiles.length) return;
-
   const formData = new FormData();
   selectedFiles.forEach((file) => {
     formData.append("files", file);
@@ -104,7 +103,7 @@ export const cleanFile = async (table_name) => {
        });
        return response.data;
    }catch (error) {
-       return handleError(error, "cleaning file");
+    return handleError(error, "Cleaning files")
    }
 } 
 
@@ -121,7 +120,7 @@ export const cancel_clean_file = async (table_name) => {
       );
       return response.data;
    }catch(error){
-     return handleError(error, "cancelling clean file");
+    return handleError(error, "Cancel Cleaning files")
    }
 }
 
@@ -166,7 +165,7 @@ export const sendSignUpData = async(formData) => {
     localStorage.setItem("username", formData.email)
     return response.data;
   }catch (error){
-    return handleError(error, "Error Uploading Sign Up Data");
+    throw (error.message);
   }
 } 
 export const sendSignInData = async (username, password) => {
@@ -183,15 +182,12 @@ export const sendSignInData = async (username, password) => {
         },
       }
     );
-
     const { access_token } = response.data;
-
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("username", username);
-
     return response.data;
   } catch (error) {
-    throw error;
+    throw(error.message);
   }
 };
 

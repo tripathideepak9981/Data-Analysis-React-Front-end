@@ -206,20 +206,21 @@ const AddDataPopup = ({ setByDataPreview }) => {
         responseData.files[0].table_name
       );
       setIsCleaning(false);
-
       if (cleanTableResponse.status === "cleaned") {
         setShowNotification(true);
         setCard("clean");
+        storeFilePreviews(cleanTableResponse);
+        setUploadedFiles((prev) => [
+          ...prev,
+          {
+            name: responseData.files[0].table_name,
+            createdDate: new Date().toISOString().split("T")[0],
+          },
+        ]);
+      } else {
+        setSelectedFiles([]);
+        throw new Error(cleanTableResponse.message || "Cleaning File failed");
       }
-
-      storeFilePreviews(cleanTableResponse);
-      setUploadedFiles((prev) => [
-        ...prev,
-        {
-          name: responseData.files[0].table_name,
-          createdDate: new Date().toISOString().split("T")[0],
-        },
-      ]);
     } catch (error) {
       console.error(error);
       Swal.fire("Error", error.message, "error");
@@ -239,8 +240,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
         responseData.files[0].table_name
       );
       setIsCleaning(false);
-
-      if (cancelResponse.status !== "error") {
+      if (cancelResponse.status === "saved raw") {
         storeFilePreviews(cancelResponse);
         setUploadedFiles((prev) => [
           ...prev,
@@ -252,6 +252,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
         setShowNotification(true);
         setCard("cancel");
       } else {
+        setSelectedFiles([]);
         throw new Error(cancelResponse.message || "Cancellation failed");
       }
     } catch (error) {
@@ -345,6 +346,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
         setErrorMessage("Some files were not uploaded successfully");
       }
     } catch (error) {
+      setSelectedFiles([]);
       setErrorMessage(error.message);
     } finally {
       setIsLoading(false);
@@ -489,10 +491,6 @@ const AddDataPopup = ({ setByDataPreview }) => {
       setCleaningSummary(responseData.files[0].cleaning_summary);
     }
   }, [responseData, setCleaningSummary]);
-
-  const filteredFiles = uploadedFiles.filter((file) =>
-    file.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleDropBoxClick = () => {
     if (fileInputRef.current) {

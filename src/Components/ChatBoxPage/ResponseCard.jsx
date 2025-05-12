@@ -261,17 +261,17 @@ const ResponseCard = ({ response }) => {
           >
             <p
               className="text-gray-900 text-label rounded-xl  leading-snug break-words whitespace-pre-wrap font-sans"
-              style={{ fontSize: "clamp(12px, 2vw, 15px)" }}
+              style={{ fontSize: "clamp(12px, 2vw, 14px)" }}
             >
               {response?.userQuery}
             </p>
 
             {/* User avatar positioned top-right inside the box */}
-            <div className="absolute top-0 -right-14 ">
+            <div className="absolute top-0 -right-12 ">
               <img
                 src={user1}
                 alt="User Avatar"
-                className="h-10 w-10 rounded-full bg-white border border-gray-300 shadow"
+                className="h-9 w-9 rounded-full bg-white border border-gray-300 shadow"
               />
             </div>
           </div>
@@ -295,7 +295,7 @@ const ResponseCard = ({ response }) => {
           <>
             {!showLoading && (
               <div className="flex justify-between mt-3 z-20">
-                <div className=" text-gray-900 text-lg font-semibold">
+                <div className=" text-gray-900 text-base font-semibold">
                   AI Response :
                 </div>
                 <div className="flex justify-end">

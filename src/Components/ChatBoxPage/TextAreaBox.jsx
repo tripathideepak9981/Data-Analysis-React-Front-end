@@ -58,7 +58,7 @@ const TextAreaBox = ({
             sendMessage();
           }
         }}
-        className="w-full ml-2  resize-none min-h-[30px] bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-0 border-none"
+        className="w-full ml-2 text-label resize-none min-h-[30px] bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-0 border-none"
       ></TextareaAutosize>
       <div className="flex justify-between items-center mt-2">
         <div className="flex gap-2">

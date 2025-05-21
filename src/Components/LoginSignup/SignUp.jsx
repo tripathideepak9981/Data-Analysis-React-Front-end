@@ -52,12 +52,12 @@ const SignUpPage = () => {
     if (password.length < 8)
       return setError("Password must be at least 8 characters long");
     if (password !== confirmPassword) return setError("Passwords do not match");
+const formData = {
+  username: fullName.replace(/\s+/g, ""), // Removes all spaces
+  email: email,
+  password: password,
+};
 
-    const formData = {
-      username: fullName,
-      email: email,
-      password: password,
-    };
 
     setLoading(true);
 

@@ -92,7 +92,10 @@ const Feature = () => {
   const [selectedFeature, setSelectedFeature] = useState(features[0]);
 
   return (
-    <section id="services" className="py-20 bg-white text-[#2d1b54]">
+    <section
+      id="services"
+      className="py-20 scroll-mt-10  bg-white text-[#2d1b54]"
+    >
       <div className="relative z-10 max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row items-center text-center md:text-left mb-16">

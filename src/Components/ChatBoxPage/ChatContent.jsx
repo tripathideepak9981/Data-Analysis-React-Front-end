@@ -3,12 +3,19 @@ import Typed from "typed.js";
 import ResponseCard from "./ResponseCard";
 import Bot from "../../assets/serach.svg";
 import main from "../../assets/main.png";
+import ChatContentCard from "./FrontViewSuggestion/ChatContentCard";
+import { motion } from "framer-motion";
 
-const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
+const ChatContent = ({
+  chatMessages,
+  setChatMessages,
+  isSliderVisible,
+  suggestionQuery,
+}) => {
   const aiResponseRef = useRef(null);
   const chatContainerRef = useRef(null);
   const responseEndRef = useRef(null);
-
+  
   useEffect(() => {
     if (
       chatMessages.chart &&
@@ -26,6 +33,23 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
   //   }
   //   fetchChartData();
   // }, [chatMessages]);
+
+  // Animation Variants
+  const containerVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        staggerChildren: 0.1, // delay between items
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   useEffect(() => {
     if (aiResponseRef.current) {
@@ -70,7 +94,7 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
           ${isSliderVisible ? "lg:max-w-[100vw]" : "lg:max-w-[100vw]"}
         `}
       >
-        <div className="flex flex-row justify-start">
+        <div className="flex flex-row justify-start mt-1">
           <div className="flex flex-row gap-3 ">
             <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm">
               <img src={Bot} className="h-8 w-8 text-[rgb(244,242,250)]" />
@@ -83,6 +107,20 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
             </div>
           </div>
         </div>
+        {/* {chatMessages.length === 0 && (
+          <div className="flex justify-center">
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.8,
+                ease: "easeOut",
+              }}
+            >
+              <ChatContentCard />
+            </motion.div>
+          </div>
+        )} */}
 
         {/* Chat Messages */}
         <div className="flex flex-col gap-5">
@@ -97,7 +135,25 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
           >
             {chatMessages &&
               chatMessages.map((chat, index) => (
-                <ResponseCard key={index} response={chat} />
+                <ResponseCard
+                  key={index}
+                  response={chat}
+                  onUpdateSQL={(updatedSQL) => {
+                    setChatMessages((prevMessages) =>
+                      prevMessages.map((msg, i) =>
+                        i === index
+                          ? {
+                              ...msg,
+                              aiResponse: {
+                                ...msg.aiResponse,
+                                sql_query: updatedSQL,
+                              },
+                            }
+                          : msg
+                      )
+                    );
+                  }}
+                />
               ))}
 
             <div ref={responseEndRef}></div>

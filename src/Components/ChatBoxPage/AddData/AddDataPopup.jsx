@@ -1,12 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { FaDatabase, FaFileExcel, FaFilePdf } from "react-icons/fa";
+import { FaDatabase } from "react-icons/fa";
 import "../../../CoustomCss/LoadingButton.css";
-import { BiData } from "react-icons/bi";
 import "../../../CoustomCss/Scrollbar.css";
-import { HiOutlineDatabase, HiArrowNarrowRight } from "react-icons/hi";
-import { FiSettings } from "react-icons/fi";
+import { HiArrowNarrowRight } from "react-icons/hi";
 import { SiMysql } from "react-icons/si";
-import File from "../../../assets/icons/file.png";
 import clsx from "clsx";
 
 import { IoEye } from "react-icons/io5";
@@ -40,7 +37,7 @@ const mockFiles = [
   },
 ];
 
-const AddDataPopup = ({ setByDataPreview }) => {
+const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
   const [isLoading, setIsLoading] = useState();
   const [isCleaning, setIsCleaning] = useState();
   const [activeTab, setActiveTab] = useState("static");
@@ -52,6 +49,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
   const [showEyeHint, setShowEyeHint] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState();
 
   const [DbResponse, setDbResponse] = useState(() => {
     const stored = sessionStorage.getItem("DbResponse");
@@ -265,6 +263,17 @@ const AddDataPopup = ({ setByDataPreview }) => {
   };
 
   useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+        setShowChatNotification(true);
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
+
+  useEffect(() => {
     if (cleaningSummary) {
       ShowAlert();
     }
@@ -315,9 +324,18 @@ const AddDataPopup = ({ setByDataPreview }) => {
       }
     });
   };
-
   const handleFileUpload = async (event) => {
     const files = Array.from(event.target.files || event.dataTransfer.files);
+
+    // Check if any file exceeds 10MB (10 * 1024 * 1024 bytes)
+    const oversizedFile = files.find((file) => file.size > 10 * 1024 * 1024);
+    if (oversizedFile) {
+      setErrorMessage("File size exceeded the limit of 10 MB.");
+      return;
+    }
+    setErrorMessage(null);
+
+    // Filter duplicates
     const newFiles = files.filter(
       (file) =>
         !uploadedFiles.some((fileObj) => fileObj.name === file.name) &&
@@ -336,6 +354,11 @@ const AddDataPopup = ({ setByDataPreview }) => {
 
     try {
       const data = await uploadFilesAPI(newFiles);
+      // const response = await suggestedQueryResponse();
+      // if (response) {
+      //   console.log("From add Data ", response);
+      //   setSuggestionQuery(response);
+      // }
       setResponseData(data);
       setTablePreview((prevPreview) => ({
         ...prevPreview,
@@ -352,6 +375,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
       setIsLoading(false);
     }
   };
+
   const getPreviewByFileName = (fileName) => {
     const previewData = tablePreview[fileName] || [];
 
@@ -542,7 +566,7 @@ const AddDataPopup = ({ setByDataPreview }) => {
               : "text-gray-400"
           }`}
         >
-          My Static Files
+          Upload Local Files
         </button>
         <button
           onClick={() => setActiveTab("connected")}
@@ -578,16 +602,27 @@ const AddDataPopup = ({ setByDataPreview }) => {
                 <span className="underline">Click to upload</span> or drag and
                 drop
               </p>
-              <p className="text-message text-gray-500">
-                Supports multiple files: CSV, XLSX, XLS
-              </p>
+              {errorMessage ? (
+                <p className="text-red-500 hover:text hover:scale-105 red-600 text-sm mt-1">
+                  {errorMessage}
+                </p>
+              ) : (
+                <>
+                  <p className="text-message text-gray-500">
+                    Supports multiple files: CSV, XLSX, XLS
+                  </p>
+                  <p className="text-message text-gray-500 mt-1">
+                    Limit file size: 10MB
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
           <div>
-            <p className="text-message text-purple-500 mb-2">
+            {/* <p className="text-message text-purple-500 mb-2">
               For optimal results, follow best practices when uploading files
-            </p>
+            </p> */}
             <div className="flex justify-between items-center px-4 py-3 bg-gray-100 rounded-md shadow-sm">
               <div>
                 <h2 className="text-label text-gray-800">Available Files</h2>
@@ -646,8 +681,8 @@ const AddDataPopup = ({ setByDataPreview }) => {
                         file.name
                           .toLowerCase()
                           .includes(searchTerm.toLowerCase())
-                      ).length > 3
-                        ? "max-h-[30vh] overflow-y-auto"
+                      ).length > 2
+                        ? "max-h-[30vh] overflow-y-auto  scrollbar-hide"
                         : ""
                     }`}
                   >
@@ -727,13 +762,13 @@ const AddDataPopup = ({ setByDataPreview }) => {
                 (card === "clean" ? (
                   <CustomNotificationCard
                     title="Data Cleaned!"
-                    text="Your Data has been cleaned and stored, Successfully"
+                    text="Your Data has been cleaned and stored."
                     onClose={() => setShowNotification(false)}
                   />
                 ) : (
                   <CustomNotificationCard
                     title="You choose Skip! now"
-                    text="Your data has been stored, Successfully"
+                    text="Your data has been stored."
                     onClose={() => setShowNotification(false)}
                   />
                 ))}

@@ -3,11 +3,57 @@ import Swal from 'sweetalert2';
 
 // Deployed backend url: http://35.154.165.174
 // Localhost url : http://127.0.0.1:8000
-const API_BASE_URL = "http://35.154.165.174";
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 const axiosConfig = {
   timeout: 100000,
 }
+
+
+export const joinTables = async (data) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/join_tables`, data, axiosConfig);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+
+export const avilableTables = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/available_tables`)
+    return response.data;
+  }catch(error) {
+    return handleError(error, "Avalilable Tables")
+  }
+}
+export const validateSQLQuery = async (sql_query, original_question = "") => {
+  try {
+    const token = localStorage.getItem("access_token");
+    console.log("SQL Query:", sql_query);
+    console.log("Original Question:", original_question);
+    console.log("Token:", token);
+
+    const response = await axios.post(
+      `${API_BASE_URL}/api/validate_sql`,
+      {
+        sql_query,
+        original_question,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        }
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    return handleError(error, "validate SQL query");
+  }
+};
 
 const handleError = (error, action = "processing-request") => {
   console.error(`Error ${action}:`, error.response?.data || error.message);
@@ -36,7 +82,7 @@ export const uploadFilesAPI = async (selectedFiles) => {
 
   try {
     const response = await axios.post(
-      `${API_BASE_URL}/api/upload/upload`,
+      `${API_BASE_URL}/api/upload`,
       formData,
       {
         headers: {
@@ -45,19 +91,29 @@ export const uploadFilesAPI = async (selectedFiles) => {
         ...axiosConfig,
       }
     );
+    
     return response.data;
   } catch (error) {
     return handleError(error, "uploading files")
   }
 };
 
+
+  // export const suggestedQueryResponse = async () => { 
+  //   const response = await axios.get(
+  //   `${API_BASE_URL}/api/initial_suggestions`
+  //   )
+  //   console.log("Suggested Response : " ,suggestedQueryResponse.data)
+  //   return response.data;
+  // }
+  
 export const exceuteQuery = async (query) => {
   try {
     const token = localStorage.getItem("access_token");
     console.log("Query:", query);
     console.log("Token:", token);
 
-    const response = await axios.post(`${API_BASE_URL}/api/query/execute_query`,
+    const response = await axios.post(`${API_BASE_URL}/api/execute_query`,
       { "query": query },
       {
         headers: {
@@ -66,6 +122,11 @@ export const exceuteQuery = async (query) => {
         }
       }
     );
+
+    //     const suggestedQueryResponse = await axios.get(
+    //   `${API_BASE_URL}/api/followup_suggestions`
+    // )
+    // console.log("Suggested Response : " ,suggestedQueryResponse.data)
 
     return response.data;
   } catch (error) {
@@ -95,7 +156,7 @@ export const cleanFile = async (table_name) => {
   console.log("Access token: " + token)
    try{
        console.log("Table Name : " + table_name)
-       const response = await axios.post(`${API_BASE_URL}/api/upload/clean_file?table_name=${encodeURIComponent(table_name)}`, {}, {
+       const response = await axios.post(`${API_BASE_URL}/api/clean_file?table_name=${encodeURIComponent(table_name)}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -111,13 +172,14 @@ export const cancel_clean_file = async (table_name) => {
   const token = localStorage.getItem("access_token");
    try{
       console.log("Table name:", table_name);
-      const response = await axios.post( `${API_BASE_URL}/api/upload/cancel_clean?table_name=${encodeURIComponent(table_name)}`, {},  {
+      const response = await axios.post( `${API_BASE_URL}/api/cancel_clean?table_name=${encodeURIComponent(table_name)}`, {},  {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         }
        }
       );
+      
       return response.data;
    }catch(error){
     return handleError(error, "Cancel Cleaning files")
@@ -177,14 +239,20 @@ export const sendSignInData = async (username, password) => {
         password,
       }),
       {
-        headers: {
+        headers: { 
           "Content-Type": "application/x-www-form-urlencoded",
         },
       }
     );
+    console.log("Sigin Response : ", response)
     const { access_token } = response.data;
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("username", username);
+    const suggestedQueryResponse = await axios.get(
+      `${API_BASE_URL}/api/initial_suggestions`
+    )
+    console.log("Suggested Response from login : " ,suggestedQueryResponse.data)
+    localStorage.setItem("suggested_question", suggestedQueryResponse.data.suggested_questions);
     return response.data;
   } catch (error) {
     throw(error.message);

@@ -1,6 +1,5 @@
 import React from "react";
-import { XCircle, Sparkles } from "lucide-react";
-import { ShieldCheck } from "lucide-react";
+import { XCircle, Sparkles, ShieldCheck } from "lucide-react";
 
 const ConfirmCleanModal = ({
   open,
@@ -19,24 +18,26 @@ const ConfirmCleanModal = ({
       const content = section.replace(/\*{1,2}/g, "").trim();
 
       return (
-        <div key={index} className="mb-2">
+        <div key={index} className="mb-3">
           {title && (
             <p className="text-[#2d1b54] font-semibold text-base mb-1 flex items-center gap-2">
-              <Sparkles className="text-[#2d1b54]" size={15} />
-              {title}
+              <Sparkles className="text-[#6c4fc3]" size={16} />
+              <span className="tracking-wide">{title}</span>
             </p>
           )}
-          <p className="text-sm text-gray-800 leading-relaxed">{content}</p>
+          <p className="text-sm text-gray-700 leading-relaxed pl-5 border-l-2 border-blue-200">
+            {content}
+          </p>
         </div>
       );
     });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white w-full max-w-5xl rounded-3xl shadow-2xl px-5 py-3 transition-all duration-300 overflow-y-auto max-h-[90vh] min-h-[70vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50  transition-all">
+      <div className="bg-white w-full max-w-5xl rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] px-6 py-5 overflow-y-auto scrollbar-hide max-h-[90vh] min-h-[70vh] animate-fadeIn">
         {/* Header */}
-        <div className="text-center mb-3">
-          <h2 className="text-xl md:text-2xl font-bold text-[#2d1b54] mb-1">
+        <div className="text-center mb-5">
+          <h2 className="text-2xl font-extrabold text-[#2d1b54] mb-1 tracking-tight">
             Do you want to clean your data?
           </h2>
           <p className="text-sm text-gray-600">
@@ -44,23 +45,23 @@ const ConfirmCleanModal = ({
           </p>
         </div>
 
-        {/* Summary Content */}
-        <div className="bg-gray-100 border border-gray-300 rounded-xl p-4 mb-3 max-h-[360px] overflow-y-auto scrollbar-hide text-left">
+        {/* Summary */}
+        <div className="bg-[#f8f9ff] border border-gray-300 rounded-2xl scrollbar-xy p-5 mb-6 max-h-[360px] ">
           {formattedSummary}
         </div>
 
-        {/* Action Buttons */}
+        {/* Actions */}
         <div className="flex flex-col sm:flex-row justify-center sm:justify-end items-center gap-3">
           <button
             onClick={onCancel}
-            className="flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 transition-all duration-300 shadow hover:shadow-md"
+            className="flex items-center gap-2 px-5 py-2 text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 transition-all shadow hover:shadow-md"
           >
-            <XCircle size={15} />
+            <XCircle size={16} />
             Skip for now
           </button>
           <button
             onClick={onConfirm}
-            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-xl"
+            className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-xl bg-gradient-to-br from-blue-500 to-[#2d1b54] text-white hover:from-blue-600 hover:to-[#241346] transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             <ShieldCheck size={18} />
             Clean File

@@ -1,38 +1,36 @@
 import React from "react";
-import card from "../../assets/Animation/card1.gif";
+import { CheckCircle, X, AlertCircle } from "lucide-react";
 
-const CustomNotificationCard = ({ title, text, onClose }) => {
+const CustomNotificationCard = ({
+  title = "Success",
+  text = "New analysis created.",
+  onClose,
+}) => {
+  const isError = title?.toLowerCase() === "error";
+
   return (
     <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2">
-      <div className="relative flex flex-col items-center justify-between p-2 w-[32vw] h-[45vh] rounded-[2rem] shadow-2xl bg-white/10 backdrop-blur-2xl border border-white/20 transition-all duration-500">
-        {/* Glow Border Layer */}
-        <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-indigo-400/20 via-transparent to-purple-500/20 pointer-events-none z-[-1] blur-sm" />
-
-        {/* Animated Image Container */}
-        <div className="">
-          <img
-            src={card}
-            alt="Notification animation"
-            className="object-cover w-28 h-28"
-          />
+      <div className="relative flex flex-col items-center space-y-2 py-3 gap-2 bg-white rounded-lg shadow-2xl border border-gray-300 px-6 w-[350px] h-[180px]">
+        {/* Icon */}
+        <div className={`mt-3 ${isError ? "text-red-600" : "text-green-600"}`}>
+          {isError ? <AlertCircle size={40} /> : <CheckCircle size={40} />}
         </div>
 
         {/* Text Content */}
-        <div className="text-center px-4 mt-2">
-          <h2 className="text-gray-800 text-2xl font-bold tracking-wider drop-shadow-sm">
-            {title}
+        <div className="flex flex-col justify-center items-center space-y-2">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {title.toUpperCase()}
           </h2>
-          <p className="text-gray-800 text-sm mt-2 leading-relaxed font-medium">
-            {text}
-          </p>
+          <p className="text-sm text-gray-600">{text}</p>
         </div>
 
-        {/* Close Button */}
+        {/* Close Icon */}
         <button
           onClick={onClose}
-          className="my-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold py-2 px-10 rounded-full shadow-md hover:shadow-xl hover:scale-105 hover:brightness-110 transition-all duration-300"
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          aria-label="Close"
         >
-          Close
+          <X size={16} />
         </button>
       </div>
     </div>

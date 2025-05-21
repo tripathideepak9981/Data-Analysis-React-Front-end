@@ -13,6 +13,10 @@ import areoplane from "../../assets/areoplane.png";
 import { IoHomeOutline } from "react-icons/io5";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
+import { motion } from "framer-motion";
+import PopupJoin from "./PopupForm/PopupJoin";
+
+import { CheckCircle, X } from "lucide-react"; // or use any icon library
 
 const ChatBox = () => {
   const [query, setQuery] = useState("");
@@ -20,7 +24,7 @@ const ChatBox = () => {
   const [chatMessages, setChatMessages] = useState([]);
   const [byDataPreview, setByDataPreview] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [chartResponse, setChartResponse] = useState();
+  const [showChatNotification, setShowChatNotification] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const openDropdown = (event) => setAnchorEl(event.currentTarget);
   const [isAddDataPopupOpen, setIsAddDataPopupOpen] = useState(false);
@@ -29,6 +33,19 @@ const ChatBox = () => {
   const [showIcon, setShowIcon] = useState(true);
   const lastScrollTop = useRef(0);
   const scrollContainerRef = useRef(null);
+  const [suggestionQuery, setSuggestionQuery] = useState();
+  const [openPopupJoin, setOpenPopupJoin] = useState(false);
+
+  useEffect(() => {
+    if (!isAddDataPopupOpen) {
+      const timer = setTimeout(() => {
+        setShowChatNotification(false);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isAddDataPopupOpen]);
+
   useEffect(() => {
     const scrollEl = scrollContainerRef.current;
     if (!scrollEl) return; // Prevent error if ref is not attached yet
@@ -59,6 +76,10 @@ const ChatBox = () => {
   const closeAddDataPopup = () => {
     setIsAddDataPopupOpen(false);
   };
+
+  useEffect(() => {
+    console.log("Chat Messages : ", chatMessages);
+  }, [chatMessages]);
 
   const handleNewChatClick = () => {
     setChatMessages([]);
@@ -304,7 +325,7 @@ const ChatBox = () => {
             )}
 
             {/* User Info */}
-            <div className="flex items-center gap-3 hover:bg-white/10 px-2 py-3 rounded-xl transition-all cursor-pointer">
+            <div className="flex items-center gap-3 hover:bg-white/10 px-4 py-3 rounded-xl transition-all cursor-pointer">
               <User2Icon className="w-6 h-6 text-gray-700" />
               {isSliderVisible && (
                 <div>
@@ -320,7 +341,7 @@ const ChatBox = () => {
 
             {/* Logout */}
             <div
-              className="flex items-center ml-2 hover:bg-red-500/20  rounded-xl transition-all cursor-pointer"
+              className="flex items-center ml-2 hover:bg-red-500/20  rounded-xl transition-all cursor-pointer px-2"
               onClick={handleLogout}
             >
               <LogoutIcon className="h-6 w-6 text-red-600" />
@@ -343,6 +364,7 @@ const ChatBox = () => {
         transition-all duration-300 style={{ fontSize: moderateScale(16) }}`}
         >
           {/* Chat Content - Responsive Scrolling and Padding */}
+
           <div
             ref={scrollContainerRef}
             className="flex-1 overflow-y-scroll scrollbar-hide  rounded-lg  relative"
@@ -371,12 +393,48 @@ const ChatBox = () => {
                 </button>
               </div>
             )}
+            {showChatNotification && !isAddDataPopupOpen && (
+              <motion.div
+                className="fixed top-4 right-3 z-50"
+                initial={{ x: "100%", opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: "100%", opacity: 0 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              >
+                <div className="relative flex items-start gap-4 bg-white rounded-lg shadow-lg border-l-4 border-green-500 p-4 w-[360px]">
+                  {/* Success Icon */}
+                  <div className="mt-1 text-green-600">
+                    <CheckCircle size={24} />
+                  </div>
+
+                  {/* Text Content */}
+                  <div className="flex-1">
+                    <h2 className="text-sm font-semibold text-gray-900">
+                      You're All Set!
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                      Your data is ready — start your analysis now.
+                    </p>
+                  </div>
+
+                  {/* Close Icon */}
+                  <button
+                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                    aria-label="Close"
+                    onClick={() => setShowChatNotification(false)}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </motion.div>
+            )}
             {/* Chat Content Component */}
             <ChatContent
               chatMessages={chatMessages}
               isSliderVisible={isSliderVisible}
               fetchChartData={fetchChartData}
               setChatMessages={setChatMessages}
+              suggestionQuery={suggestionQuery}
             />
           </div>
 
@@ -392,6 +450,12 @@ const ChatBox = () => {
               openAddDataPopup={openAddDataPopup}
               isSliderVisible={isSliderVisible}
               setByDataPreview={setByDataPreview}
+              suggestionQuery={suggestionQuery}
+              setChatMessages={setChatMessages}
+              chatMessages={chatMessages}
+              fetchChartData={fetchChartData}
+              openPopupJoin={openPopupJoin}
+              setOpenPopupJoin={setOpenPopupJoin}
             />
             {isAddDataPopupOpen && (
               <div
@@ -405,10 +469,15 @@ const ChatBox = () => {
                   >
                     &times;
                   </button>
-                  <AddDataPopup byDataPreview={byDataPreview} />
+                  <AddDataPopup
+                    setShowChatNotification={setShowChatNotification}
+                    setSuggestionQuery={setSuggestionQuery}
+                  />
                 </div>
               </div>
             )}
+
+            {openPopupJoin && <PopupJoin />}
           </div>
         </div>
       </div>

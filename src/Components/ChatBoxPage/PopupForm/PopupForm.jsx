@@ -89,7 +89,8 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
                 value={formData[name]}
                 onChange={handleChange}
                 placeholder={`Enter ${label}`}
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none text-sm sm:text-base"
+                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:ring-2 
+                text-gray-800 focus:ring-blue-400 focus:outline-none text-sm sm:text-base"
               />
             </div>
           ))}

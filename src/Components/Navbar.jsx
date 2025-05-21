@@ -5,38 +5,13 @@ import { logoutUser } from "../Api"; // Adjust path if needed
 import user2 from "../assets/icons/user2.jpg";
 
 const Navbar = ({ isLoggedIn, username, setUsername }) => {
-  const [scrolled, setScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const userIconRef = useRef(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
-  useEffect(() => {
-    let lastScrollY = window.scrollY;
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const isScrollingUp = scrollY < lastScrollY;
-      const scrollHeight = document.body.scrollHeight - window.innerHeight;
-      const scrollPercent = (scrollY / scrollHeight) * 200;
-
-      if (scrollY < 40) setScrolled(true);
-      if (isScrollingUp) setScrolled(true);
-      if (scrollPercent > 50 && !isScrollingUp) setScrolled(false);
-
-      lastScrollY = scrollY;
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   const handleLogout = async () => {
     setUsername(null);
@@ -78,16 +53,12 @@ const Navbar = ({ isLoggedIn, username, setUsername }) => {
   }, [isDropdownOpen]);
 
   return (
-    <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ${
-        scrolled ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full"
-      } bg-white shadow-md backdrop-blur-md`}
-    >
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md backdrop-blur-md">
       <div className="max-w-8xl mx-auto px-8 py-4 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center space-x-2 text-[#2d1b54] text-xl font-bold">
           <FaRobot className="text-2xl" />
-          <span>Data Analysis AI</span>
+          <span>My Data Analysis</span>
         </div>
 
         {/* Desktop Navigation */}

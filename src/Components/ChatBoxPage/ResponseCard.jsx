@@ -19,18 +19,35 @@ import { FaDatabase } from "react-icons/fa6";
 import { BsFiletypeSql } from "react-icons/bs";
 import { MdPieChartOutline } from "react-icons/md";
 import { PiFileSql } from "react-icons/pi";
-const ResponseCard = ({ response }) => {
+import { validateSQLQuery } from "../../Api";
+const ResponseCard = ({ response, onUpdateSQL }) => {
   const [showSQL, setShowSQL] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
   const responseEndRef = useRef(null);
   const [showResult, setShowResult] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [isValidating, setIsValidating] = useState(false);
+  const [statusMessage, setStatusMessage] = useState({
+    text: "View your SQL. You can edit or validate the query.",
+    type: "info",
+  });
 
   const closeDropdown = () => setAnchorEl(null);
 
   const [menuOpen, setMenuOpen] = useState(false);
 
   const openDropdown = (event) => setAnchorEl(event.currentTarget);
+
+  const [validateResponse, setValidateResponse] = useState(null);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editableSQL, setEditableSQL] = useState(
+    response?.aiResponse?.sql_query
+  );
+
+  const handleChange = (e) => {
+    setEditableSQL(e.target.value);
+  };
 
   useEffect(() => {
     if (response.chart == null) {
@@ -235,6 +252,46 @@ const ResponseCard = ({ response }) => {
   ];
 
   useEffect(() => {
+    if (
+      showSQL &&
+      response?.aiResponse?.sql_query &&
+      validateResponse?.status === "error"
+    ) {
+      setEditableSQL(response.aiResponse.sql_query);
+    }
+  }, [showSQL]);
+
+  const handleValidate = async () => {
+    console.log("Editable : ", editableSQL);
+    setIsValidating(true);
+    try {
+      const response = await validateSQLQuery(editableSQL);
+      if (response.status === "error") {
+        setStatusMessage({
+          text: `${response.message}`,
+          type: "error",
+        });
+      } else {
+        setEditableSQL(editableSQL);
+        setValidateResponse(response);
+        setStatusMessage({
+          text: "Calculation is correct",
+          type: "success",
+        });
+        if (onUpdateSQL) {
+          onUpdateSQL(editableSQL);
+        }
+      }
+      setShowResult(false);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  useEffect(() => {
     if (!showLoading) return;
 
     const timeout = setTimeout(() => {
@@ -243,6 +300,25 @@ const ResponseCard = ({ response }) => {
 
     return () => clearTimeout(timeout);
   }, [showLoading]);
+
+  useEffect(() => {
+    setStatusMessage({
+      text: "View your SQL. You can edit or validate the query.",
+      type: "info",
+    });
+    return () => {
+      setStatusMessage({
+        text: "", // or any default/fallback message
+        type: "info",
+      });
+    };
+  }, [setStatusMessage]);
+
+  useEffect(() => {
+    if (showSQL && response?.aiResponse?.sql_query) {
+      setEditableSQL(response.aiResponse.sql_query);
+    }
+  }, [showSQL, response?.aiResponse?.sql_query]);
 
   return (
     <div className="z-20 w-full space-y-3 bg-[#f0f1f9]">
@@ -428,21 +504,20 @@ const ResponseCard = ({ response }) => {
                 />
               </div>
             )}
-
-            {response?.aiResponse?.result && showResult && (
+            {validateResponse?.result ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.5 }}
-                className="bg-white rounded-tl-sm  font-sans"
+                className="bg-white rounded-tl-sm font-sans"
               >
-                {Array.isArray(response.aiResponse.result) &&
-                typeof response.aiResponse.result[0] === "object" ? (
-                  <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded  space-y-2 my-3 mx-2">
+                {Array.isArray(validateResponse.result) &&
+                typeof validateResponse.result[0] === "object" ? (
+                  <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
                     <table className="min-w-full text-left border-collapse text-message text-gray-800">
                       <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
                         <tr>
-                          {Object.keys(response.aiResponse.result[0]).map(
+                          {Object.keys(validateResponse.result[0]).map(
                             (key, index) => (
                               <th
                                 key={index}
@@ -455,7 +530,7 @@ const ResponseCard = ({ response }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {response.aiResponse.result.map((row, rowIndex) => (
+                        {validateResponse.result.map((row, rowIndex) => (
                           <tr
                             key={rowIndex}
                             className="odd:bg-white even:bg-gray-50"
@@ -475,10 +550,63 @@ const ResponseCard = ({ response }) => {
                   </div>
                 ) : (
                   <p className="text-label text-gray-800 px-2 pb-2">
-                    {response.aiResponse.result}
+                    {validateResponse.result}
                   </p>
                 )}
               </motion.div>
+            ) : (
+              response?.aiResponse?.result &&
+              showResult && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.5 }}
+                  className="bg-white rounded-tl-sm font-sans"
+                >
+                  {Array.isArray(response.aiResponse.result) &&
+                  typeof response.aiResponse.result[0] === "object" ? (
+                    <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
+                      <table className="min-w-full text-left border-collapse text-message text-gray-800">
+                        <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
+                          <tr>
+                            {Object.keys(response.aiResponse.result[0]).map(
+                              (key, index) => (
+                                <th
+                                  key={index}
+                                  className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
+                                >
+                                  {key}
+                                </th>
+                              )
+                            )}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {response.aiResponse.result.map((row, rowIndex) => (
+                            <tr
+                              key={rowIndex}
+                              className="odd:bg-white even:bg-gray-50"
+                            >
+                              {Object.values(row).map((value, colIndex) => (
+                                <td
+                                  key={colIndex}
+                                  className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
+                                >
+                                  {value}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <p className="text-label text-gray-800 px-2 pb-2">
+                      {response.aiResponse.result}
+                    </p>
+                  )}
+                </motion.div>
+              )
             )}
 
             {response?.aiResponse?.response && showResult && (
@@ -493,30 +621,88 @@ const ResponseCard = ({ response }) => {
                 </p>
               </motion.div>
             )}
-
             {response?.aiResponse?.sql_query && showSQL && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.3 }}
-                className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center"
+                className="fixed -top-16 justify-items-center -inset-[10px] z-50 flex items-center justify-center bg-black/50 opacity-40 "
               >
-                <div className="bg-white p-5 rounded-xl -top-5 -right-5 shadow-xl border h-[25vw] w-[45vw] border-gray-300 relative">
+                <div className="bg-white w-[46%] max-w-2xl h-[65vh] rounded-2xl shadow-2xl border border-blue-500 flex flex-col relative">
                   <button
-                    onClick={() => setShowSQL(false)}
-                    className="absolute top-3 right-3 text-gray-500 hover:text-black transition"
+                    onClick={() => {
+                      setShowSQL(false);
+                      setIsEditing(false);
+                    }}
+                    className="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold transition"
                   >
-                    ✕
+                    &times;
                   </button>
-                  <div className="flex items-center mb-4 space-x-2">
-                    <BsFiletypeSql className="text-xl text-blue-600" />
+
+                  {/* Header */}
+                  <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200">
+                    <BsFiletypeSql className="text-2xl text-blue-600" />
                     <h2 className="text-xl font-semibold text-gray-800">
-                      Structured Query Language (SQL)
+                      SQL Query Viewer
                     </h2>
                   </div>
-                  <pre className="bg-gray-100 p-4 h-[19vw] rounded-lg text-gray-800 text-label whitespace-pre-wrap overflow-x-auto border border-blue-400">
-                    {response.aiResponse.sql_query}
-                  </pre>
+
+                  {/* SQL Content */}
+                  <div className="flex-1 overflow-hidden px-4 py-2 bg-gray-50">
+                    {isEditing ? (
+                      <textarea
+                        value={editableSQL}
+                        onChange={handleChange}
+                        className="w-full h-full p-3 text-sm font-mono text-gray-800 bg-white border border-blue-300 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        placeholder="Edit your SQL here..."
+                      />
+                    ) : (
+                      <pre className="w-full h-full p-3 overflow-auto font-mono text-sm text-gray-800 bg-white border border-gray-300 rounded-md whitespace-pre-wrap">
+                        {editableSQL}
+                      </pre>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="px-6 py-4 bg-[#e6f0ff] border-t border-blue-400 rounded-b-2xl flex justify-between items-center">
+                    <p
+                      className={`text-sm whitespace-pre-line ${
+                        statusMessage.type === "error"
+                          ? "text-red-600"
+                          : statusMessage.type === "success"
+                          ? "text-green-600"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {statusMessage.text}
+                    </p>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          setIsEditing(!isEditing);
+                          setStatusMessage({
+                            text: "Now you'r in Editing Mode, edit sql query and click on Validate",
+                            type: "info",
+                          });
+                        }}
+                        className="bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 border border-blue-700 transition shadow"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleValidate(editableSQL)}
+                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition shadow ${
+                          isValidating
+                            ? "bg-blue-100 text-blue-700 cursor-not-allowed"
+                            : "bg-blue-700 text-white hover:bg-blue-800"
+                        }`}
+                        disabled={isValidating}
+                      >
+                        {isValidating ? "Validating..." : "Validate"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}

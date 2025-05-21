@@ -28,7 +28,7 @@ const HeroSection = ({ isLoggedIn }) => {
       <div className="relative z-20 flex flex-col md:flex-row items-center justify-between px-6 md:px-20 pt-20 pb-14 min-h-screen gap-5">
         {/* Left: Text Content with animation */}
         <motion.div
-          className="w-full md:w-1/2 space-y-3 text-center md:text-left"
+          className="w-full md:w-1/2 space-y-3 text-center md:text-left z-10"
           initial={{ opacity: 0, x: -100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 2, ease: "easeOut" }}
@@ -49,12 +49,11 @@ const HeroSection = ({ isLoggedIn }) => {
             </span>
             <span className="text-white"> with AI</span>
           </h1>
-
+{/* We empower data analysis by enabling on-the-fly SQL query generation and editing, coupled with instant creation of insightful charts */}
           <p className="text-base text-yellow-100 leading-relaxed max-w-lg mx-auto md:mx-0 border-l-4 border-yellow-400 pl-4 italic shadow-sm">
-            The{" "}
-            <span className="font-semibold text-white">single platform</span> to{" "}
-            <span className="">connect</span>, analyze, visualize, clean,
-            transform and enrich your data.
+            We empower{" "}
+            <span className="font-semibold text-white">Data Analysis</span> by{" "}
+            <span className="">enabling</span> the SQL query generation and editing, coupled with instant creation of insightful charts
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start sm:justify-start justify-center mt-4">
@@ -74,7 +73,7 @@ const HeroSection = ({ isLoggedIn }) => {
 
         {/* Right: Image with animation */}
         <motion.div
-          className="w-full md:w-[40vw] flex absolute justify-center right-5 mt-12 md:mt-0"
+          className="w-full md:w-[40vw] flex absolute justify-center right-5 mt-12 md:mt-0 "
           initial={{ opacity: 0, x: 100 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}

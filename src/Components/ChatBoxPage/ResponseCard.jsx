@@ -15,12 +15,14 @@ import Tooltip from "@mui/material/Tooltip";
 import InsightsIcon from "@mui/icons-material/Insights";
 import GroupedLine from "../../assets/icons/GroupedLine.svg";
 import GroupedBar from "../../assets/icons/GroupedBar.svg";
-import { FaDatabase } from "react-icons/fa6";
 import { BsFiletypeSql } from "react-icons/bs";
 import { MdPieChartOutline } from "react-icons/md";
 import { PiFileSql } from "react-icons/pi";
 import { validateSQLQuery } from "../../Api";
-const ResponseCard = ({ response, onUpdateSQL }) => {
+import TypeWriter from "./TypeWriter";
+import { TypeWriterProvider } from "./TypeWriterContext";
+
+const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
   const [showSQL, setShowSQL] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
   const responseEndRef = useRef(null);
@@ -34,8 +36,6 @@ const ResponseCard = ({ response, onUpdateSQL }) => {
 
   const closeDropdown = () => setAnchorEl(null);
 
-  const [menuOpen, setMenuOpen] = useState(false);
-
   const openDropdown = (event) => setAnchorEl(event.currentTarget);
 
   const [validateResponse, setValidateResponse] = useState(null);
@@ -44,6 +44,22 @@ const ResponseCard = ({ response, onUpdateSQL }) => {
   const [editableSQL, setEditableSQL] = useState(
     response?.aiResponse?.sql_query
   );
+  const [downloadMenuAnchorEl, setDownloadMenuAnchorEl] = useState(null);
+  const isDownloadMenuOpen = Boolean(downloadMenuAnchorEl);
+
+  const handleDownloadClick = (event) => {
+    setDownloadMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleDownloadClose = () => {
+    setDownloadMenuAnchorEl(null);
+  };
+
+  const handleDownload = (format) => {
+    // Replace this with actual download logic
+    console.log(`Download as ${format}`);
+    handleDownloadClose();
+  };
 
   const handleChange = (e) => {
     setEditableSQL(e.target.value);
@@ -51,35 +67,9 @@ const ResponseCard = ({ response, onUpdateSQL }) => {
 
   useEffect(() => {
     if (response.chart == null) {
-      setShowResult(true);
+      setShowResult(false);
     }
   }, []);
-
-  useEffect(() => {
-    if (!response?.aiResponse) return;
-
-    const hasResponse =
-      response.aiResponse.summary ||
-      response.aiResponse.sql_query ||
-      (Array.isArray(response.aiResponse.optimizations) &&
-        response.aiResponse.optimizations.length > 0) ||
-      (Array.isArray(response.aiResponse.result) &&
-        response.aiResponse.result.length > 0) ||
-      (Array.isArray(response.aiResponse.analysis) &&
-        response.aiResponse.analysis.length > 0);
-
-    setTimeout(() => {
-      if (typeof response.aiResponse.summary === "string") {
-        let index = 0;
-        const summaryText = response.aiResponse.summary;
-        const interval = setInterval(() => {
-          index++;
-          if (index >= summaryText.length) clearInterval(interval);
-        }, 50);
-        return () => clearInterval(interval);
-      }
-    }, 1500);
-  }, [response]);
 
   function formatSummary(summaryObj) {
     if (!summaryObj) return null;
@@ -88,82 +78,48 @@ const ResponseCard = ({ response, onUpdateSQL }) => {
     const paragraphs = summary.split("\n").filter((para) => para.trim() !== "");
 
     return (
-      <div className="bg-white py-2 px-4 space-y-3 text-gray-800">
-        {paragraphs.map((para, index) => {
-          if (/^# /.test(para)) {
-            return (
-              <h2
-                key={index}
-                className="text-label text-gray-800 border-b pb-1"
-              >
-                {para.replace(/^# /, "")}
-              </h2>
-            );
-          } else if (/^## /.test(para)) {
-            return (
-              <h3 key={index} className="text-label text-gray-800 mt-3">
-                {para.replace(/^## /, "")}
-              </h3>
-            );
-          } else if (/^\*\*(.*?)\*\*/.test(para)) {
-            return (
-              <h4 key={index} className="text-lg font-medium text-gray-800">
-                {para.replace(/\*\*/g, "")}
-              </h4>
-            );
-          }
-
-          para = para.replace(/\*\*/g, "");
-
-          if (/^\*\s/.test(para)) {
-            return (
-              <ul
-                key={index}
-                className="list-disc ml-6 text-label text-gray-800"
-              >
-                <li
-                  dangerouslySetInnerHTML={{
-                    __html: formatText(para.replace(/^\*\s/, "")),
-                  }}
-                />
-              </ul>
-            );
-          }
-
-          return (
-            <p
+      <TypeWriterProvider>
+        <div className="bg-white py-2 px-4 space-y-3 text-gray-900">
+          {paragraphs.map((para, index) => (
+            <TypeWriter
               key={index}
-              className="text-base leading-relaxed text-gray-700"
-              dangerouslySetInnerHTML={{ __html: formatText(para) }}
-            ></p>
-          );
-        })}
-      </div>
+              index={index}
+              text={para}
+              className={`text-sm font-medium leading-relaxed ${
+                /^# /.test(para)
+                  ? "text-xl font-semibold border-b pb-1"
+                  : /^## /.test(para)
+                  ? "text-xl font-semibold mt-3"
+                  : /^\*\*(.*?)\*\*/.test(para)
+                  ? "font-light"
+                  : /^\* /.test(para)
+                  ? "ml-6 list-disc"
+                  : "text-gray-800"
+              }`}
+            />
+          ))}
+        </div>
+      </TypeWriterProvider>
     );
   }
 
-  function formatText(text) {
-    return text.replace(/(\d+(\.\d+)?%)/g, "$1");
-  }
   useEffect(() => {
     const hasStartedRendering =
-      response?.aiResponse?.summary ||
       response?.aiResponse?.sql_query ||
       response?.aiResponse?.result ||
-      response?.aiResponse?.analysis ||
       response?.aiResponse?.response ||
-      response?.aiResponse?.optimizations;
+      response?.aiResponse?.error ||
+      response?.interrupted;
 
     if (hasStartedRendering) {
       setShowLoading(false);
     }
   }, [
-    response?.aiResponse?.summary,
     response?.aiResponse?.sql_query,
     response?.aiResponse?.result,
-    response?.aiResponse?.analysis,
-    response?.aiResponse?.optimizations,
     response?.aiResponse?.response,
+    response?.aiResponse?.error,
+    response?.interrupted,
   ]);
 
   useEffect(() => {
@@ -355,7 +311,7 @@ const ResponseCard = ({ response, onUpdateSQL }) => {
       </div>
 
       <div className="flex flex-row items-start space-x-3">
-        <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm">
+        <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-lg">
           <img src={Bot} className="h-6 w-6 text-[rgb(244,242,250)]" />
         </div>
         {showLoading && (
@@ -367,15 +323,15 @@ const ResponseCard = ({ response, onUpdateSQL }) => {
           </div>
         )}
 
-        <div className="flex flex-col w-full max-w-[78%] space-y-2 px-4 rounded-md  bg-white">
+        <div className="flex flex-col w-full max-w-[78%] -space-y-1 px-0 rounded-md shadow-md bg-white">
           <>
             {!showLoading && (
-              <div className="flex justify-between mt-3 z-20">
-                <div className=" text-gray-900 text-base font-semibold">
+              <div className="flex justify-between mt-0 py-2 px-4 z-20 bg-gray-100 border border-gray-300">
+                <div className=" text-gray-900 text-lg font-semibold">
                   AI Response :
                 </div>
                 <div className="flex justify-end">
-                  <div className="flex relative bg-white text-message text-gray-700 z-10">
+                  <div className="flex relative bg-gray-100 text-message text-gray-700 z-10">
                     {/* SQL Icon */}
                     <div
                       className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-8 h-8"
@@ -407,8 +363,14 @@ const ResponseCard = ({ response, onUpdateSQL }) => {
                       anchorEl={anchorEl}
                       open={Boolean(anchorEl)}
                       onClose={closeDropdown}
-                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                      transformOrigin={{ vertical: "top", horizontal: "right" }}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
                       PaperProps={{
                         sx: {
                           overflow: "visible",
@@ -480,7 +442,7 @@ const ResponseCard = ({ response, onUpdateSQL }) => {
 
                     {/* Download Icon */}
                     <button
-                      onClick={() => setMenuOpen(!menuOpen)}
+                      onClick={handleDownloadClick}
                       className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-8 h-8 text-gray-900 focus:outline-none"
                     >
                       <BsThreeDotsVertical className="w-5 h-5 text-gray-600" />
@@ -491,259 +453,313 @@ const ResponseCard = ({ response, onUpdateSQL }) => {
                         <div className="w-2 h-2 -mt-1 rotate-45 bg-gray-600"></div>
                       </div>
                     </button>
+
+                    <Menu
+                      anchorEl={downloadMenuAnchorEl}
+                      open={isDownloadMenuOpen}
+                      onClose={handleDownloadClose}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right",
+                      }}
+                      transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                      PaperProps={{
+                        sx: {
+                          overflow: "visible",
+                          borderRadius: "8px",
+                          boxShadow: 4,
+                          width: 180,
+                          backgroundColor: "white",
+                          "&::before": {
+                            content: '""',
+                            position: "absolute",
+                            top: -6,
+                            right: 12,
+                            width: 12,
+                            height: 12,
+                            backgroundColor: "white",
+                            transform: "rotate(45deg)",
+                            zIndex: 1,
+                            boxShadow: "-2px -2px 3px rgba(0,0,0,0.1)",
+                            borderTop: "1px solid #e5e7eb",
+                            borderLeft: "1px solid #e5e7eb",
+                          },
+                        },
+                      }}
+                    >
+                      <div className="flex flex-col">
+                        <button
+                          onClick={() => handleDownload("png")}
+                          disabled={
+                            !response.aiResponse.chart &&
+                            !response.aiResponse.chartType
+                          }
+                          className={`text-left w-full px-4 py-2 text-sm ${
+                            !response.aiResponse.chart &&
+                            !response.aiResponse.chartType
+                              ? "text-gray-400 cursor-not-allowed bg-gray-50"
+                              : "hover:bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          Download as PNG
+                        </button>
+                        <button
+                          onClick={() => handleDownload("jpg")}
+                          disabled={
+                            !response.aiResponse.chart &&
+                            !response.aiResponse.chartType
+                          }
+                          className={`text-left w-full px-4 py-2 text-sm ${
+                            !response.aiResponse.chart &&
+                            !response.aiResponse.chartType
+                              ? "text-gray-400 cursor-not-allowed bg-gray-50"
+                              : "hover:bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          Download as JPG
+                        </button>
+                      </div>
+                    </Menu>
                   </div>
                 </div>
               </div>
             )}
 
-            {response?.chart && !showResult && (
-              <div className="w-full bg-white sm:px-2 sm:py-2 animate-fadeIn">
-                <Chart
-                  chartResponse={response.chart}
-                  chartType={response.chartType}
-                />
-              </div>
-            )}
-            {validateResponse?.result ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-                className="bg-white rounded-tl-sm font-sans"
-              >
-                {Array.isArray(validateResponse.result) &&
-                typeof validateResponse.result[0] === "object" ? (
-                  <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
-                    <table className="min-w-full text-left border-collapse text-message text-gray-800">
-                      <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
-                        <tr>
-                          {Object.keys(validateResponse.result[0]).map(
-                            (key, index) => (
-                              <th
-                                key={index}
-                                className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
-                              >
-                                {key}
-                              </th>
-                            )
-                          )}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {validateResponse.result.map((row, rowIndex) => (
-                          <tr
-                            key={rowIndex}
-                            className="odd:bg-white even:bg-gray-50"
-                          >
-                            {Object.values(row).map((value, colIndex) => (
-                              <td
-                                key={colIndex}
-                                className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
-                              >
-                                {value}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p className="text-label text-gray-800 px-2 pb-2">
-                    {validateResponse.result}
+            {showInterruptMessage ? (
+              <p className="text-gray-700 text-label px-3 py-4 ">
+                Query execution was cancelled as requested. Let me know if you'd
+                like to try again or modify your query.
+              </p>
+            ) : (
+              <>
+                {response?.aiResponse?.error && (
+                  <p className="text-gray-700 text-label px-3 py-4 ">
+                    {response?.aiResponse?.message}
                   </p>
                 )}
-              </motion.div>
-            ) : (
-              response?.aiResponse?.result &&
-              showResult && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
-                  className="bg-white rounded-tl-sm font-sans"
-                >
-                  {Array.isArray(response.aiResponse.result) &&
-                  typeof response.aiResponse.result[0] === "object" ? (
-                    <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
-                      <table className="min-w-full text-left border-collapse text-message text-gray-800">
-                        <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
-                          <tr>
-                            {Object.keys(response.aiResponse.result[0]).map(
-                              (key, index) => (
-                                <th
-                                  key={index}
-                                  className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
-                                >
-                                  {key}
-                                </th>
-                              )
-                            )}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {response.aiResponse.result.map((row, rowIndex) => (
-                            <tr
-                              key={rowIndex}
-                              className="odd:bg-white even:bg-gray-50"
-                            >
-                              {Object.values(row).map((value, colIndex) => (
-                                <td
-                                  key={colIndex}
-                                  className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
-                                >
-                                  {value}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <p className="text-label text-gray-800 px-2 pb-2">
-                      {response.aiResponse.result}
-                    </p>
-                  )}
-                </motion.div>
-              )
-            )}
 
-            {response?.aiResponse?.response && showResult && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-                className="bg-white rounded-tl-sm  font-sans"
-              >
-                <p className="text-label text-gray-800 px-2 pb-2">
-                  {response.aiResponse.response}
-                </p>
-              </motion.div>
-            )}
-            {response?.aiResponse?.sql_query && showSQL && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-                className="fixed -top-16 justify-items-center -inset-[10px] z-50 flex items-center justify-center bg-black/50 opacity-40 "
-              >
-                <div className="bg-white w-[46%] max-w-2xl h-[65vh] rounded-2xl shadow-2xl border border-blue-500 flex flex-col relative">
-                  <button
-                    onClick={() => {
-                      setShowSQL(false);
-                      setIsEditing(false);
-                    }}
-                    className="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold transition"
+                {validateResponse?.result ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 0.5 }}
+                    className="bg-white rounded-tl-sm font-sans "
                   >
-                    &times;
-                  </button>
-
-                  {/* Header */}
-                  <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200">
-                    <BsFiletypeSql className="text-2xl text-blue-600" />
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      SQL Query Viewer
-                    </h2>
-                  </div>
-
-                  {/* SQL Content */}
-                  <div className="flex-1 overflow-hidden px-4 py-2 bg-gray-50">
-                    {isEditing ? (
-                      <textarea
-                        value={editableSQL}
-                        onChange={handleChange}
-                        className="w-full h-full p-3 text-sm font-mono text-gray-800 bg-white border border-blue-300 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        placeholder="Edit your SQL here..."
-                      />
+                    {Array.isArray(validateResponse.result) &&
+                    typeof validateResponse.result[0] === "object" ? (
+                      <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
+                        <table className="min-w-full text-left border-collapse text-message text-gray-800">
+                          <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
+                            <tr>
+                              {Object.keys(validateResponse.result[0]).map(
+                                (key, index) => (
+                                  <th
+                                    key={index}
+                                    className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
+                                  >
+                                    {key}
+                                  </th>
+                                )
+                              )}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {validateResponse.result.map((row, rowIndex) => (
+                              <tr
+                                key={rowIndex}
+                                className="odd:bg-white even:bg-gray-50"
+                              >
+                                {Object.values(row).map((value, colIndex) => (
+                                  <td
+                                    key={colIndex}
+                                    className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
+                                  >
+                                    {value}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     ) : (
-                      <pre className="w-full h-full p-3 overflow-auto font-mono text-sm text-gray-800 bg-white border border-gray-300 rounded-md whitespace-pre-wrap">
-                        {editableSQL}
-                      </pre>
+                      <p className="text-label text-gray-800 px-4 pb-3 pt-3">
+                        {validateResponse.result}
+                      </p>
                     )}
-                  </div>
+                  </motion.div>
+                ) : (
+                  <>
+                    {response?.aiResponse?.response && (
+                      <typeWriterProvider>
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.5, duration: 0.5 }}
+                          className="bg-white rounded-tl-sm font-sans"
+                        >
+                          <p className="text-label text-gray-800 px-4 pb-1 mt-5 mb-5">
+                            {formatSummary(response.aiResponse.response)}
+                          </p>
+                        </motion.div>
+                      </typeWriterProvider>
+                    )}
 
-                  {/* Footer */}
-                  <div className="px-6 py-4 bg-[#e6f0ff] border-t border-blue-400 rounded-b-2xl flex justify-between items-center">
-                    <p
-                      className={`text-sm whitespace-pre-line ${
-                        statusMessage.type === "error"
-                          ? "text-red-600"
-                          : statusMessage.type === "success"
-                          ? "text-green-600"
-                          : "text-gray-700"
-                      }`}
-                    >
-                      {statusMessage.text}
-                    </p>
+                    {response?.chart && !showResult && (
+                      <div className="w-full bg-white sm:px-2 sm:py-2 animate-fadeIn px-4">
+                        <Chart
+                          chartResponse={response.chart}
+                          chartType={response.chartType}
+                        />
+                      </div>
+                    )}
 
-                    <div className="flex gap-3">
+                    {response?.aiResponse?.result && showResult && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5, duration: 0.5 }}
+                        className="bg-white rounded-tl-sm font-sans"
+                      >
+                        {Array.isArray(response.aiResponse.result) &&
+                        typeof response.aiResponse.result[0] === "object" ? (
+                          <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
+                            <table className="min-w-full text-left border-collapse text-message text-gray-800">
+                              <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
+                                <tr>
+                                  {Object.keys(
+                                    response.aiResponse.result[0]
+                                  ).map((key, index) => (
+                                    <th
+                                      key={index}
+                                      className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
+                                    >
+                                      {key}
+                                    </th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {response.aiResponse.result.map(
+                                  (row, rowIndex) => (
+                                    <tr
+                                      key={rowIndex}
+                                      className="odd:bg-white even:bg-gray-50"
+                                    >
+                                      {Object.values(row).map(
+                                        (value, colIndex) => (
+                                          <td
+                                            key={colIndex}
+                                            className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
+                                          >
+                                            {value}
+                                          </td>
+                                        )
+                                      )}
+                                    </tr>
+                                  )
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <typeWriterProvider>
+                            <p className="text-label text-gray-800 px-2 pb-2">
+                              {response.aiResponse.result}
+                            </p>
+                          </typeWriterProvider>
+                        )}
+                      </motion.div>
+                    )}
+                  </>
+                )}
+
+                {response?.aiResponse?.sql_query && showSQL && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2, duration: 0.3 }}
+                    className="fixed -top-16 justify-items-center -inset-[10px] z-50 flex items-center justify-center bg-black/50 opacity-40"
+                  >
+                    <div className="bg-white w-[46%] max-w-2xl h-[60vh] rounded-2xl shadow-2xl border border-blue-500 flex flex-col relative">
                       <button
                         onClick={() => {
-                          setIsEditing(!isEditing);
-                          setStatusMessage({
-                            text: "Now you'r in Editing Mode, edit sql query and click on Validate",
-                            type: "info",
-                          });
+                          setShowSQL(false);
+                          setIsEditing(false);
                         }}
-                        className="bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 border border-blue-700 transition shadow"
+                        className="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold transition"
                       >
-                        Edit
+                        &times;
                       </button>
-                      <button
-                        onClick={() => handleValidate(editableSQL)}
-                        className={`px-4 py-2 rounded-lg text-sm font-semibold transition shadow ${
-                          isValidating
-                            ? "bg-blue-100 text-blue-700 cursor-not-allowed"
-                            : "bg-blue-700 text-white hover:bg-blue-800"
-                        }`}
-                        disabled={isValidating}
-                      >
-                        {isValidating ? "Validating..." : "Validate"}
-                      </button>
+
+                      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200">
+                        <BsFiletypeSql className="text-2xl text-blue-600" />
+                        <h2 className="text-xl font-semibold text-gray-800">
+                          SQL Query Viewer
+                        </h2>
+                      </div>
+
+                      <div className="flex-1 overflow-hidden px-4 py-2 bg-gray-50">
+                        {isEditing ? (
+                          <textarea
+                            value={editableSQL}
+                            onChange={handleChange}
+                            className="w-full h-full p-3 text-sm font-mono text-gray-800 bg-white border border-blue-300 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Edit your SQL here..."
+                          />
+                        ) : (
+                          <pre className="w-full h-full p-3 overflow-auto font-mono text-sm text-gray-800 bg-white border border-gray-300 rounded-md whitespace-pre-wrap">
+                            {editableSQL}
+                          </pre>
+                        )}
+                      </div>
+
+                      <div className="px-6 py-3 bg-[#e6f0ff] border-t border-blue-400 rounded-b-2xl flex justify-between items-center">
+                        <p
+                          className={`text-sm whitespace-pre-line ${
+                            statusMessage.type === "error"
+                              ? "text-red-600"
+                              : statusMessage.type === "success"
+                              ? "text-green-600"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {statusMessage.text}
+                        </p>
+
+                        <div className="flex gap-3">
+                          <button
+                            onClick={() => {
+                              setIsEditing(!isEditing);
+                              setStatusMessage({
+                                text: "Now you'r in Editing Mode, edit sql query and click on Validate",
+                                type: "info",
+                              });
+                            }}
+                            className="bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 border border-blue-700 transition shadow"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleValidate(editableSQL)}
+                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition shadow ${
+                              isValidating
+                                ? "bg-blue-100 text-blue-700 cursor-not-allowed"
+                                : "bg-blue-700 text-white hover:bg-blue-800"
+                            }`}
+                            disabled={isValidating}
+                          >
+                            {isValidating ? "Validating..." : "Validate"}
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {response?.aiResponse?.analysis && showResult && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-                className="space-y-2"
-              >
-                {formatSummary(response.aiResponse.analysis)}
-              </motion.div>
-            )}
-
-            {response?.aiResponse?.optimizations &&
-              showResult &&
-              response.aiResponse.optimizations.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
-                  className="bg-white p-2 rounded-xl shadow border border-gray-300 space-y-2"
-                >
-                  <ul className="list-disc ml-10 text-gray-700 space-y-2">
-                    {response.aiResponse.optimizations.map((opt, idx) => (
-                      <li key={idx}>{opt}</li>
-                    ))}
-                  </ul>
-                </motion.div>
-              )}
-
-            {response?.aiResponse?.summary && showResult && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-                className=""
-              >
-                {formatSummary(response.aiResponse.summary)}
-              </motion.div>
+                  </motion.div>
+                )}
+              </>
             )}
           </>
         </div>

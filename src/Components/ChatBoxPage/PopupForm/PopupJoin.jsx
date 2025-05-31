@@ -58,7 +58,7 @@ const Dropdown = ({
   </div>
 );
 
-const PopupJoin = () => {
+const PopupJoin = ({ closeOpenedPopupJoin }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [leftTable, setLeftTable] = useState("");
   const [leftColumn, setLeftColumn] = useState("");
@@ -121,11 +121,11 @@ const PopupJoin = () => {
     try {
       const response = await joinTables(payload);
       console.log(response);
-      if (response) {
+      if (response && response.preview.length > 0) {
         const storedUploadedFile = localStorage.getItem("uploadedFile");
         const storedTablePreview = localStorage.getItem("tablePreview");
         const newFile = {
-          name: response.joined_table_name.trim(),
+          name: response.joined_table_name?.trim(),
           createdDate: new Date().toISOString().split("T")[0],
         };
         const existingFile = storedUploadedFile
@@ -139,8 +139,14 @@ const PopupJoin = () => {
         existingPreview[response.joined_table_name.trim()] = response.preview;
         localStorage.setItem("tablePreview", JSON.stringify(existingPreview));
         setTimeout(() => {
-          setMessage(response.message);
+          setMessageTitle("success");
+          setMessage(
+            "Joined table created. You can now run cross-table queries."
+          );
         }, 2000);
+      } else {
+        setMessageTitle("error");
+        setMessage("Join failed");
       }
     } catch (error) {
       console.error("Join failed:", error);
@@ -163,7 +169,7 @@ const PopupJoin = () => {
         {/* Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-          onClick={() => setIsOpen(false)}
+          onClick={() => closeOpenedPopupJoin()}
         >
           <X className="w-5 h-5" />
         </button>

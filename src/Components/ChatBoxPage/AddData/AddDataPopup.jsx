@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { FaDatabase } from "react-icons/fa";
+import { FaDatabase, FaFileExcel, FaFilePdf } from "react-icons/fa";
 import "../../../CoustomCss/LoadingButton.css";
+import { suggestedQueryResponse } from "../../../Api";
+import { BiData } from "react-icons/bi";
 import "../../../CoustomCss/Scrollbar.css";
-import { HiArrowNarrowRight } from "react-icons/hi";
+import { HiOutlineDatabase, HiArrowNarrowRight } from "react-icons/hi";
+import { FiSettings } from "react-icons/fi";
 import { SiMysql } from "react-icons/si";
+import File from "../../../assets/icons/file.png";
 import clsx from "clsx";
 
 import { IoEye } from "react-icons/io5";
@@ -49,12 +53,19 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
   const [showEyeHint, setShowEyeHint] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState();
 
   const [DbResponse, setDbResponse] = useState(() => {
     const stored = sessionStorage.getItem("DbResponse");
     return stored ? JSON.parse(stored) : {};
   });
+
+  const showNotifications = (title, text) => {
+    setNotification({
+      visible: true,
+      title,
+      text,
+    });
+  };
   const [dbType, setDbType] = useState(() => {
     const stored = sessionStorage.getItem("DbType");
     return stored ? JSON.parse(stored) : {};
@@ -75,6 +86,12 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
   const fileInputRef = useRef(null);
   const [isDataPreviewPopupOpen, setIsDataPreviewPopupOpen] = useState(false);
   const [card, setCard] = useState();
+  const [notification, setNotification] = useState({
+    visible: false,
+    title: "",
+    text: "",
+  });
+
   const DataProcessingLoader = () => {
     const dynamicSteps = fileCleaning
       ? steps
@@ -95,22 +112,22 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
     const allStepsDone = completedSteps.length === dynamicSteps.length;
 
     return (
-      <div className="w-full max-w-md mx-auto mt-16 p-8 bg-gradient-to-br from-white to-indigo-50 shadow-2xl rounded-3xl border border-indigo-200">
+      <div className="w-full max-w-sm mx-auto mt-12 p-6 bg-gradient-to-br from-white to-indigo-50 shadow-2xl rounded-3xl border border-indigo-200">
         <h2 className="text-2xl font-bold text-center text-indigo-700 tracking-wide mb-6">
           Data Processing
         </h2>
 
-        <div className="flex flex-col gap-10 relative px-4">
+        <div className="flex flex-col gap-6 relative px-4">
           {dynamicSteps.map((step, index) => {
             const isCurrent = currentStep === index;
             const isCompleted = completedSteps.includes(index);
             const isLast = index === dynamicSteps.length - 1;
 
             return (
-              <div key={index} className="relative flex items-center gap-5">
+              <div key={index} className="relative flex items-center gap-4">
                 {/* Connector */}
                 {!isLast && (
-                  <span className="absolute left-3 top-6 w-px h-10 bg-gradient-to-b from-indigo-200 to-indigo-500 z-0" />
+                  <span className="absolute left-3 top-6 w-px h-5 bg-gradient-to-b from-indigo-200 to-indigo-500 z-0" />
                 )}
 
                 {/* Icon */}
@@ -161,6 +178,17 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
       </div>
     );
   };
+
+  useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+        setShowChatNotification(true);
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
 
   useEffect(() => {
     setShowEyeHint(true);
@@ -216,13 +244,13 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
           },
         ]);
       } else {
-        setSelectedFiles([]);
         throw new Error(cleanTableResponse.message || "Cleaning File failed");
       }
     } catch (error) {
       console.error(error);
       Swal.fire("Error", error.message, "error");
     } finally {
+      setSelectedFiles([]);
       setIsCleaning(false);
       setShowModal(false);
     }
@@ -257,21 +285,11 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
       console.error(error);
       Swal.fire("Error", error.message, "error");
     } finally {
+      setSelectedFiles([]);
       setIsCleaning(false);
       setShowModal(false);
     }
   };
-
-  useEffect(() => {
-    if (showNotification) {
-      const timer = setTimeout(() => {
-        setShowNotification(false);
-        setShowChatNotification(true);
-      }, 4000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [showNotification]);
 
   useEffect(() => {
     if (cleaningSummary) {
@@ -325,17 +343,17 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
     });
   };
   const handleFileUpload = async (event) => {
-    const files = Array.from(event.target.files || event.dataTransfer.files);
+    const input = event.target;
+    const files = Array.from(input.files || event.dataTransfer.files);
 
-    // Check if any file exceeds 10MB (10 * 1024 * 1024 bytes)
+    input.value = null; // Reset immediately after reading the files
+
     const oversizedFile = files.find((file) => file.size > 10 * 1024 * 1024);
     if (oversizedFile) {
-      setErrorMessage("File size exceeded the limit of 10 MB.");
+      showNotifications("Error", "File size exceeded the limit of 10 MB.");
       return;
     }
-    setErrorMessage(null);
 
-    // Filter duplicates
     const newFiles = files.filter(
       (file) =>
         !uploadedFiles.some((fileObj) => fileObj.name === file.name) &&
@@ -343,7 +361,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
     );
 
     if (newFiles.length === 0) {
-      setErrorMessage("Duplicate files are not allowed.");
+      showNotifications("Error", "Duplicate files are not allowed.");
       return;
     }
 
@@ -354,28 +372,104 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
 
     try {
       const data = await uploadFilesAPI(newFiles);
-      // const response = await suggestedQueryResponse();
-      // if (response) {
-      //   console.log("From add Data ", response);
-      //   setSuggestionQuery(response);
-      // }
+      const uploadedTableName = data.files[0].table_name;
+
+      const isDuplicate = uploadedFiles.some(
+        (f) => f.name === uploadedTableName
+      );
+      if (isDuplicate) {
+        showNotifications("Error", "This file has already been uploaded.");
+        return;
+      }
+
+      const response = await suggestedQueryResponse();
+      if (response) {
+        console.log("From add Data ", response);
+        setSuggestionQuery(response);
+      }
       setResponseData(data);
       setTablePreview((prevPreview) => ({
         ...prevPreview,
         ...data,
       }));
       setSelectedFiles([]);
+
       if (data.files.length !== newFiles.length) {
-        setErrorMessage("Some files were not uploaded successfully");
+        showNotifications(
+          "Error",
+          "Some files were not uploaded successfully."
+        );
       }
     } catch (error) {
       setSelectedFiles([]);
-      setErrorMessage(error.message);
+      showNotifications("Error", error.message || "Upload failed.");
     } finally {
+      input.value = null; // Reset again, just in case
+      setSelectedFiles([]);
       setIsLoading(false);
     }
   };
 
+  // const handleFileUpload = async (event) => {
+  //   const files = Array.from(event.target.files || event.dataTransfer.files);
+
+  //   const newFiles = files.filter(
+  //     (file) =>
+  //       !uploadedFiles.some((fileObj) => fileObj.name === file.name) &&
+  //       !selectedFiles.some((selected) => selected.name === file.name)
+  //   );
+
+  //   // Check if any file exceeds 10MB (10 * 1024 * 1024 bytes)
+  //   const oversizedFile = files.find((file) => file.size > 10 * 1024 * 1024);
+  //   if (oversizedFile) {
+  //     showNotification("Error", "File size exceeded the limit of 10 MB.");
+  //     return;
+  //   }
+  //   setErrorMessage(null);
+  //   setSelectedFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  //   queueMicrotask(() => {
+  //     setIsLoading(true);
+  //   });
+
+  //   try {
+  //     const data = await uploadFilesAPI(newFiles);
+  //     // const response = await suggestedQueryResponse();
+  //     // if (response) {
+  //     //   console.log("From add Data ", response);
+  //     //   setSuggestionQuery(response);
+  //     // }
+
+  //     console.log("API Response Files:", data.files);
+  //     console.log(
+  //       "Already Uploaded Files:",
+  //       uploadedFiles.map((f) => f.name)
+  //     );
+  //     const uploadedTableName = data.files[0].table_name;
+  //     console.log(uploadedTableName);
+  //     uploadedFiles.map((f) => {
+  //       if (f.name === uploadedTableName) {
+  //         setIsDuplicate(true);
+  //       }
+  //     });
+  //     if (isDuplicate) {
+  //       showNotification("Error", "Duplicate File can't uploaded.");
+  //     } else {
+  //       setResponseData(data);
+  //       setTablePreview((prevPreview) => ({
+  //         ...prevPreview,
+  //         ...data,
+  //       }));
+  //     }
+
+  //     setSelectedFiles([]);
+  //   } catch (error) {
+  //     setSelectedFiles([]);
+  //     setErrorMessage(error.message);
+  //   } finally {
+  //     setIsDuplicate(false);
+  //     setIsLoading(false);
+  //   }
+  // };
   const getPreviewByFileName = (fileName) => {
     const previewData = tablePreview[fileName] || [];
 
@@ -555,7 +649,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
   };
 
   return (
-    <div className="w-full max-w-5xl bg-white rounded-xl p-3">
+    <div className="w-full max-w-4xl bg-white rounded-xl p-3">
       {/* Tabs */}
       <div className="flex flex-row m-2 border-b">
         <button
@@ -566,7 +660,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
               : "text-gray-400"
           }`}
         >
-          Upload Local Files
+          My Static Files
         </button>
         <button
           onClick={() => setActiveTab("connected")}
@@ -602,27 +696,16 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                 <span className="underline">Click to upload</span> or drag and
                 drop
               </p>
-              {errorMessage ? (
-                <p className="text-red-500 hover:text hover:scale-105 red-600 text-sm mt-1">
-                  {errorMessage}
-                </p>
-              ) : (
-                <>
-                  <p className="text-message text-gray-500">
-                    Supports multiple files: CSV, XLSX, XLS
-                  </p>
-                  <p className="text-message text-gray-500 mt-1">
-                    Limit file size: 10MB
-                  </p>
-                </>
-              )}
+              <p className="text-message text-gray-500">
+                Supports multiple files: CSV, XLSX, XLS
+              </p>
             </div>
           </div>
 
           <div>
-            {/* <p className="text-message text-purple-500 mb-2">
+            <p className="text-message text-purple-500 mb-2">
               For optimal results, follow best practices when uploading files
-            </p> */}
+            </p>
             <div className="flex justify-between items-center px-4 py-3 bg-gray-100 rounded-md shadow-sm">
               <div>
                 <h2 className="text-label text-gray-800">Available Files</h2>
@@ -658,7 +741,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
             </div>
 
             {isCleaning && (
-              <div className="fixed inset-0 flex justify-center items-center z-50 bg-black/40">
+              <div className="fixed -top-20 -right-20 inset-0 flex justify-center items-center z-50 bg-black/40">
                 <DataProcessingLoader fileCleaning={fileCleaning} />
               </div>
             )}
@@ -678,11 +761,11 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                   <div
                     className={`${
                       uploadedFiles.filter((file) =>
-                        file.name
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
+                        file?.name
+                          ?.toLowerCase()
+                          .includes((searchTerm || "").toLowerCase())
                       ).length > 2
-                        ? "max-h-[30vh] overflow-y-auto  scrollbar-hide"
+                        ? "h-[25vh] overflow-y-auto"
                         : ""
                     }`}
                   >
@@ -698,8 +781,8 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                       <tbody>
                         {uploadedFiles
                           .filter((file) =>
-                            file.name
-                              .toLowerCase()
+                            file?.name
+                              ?.toLowerCase()
                               .includes(searchTerm.toLowerCase())
                           )
                           .map((file, index) => (
@@ -758,17 +841,27 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                 cleaningSummary={cleaningSummary}
               />
 
+              {notification.visible && (
+                <CustomNotificationCard
+                  title={notification.title}
+                  text={notification.text}
+                  onClose={() =>
+                    setNotification({ visible: false, title: "", text: "" })
+                  }
+                />
+              )}
+
               {showNotification &&
                 (card === "clean" ? (
                   <CustomNotificationCard
                     title="Data Cleaned!"
-                    text="Your Data has been cleaned and stored."
+                    text="Your Data has been cleaned and stored, Successfully"
                     onClose={() => setShowNotification(false)}
                   />
                 ) : (
                   <CustomNotificationCard
                     title="You choose Skip! now"
-                    text="Your data has been stored."
+                    text="Your data has been stored, Successfully"
                     onClose={() => setShowNotification(false)}
                   />
                 ))}

@@ -374,7 +374,7 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
                   }}
                 ></span>
               </span>
-              {dataset.label}
+              {chartResponse.keys[index]}
             </span>
           ))}
         </div>

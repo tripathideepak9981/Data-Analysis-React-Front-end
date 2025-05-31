@@ -196,6 +196,12 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
   const chartOptions = {
     bar: {
       ...commonOptions,
+      grid: {
+        display: false,
+        drawBorder: false,
+        drawTicks: false,
+      },
+
       plugins: {
         ...commonOptions.plugins,
         datalabels: {

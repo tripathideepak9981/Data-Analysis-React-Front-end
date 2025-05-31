@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { FaRobot } from "react-icons/fa";
 import { logoutUser } from "../Api"; // Adjust path if needed
 import user2 from "../assets/icons/user2.jpg";
@@ -10,9 +10,6 @@ const Navbar = ({ isLoggedIn, username, setUsername }) => {
   const dropdownRef = useRef(null);
   const userIconRef = useRef(null);
   const navigate = useNavigate();
-
-
-
   const handleLogout = async () => {
     setUsername(null);
     try {
@@ -21,7 +18,6 @@ const Navbar = ({ isLoggedIn, username, setUsername }) => {
     } catch (err) {
       console.error("Error logging out:", err);
     }
-    navigate("/");
   };
 
   const handleSignIn = () => navigate("/signInPage");

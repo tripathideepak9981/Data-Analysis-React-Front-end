@@ -2,39 +2,73 @@ import React, { useRef, useState, useEffect } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import updatedColor from "../../assets/typed.svg";
 import ChatContent from "./ChatContent";
-import { exceuteQuery, logoutUser, chartGenerator } from "../../Api";
+import {
+  exceuteQuery,
+  logoutUser,
+  chartGenerator,
+  addMessageApi,
+} from "../../Api";
 import TextAreaBox from "./TextAreaBox";
 import AddDataPopup from "./AddData/AddDataPopup";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { motion } from "framer-motion";
 import { User2Icon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { IoAddCircleOutline } from "react-icons/io5";
 import areoplane from "../../assets/areoplane.png";
 import { IoHomeOutline } from "react-icons/io5";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
-import { motion } from "framer-motion";
 import PopupJoin from "./PopupForm/PopupJoin";
-
 import { CheckCircle, X } from "lucide-react"; // or use any icon library
 
 const ChatBox = () => {
   const [query, setQuery] = useState("");
   const [isSliderVisible, setIsSliderVisible] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
-  const [byDataPreview, setByDataPreview] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showChatNotification, setShowChatNotification] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openDropdown = (event) => setAnchorEl(event.currentTarget);
   const [isAddDataPopupOpen, setIsAddDataPopupOpen] = useState(false);
-  const closeDropdown = () => setAnchorEl(null);
-  const [queryResponse, setQueryResponse] = useState(null);
   const [showIcon, setShowIcon] = useState(true);
   const lastScrollTop = useRef(0);
   const scrollContainerRef = useRef(null);
   const [suggestionQuery, setSuggestionQuery] = useState();
   const [openPopupJoin, setOpenPopupJoin] = useState(false);
+  const [queryRunning, setQueryRunning] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
+  // const [savedMessageIndexes, setSavedMessageIndexes] = useState(new Set());
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("suggested_question");
+    if (storedData) {
+      setSuggestionQuery(JSON.parse(storedData));
+    }
+  }, []);
+
+  // useEffect(() => {
+  //   const unsavedIndex = chatMessages.findIndex(
+  //     (_, index) => !savedMessageIndexes.has(index)
+  //   );
+  //   if (unsavedIndex === -1) return; // Nothing to save
+
+  //   const message = chatMessages[unsavedIndex];
+
+  //   const messageToSend = {
+  //     userQuery: message.userQuery,
+  //     aiResponse: message.aiResponse,
+  //     interrupted: message.interrupted,
+  //   };
+
+  //   addMessageApi(messageToSend)
+  //     .then((res) => {
+  //       console.log("Chat message stored:", res);
+  //       setSavedMessageIndexes((prev) => new Set(prev).add(unsavedIndex));
+  //     })
+  //     .catch((err) => {
+  //       console.error("Failed to store chat message:", err);
+  //     });
+  // }, [chatMessages]);
 
   useEffect(() => {
     if (!isAddDataPopupOpen) {
@@ -77,14 +111,23 @@ const ChatBox = () => {
     setIsAddDataPopupOpen(false);
   };
 
-  useEffect(() => {
-    console.log("Chat Messages : ", chatMessages);
-  }, [chatMessages]);
-
-  const handleNewChatClick = () => {
-    setChatMessages([]);
+  const openedPopupJoin = () => {
+    setOpenPopupJoin(true);
   };
 
+  const closeOpenedPopupJoin = () => {
+    setOpenPopupJoin(false);
+  };
+
+  const handleNewChatClick = () => {
+    toast.success("New analysis started", {
+      hideProgressBar: true,
+      toastId: "new-analysis",
+      autoClose: 2000,
+      closeOnClick: true,
+    });
+    setChatMessages([]);
+  };
   const sendMessage = async () => {
     if (!query.trim()) return;
 
@@ -93,58 +136,158 @@ const ChatBox = () => {
       aiResponse: "...",
       chart: null,
       chartType: null,
+      interrupted: false,
     };
 
-    setChatMessages((prevMessages) => [...prevMessages, newMessage]);
+    let newMessageIndex = 0;
 
-    const currentMessageIndex = chatMessages.length;
+    // Capture the correct index at the time of update
+    setChatMessages((prevMessages) => {
+      newMessageIndex = prevMessages.length;
+      return [...prevMessages, newMessage];
+    });
 
     setQuery("");
+    setQueryRunning(true);
 
     try {
       const response = await exceuteQuery(query);
+
       if (response) {
-        setQueryResponse(response);
-        console.log("Response : ", queryResponse);
+        console.log("Response : ", response);
       }
-      setChatMessages((prevMessages) => {
-        return prevMessages.map((message, index) =>
-          index === currentMessageIndex
-            ? { ...message, aiResponse: response }
-            : message
+      if (response.status == "error") {
+        console.log(response.message);
+
+        // Safely update the AI response
+        setChatMessages((prevMessages) =>
+          prevMessages.map((message, index) => {
+            if (index !== newMessageIndex) return message;
+
+            if (message.interrupted) return message;
+
+            return {
+              ...message,
+              aiResponse: response,
+              interrupted: false,
+            };
+          })
         );
-      });
-      // Fetch chart data and update message
-      await fetchChartData(query, currentMessageIndex);
+      } else {
+        // Safely update the AI response
+        setChatMessages((prevMessages) =>
+          prevMessages.map((message, index) => {
+            if (index !== newMessageIndex) return message;
+
+            if (message.interrupted) return message;
+
+            return {
+              ...message,
+              aiResponse: response,
+              ...(response?.result?.length > 2 && {
+                chart: transformChartData(response.result),
+                chartType: "bar",
+              }),
+              interrupted: false,
+            };
+          })
+        );
+      }
+      // await fetchChartData(query, newMessageIndex);
     } catch (e) {
       console.error("Error fetching AI response:", e);
+
       setChatMessages((prevMessages) =>
-        prevMessages.map((message, index) =>
-          index === prevMessages.length - 1
-            ? { ...message, aiResponse: "Error fetching response." }
-            : message
-        )
+        prevMessages.map((message, index) => {
+          if (index !== newMessageIndex) return message;
+
+          return {
+            ...message,
+            aiResponse: message.interrupted
+              ? message.aiResponse
+              : "Error fetching response.",
+          };
+        })
       );
+    } finally {
+      setQueryRunning(false);
     }
   };
 
-  const fetchChartData = async (query, messageIndex) => {
-    try {
-      const chartData = await chartGenerator(query);
-      setChatMessages((prevMessages) =>
-        prevMessages.map((message, index) =>
-          index === messageIndex ? { ...message, chart: chartData } : message
-        )
-      );
-      console.log("ChatMessages : ", chatMessages);
-    } catch (error) {
-      console.error("Error fetching chart data:", error);
+  function transformChartData(result) {
+    if (!Array.isArray(result) || result.length === 0) {
+      return {
+        labels: [],
+        data: [],
+        multi_value: false,
+        keys: [],
+      };
     }
+
+    const allKeys = Object.keys(result[0]);
+    const labelKey = allKeys[0];
+    const valueKeys = allKeys.slice(1);
+
+    const labels = result.map((item) => item[labelKey]);
+
+    const multi_value = valueKeys.length > 1;
+
+    // Prepare data based on whether it's single or multi-value
+    const data = multi_value
+      ? valueKeys.map((key) => result.map((item) => item[key]))
+      : result.map((item) => item[valueKeys[0]]);
+
+    return {
+      labels,
+      data,
+      keys: valueKeys,
+      multi_value,
+    };
+  }
+
+  const stopExecution = () => {
+    setQueryRunning(false);
+    setChatMessages((prevMessages) =>
+      prevMessages.map((msg, index) =>
+        index === prevMessages.length - 1
+          ? {
+              ...msg,
+              interrupted: true,
+              aiResponse:
+                "Query execution was cancelled as requested. Let me know if you'd like to try again or modify your query.",
+            }
+          : msg
+      )
+    );
   };
+
+  // const fetchChartData = async (query, messageIndex) => {
+  //   try {
+  //     const chartData = await chartGenerator(query);
+  //     setChatMessages((prevMessages) =>
+  //       prevMessages.map((message, index) =>
+  //         index === messageIndex ? { ...message, chart: chartData } : message
+  //       )
+  //     );
+  //     console.log("ChatMessages : ", chatMessages);
+  //   } catch (error) {
+  //     console.error("Error fetching chart data:", error);
+  //   }
+  // };
 
   const navigate = useNavigate();
+
   const handleLogout = async () => {
-    await logoutUser();
+    setLogoutLoading(true);
+
+    const response = await logoutUser();
+    console.log(response);
+    setTimeout(async () => {
+      setLogoutLoading(false);
+      if (response) {
+        navigate("/");
+      }
+    }, 2000);
   };
 
   return (
@@ -243,10 +386,10 @@ const ChatBox = () => {
                   )}
                 </button>
                 <div
-                  className="mt-2 ml-2 flex flex-row items-center hover:scale-105 relative group"
+                  className="mt-2 ml-2 flex flex-row items-center hover:scale-105 relative group hover:bg-blue-600/20 rounded-xl transition-all cursor-pointer"
                   onClick={() => (window.location.href = "/")}
                 >
-                  <div className="bg-white p-2 rounded flex items-center justify-center transition duration-200 ease-in-out cursor-pointer">
+                  <div className="p-2 rounded flex items-center justify-center transition duration-200 ease-in-out cursor-pointer">
                     <IoHomeOutline className="h-[17px] w-[17px]" />
                   </div>
 
@@ -260,8 +403,8 @@ const ChatBox = () => {
                     </span>
                   )}
                 </div>
-                <div className="ml-2 flex flex-row items-center hover:scale-105 relative group">
-                  <div className="bg-white p-2 rounded flex items-center justify-center transition duration-200 ease-in-out cursor-pointer">
+                <div className="ml-2 flex flex-row items-center hover:scale-105 relative group hover:bg-blue-600/20 rounded-xl transition-all cursor-pointer">
+                  <div className="p-2 rounded flex items-center justify-center transition duration-200 ease-in-out cursor-pointer">
                     <svg
                       viewBox="0 0 32 32"
                       className="w-[15px] h-[15px] stroke-gray-800 fill-none"
@@ -325,8 +468,8 @@ const ChatBox = () => {
             )}
 
             {/* User Info */}
-            <div className="flex items-center gap-3 hover:bg-white/10 px-4 py-3 rounded-xl transition-all cursor-pointer">
-              <User2Icon className="w-6 h-6 text-gray-700" />
+            <div className="flex items-center  gap-3 hover:bg-white/10 px-2 py-3 rounded-xl transition-all cursor-pointer">
+              <User2Icon className="ml-1 w-6 h-6 text-gray-700" />
               {isSliderVisible && (
                 <div>
                   <p className="text-message">
@@ -338,15 +481,26 @@ const ChatBox = () => {
                 </div>
               )}
             </div>
-
             {/* Logout */}
             <div
-              className="flex items-center ml-2 hover:bg-red-500/20  rounded-xl transition-all cursor-pointer px-2"
+              className="flex items-center ml-2 rounded-xl transition-all cursor-pointer relative group"
               onClick={handleLogout}
             >
-              <LogoutIcon className="h-6 w-6 text-red-600" />
-              {isSliderVisible && (
-                <span className="btn-standard  text-red-500">Logout</span>
+              <div className="p-2 rounded flex items-center justify-center transition duration-200 ease-in-out cursor-pointer hover:bg-red-500/20">
+                {logoutLoading ? (
+                  <div className="h-6 w-6 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <LogoutIcon className="h-6 w-6 text-red-600" />
+                )}
+              </div>
+              {isSliderVisible ? (
+                <button className="ml-2 text-label text-gray-700">
+                  Logout
+                </button>
+              ) : (
+                <span className="absolute left-[25px] ml-2 w-[6vw] px-1.5 py-1 bg-gray-100 border border-gray-800 text-gray-800 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                  Logout
+                </span>
               )}
             </div>
           </div>
@@ -364,7 +518,6 @@ const ChatBox = () => {
         transition-all duration-300 style={{ fontSize: moderateScale(16) }}`}
         >
           {/* Chat Content - Responsive Scrolling and Padding */}
-
           <div
             ref={scrollContainerRef}
             className="flex-1 overflow-y-scroll scrollbar-hide  rounded-lg  relative"
@@ -428,11 +581,12 @@ const ChatBox = () => {
                 </div>
               </motion.div>
             )}
+
             {/* Chat Content Component */}
             <ChatContent
               chatMessages={chatMessages}
               isSliderVisible={isSliderVisible}
-              fetchChartData={fetchChartData}
+              // fetchChartData={fetchChartData}
               setChatMessages={setChatMessages}
               suggestionQuery={suggestionQuery}
             />
@@ -444,25 +598,19 @@ const ChatBox = () => {
               query={query}
               setQuery={setQuery}
               sendMessage={sendMessage}
-              openDropdown={openDropdown}
-              closeDropdown={closeDropdown}
-              anchorEl={anchorEl}
               openAddDataPopup={openAddDataPopup}
               isSliderVisible={isSliderVisible}
-              setByDataPreview={setByDataPreview}
               suggestionQuery={suggestionQuery}
-              setChatMessages={setChatMessages}
-              chatMessages={chatMessages}
-              fetchChartData={fetchChartData}
-              openPopupJoin={openPopupJoin}
-              setOpenPopupJoin={setOpenPopupJoin}
+              openedPopupJoin={openedPopupJoin}
+              queryRunning={queryRunning}
+              stopExecution={stopExecution}
             />
             {isAddDataPopupOpen && (
               <div
                 className="fixed inset-0 flex items-center 
               justify-center bg-black bg-opacity-40 z-50"
               >
-                <div className="bg-white rounded-xl left-14 px-8 py-4 shadow-lg max-w-[65vw] h-full max-h-[90vh] w-full relative">
+                <div className="bg-white rounded-xl left-14 -top-8 px-8 py-4 shadow-lg max-w-[65%] h-full max-h-[82%] w-full relative">
                   <button
                     className="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-xl"
                     onClick={closeAddDataPopup}
@@ -477,7 +625,9 @@ const ChatBox = () => {
               </div>
             )}
 
-            {openPopupJoin && <PopupJoin />}
+            {openPopupJoin && (
+              <PopupJoin closeOpenedPopupJoin={closeOpenedPopupJoin} />
+            )}
           </div>
         </div>
       </div>

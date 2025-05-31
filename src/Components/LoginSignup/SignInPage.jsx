@@ -29,8 +29,6 @@ export default function Login() {
     if (error) {
       const timer = setTimeout(() => {
         setError("");
-        setEmail("");
-        setPassword("");
       }, 5000);
       return () => clearTimeout(timer);
     }
@@ -58,6 +56,11 @@ export default function Login() {
         navigate("/");
       }
     } catch (err) {
+      if (err === "Network Error") {
+        setError("Network Error");
+        return;
+      }
+
       console.error(err.message);
       setError("Incorrect Email Or Password");
     } finally {

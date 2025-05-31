@@ -20,10 +20,6 @@ const SignUpPage = () => {
     if (error) {
       const timer = setTimeout(() => {
         setError("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
-        setFullName("");
       }, 5000);
       return () => clearTimeout(timer);
     }

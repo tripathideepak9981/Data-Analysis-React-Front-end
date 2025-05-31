@@ -24,7 +24,7 @@ export const avilableTables = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/api/available_tables`)
     return response.data;
-  }catch(error) {
+  } catch (error) {
     return handleError(error, "Avalilable Tables")
   }
 }
@@ -58,9 +58,9 @@ export const validateSQLQuery = async (sql_query, original_question = "") => {
 const handleError = (error, action = "processing-request") => {
   console.error(`Error ${action}:`, error.response?.data || error.message);
   let errorMessage = "Something went wrong";
-  if(error.code === "ECONNABORTED"){
+  if (error.code === "ECONNABORTED") {
     errorMessage = "Network issue. Try again later.";
-  }else if(error.response?.data?.detail){
+  } else if (error.response?.data?.detail) {
     errorMessage = error.response?.data?.detail;
   }
   Swal.fire({
@@ -70,7 +70,8 @@ const handleError = (error, action = "processing-request") => {
     confirmButtonText: "OK",
     width: "30vw",
   });
-  return {success: false, error: error.message};
+  console.log(errorMessage)
+  return { success: false, error: error.message };
 }
 
 export const uploadFilesAPI = async (selectedFiles) => {
@@ -91,7 +92,7 @@ export const uploadFilesAPI = async (selectedFiles) => {
         ...axiosConfig,
       }
     );
-    
+
     return response.data;
   } catch (error) {
     return handleError(error, "uploading files")
@@ -99,15 +100,15 @@ export const uploadFilesAPI = async (selectedFiles) => {
 };
 
 
-  // export const suggestedQueryResponse = async () => { 
-  //   const response = await axios.get(
-  //   `${API_BASE_URL}/api/initial_suggestions`
-  //   )
-  //   console.log("Suggested Response : " ,suggestedQueryResponse.data)
-  //   return response.data;
-  // }
-  
-export const exceuteQuery = async (query) => {
+export const suggestedQueryResponse = async () => {
+  const response = await axios.get(
+    `${API_BASE_URL}/api/initial_suggestions`
+  )
+  console.log("Suggested Response : ", suggestedQueryResponse.data)
+  return response.data;
+}
+
+export const exceuteQuery = async (query, signal) => {
   try {
     const token = localStorage.getItem("access_token");
     console.log("Query:", query);
@@ -120,8 +121,9 @@ export const exceuteQuery = async (query) => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         }
-      }
+      },
     );
+    console.log("Execute Query : ", response.data)
 
     //     const suggestedQueryResponse = await axios.get(
     //   `${API_BASE_URL}/api/followup_suggestions`
@@ -138,7 +140,7 @@ export const exceuteQuery = async (query) => {
 export const chartGenerator = async (query) => {
   try {
     console.log("Query : " + query)
-    const response = await axios.post(`${API_BASE_URL}/api/chart/chart`, {query }, {
+    const response = await axios.post(`${API_BASE_URL}/chart/chart`, { query }, {
       headers: {
         "Content-Type": "application/json"
       },
@@ -147,6 +149,7 @@ export const chartGenerator = async (query) => {
     console.log("Chart Generation: ", response.data)
     return response.data;
   } catch (error) {
+    console.error(error)
     // return handleError(error, "chart generation");
   }
 }
@@ -154,54 +157,78 @@ export const chartGenerator = async (query) => {
 export const cleanFile = async (table_name) => {
   const token = localStorage.getItem("access_token");
   console.log("Access token: " + token)
-   try{
-       console.log("Table Name : " + table_name)
-       const response = await axios.post(`${API_BASE_URL}/api/clean_file?table_name=${encodeURIComponent(table_name)}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        }
-       });
-       return response.data;
-   }catch (error) {
+  try {
+    console.log("Table Name : " + table_name)
+    const response = await axios.post(`${API_BASE_URL}/api/clean_file?table_name=${encodeURIComponent(table_name)}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    });
+    return response.data;
+  } catch (error) {
     return handleError(error, "Cleaning files")
-   }
-} 
+  }
+}
 
 export const cancel_clean_file = async (table_name) => {
   const token = localStorage.getItem("access_token");
-   try{
-      console.log("Table name:", table_name);
-      const response = await axios.post( `${API_BASE_URL}/api/cancel_clean?table_name=${encodeURIComponent(table_name)}`, {},  {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        }
-       }
-      );
-      
-      return response.data;
-   }catch(error){
+  try {
+    console.log("Table name:", table_name);
+    const response = await axios.post(`${API_BASE_URL}/api/cancel_clean?table_name=${encodeURIComponent(table_name)}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+    }
+    );
+
+    return response.data;
+  } catch (error) {
     return handleError(error, "Cancel Cleaning files")
-   }
+  }
 }
 
 
 export const connectToDatabase = async (dbParams) => {
-   try{
-      const response = await axios.post(`${API_BASE_URL}/api/db/connect_db`, dbParams, axiosConfig);
-      console.log("Database connection response:", response.data);
-      return response.data;
-   }catch (error){
-     console.error("Error connecting to database:", error);
-     return handleError(error, "connecting to database");;
-   }
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/db/connect_db`, dbParams, axiosConfig);
+    console.log("Database connection response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error connecting to database:", error);
+    return handleError(error, "connecting to database");;
+  }
 }
 
 
+export const addMessageApi = async (messageData) => {
+  const token = localStorage.getItem("access_token")
+  try {
+    console.log("Sending Chat Message:", messageData);
+
+    const response = await axios.post(
+      `${API_BASE_URL}/api/add_message`,
+      messageData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error storing message:", error);
+    throw error.response?.data || { detail: "Unknown error occurred" };
+  }
+};
+
+
+
 export const loadTablesApi = async (table_name) => {
-  try{
-    console.log("Loading Tables : "+ table_name);
+  try {
+    console.log("Loading Tables : " + table_name);
     const response = await axios.post(`${API_BASE_URL}/api/db/load_tables`, table_name, {
       headers: {
         "Content-Type": "application/json"
@@ -209,27 +236,27 @@ export const loadTablesApi = async (table_name) => {
       ...axiosConfig
     })
     return response.data;
-  }catch (error) {
+  } catch (error) {
     return handleError(error, "loading tables");
   }
 }
 
-export const sendSignUpData = async(formData) => {
-  try{
+export const sendSignUpData = async (formData) => {
+  try {
     const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, formData, {
       headers: {
         "Content-Type": "application/json"
       }
     })
-    const {access_token} = response.data;
+    const { access_token } = response.data;
     console.log(response)
     localStorage.setItem("access_token", access_token)
     localStorage.setItem("username", formData.email)
     return response.data;
-  }catch (error){
+  } catch (error) {
     throw (error.message);
   }
-} 
+}
 export const sendSignInData = async (username, password) => {
   try {
     const response = await axios.post(
@@ -239,7 +266,7 @@ export const sendSignInData = async (username, password) => {
         password,
       }),
       {
-        headers: { 
+        headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       }
@@ -251,16 +278,17 @@ export const sendSignInData = async (username, password) => {
     const suggestedQueryResponse = await axios.get(
       `${API_BASE_URL}/api/initial_suggestions`
     )
-    console.log("Suggested Response from login : " ,suggestedQueryResponse.data)
-    localStorage.setItem("suggested_question", suggestedQueryResponse.data.suggested_questions);
+    console.log("Suggested Response from login : ", suggestedQueryResponse.data)
+    localStorage.setItem("suggested_question", JSON.stringify(suggestedQueryResponse.data));
     return response.data;
   } catch (error) {
-    throw(error.message);
+    throw (error.message);
   }
 };
 
 export const logoutUser = async () => {
   try {
+    console.log("I am here!")
     const token = localStorage.getItem("access_token"); // store before removal
 
     const response = await axios.post(
@@ -273,15 +301,13 @@ export const logoutUser = async () => {
         }
       }
     );
+    console.log(response)
+    return response.data;
   } catch (error) {
     console.error("Logout failed:", error);
   } finally {
-    
-    localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("access_token");
-    localStorage.removeItem("token_type");
     localStorage.removeItem("userEmail");
-    window.location.href = '/';
   }
 };

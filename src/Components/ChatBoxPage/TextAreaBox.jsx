@@ -5,6 +5,8 @@ import { VscPreview } from "react-icons/vsc";
 import { useState } from "react";
 import { exceuteQuery, chartGenerator } from "../../Api";
 import { TbArrowsJoin2 } from "react-icons/tb";
+import { MdKeyboardArrowDown } from "react-icons/md";
+import { FaStop } from "react-icons/fa";
 
 const containerVariants = {
   hidden: { opacity: 0, y: -20 },
@@ -26,84 +28,23 @@ const TextAreaBox = ({
   sendMessage,
   openAddDataPopup,
   isSliderVisible,
-  setByDataPreview,
-  setChatMessages,
   suggestionQuery,
-  chatMessages,
-  openPopupJoin,
-  setOpenPopupJoin
+  openedPopupJoin,
+  queryRunning,
+  stopExecution,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
 
   const handleCreateJoin = () => {
-    setOpenPopupJoin(!openPopupJoin);
+    openedPopupJoin();
   };
 
-
-
   const handlePreviewDataButton = () => {
-    setByDataPreview(true);
     openAddDataPopup();
   };
 
-  const fetchChartData = async (query, messageIndex) => {
-    try {
-      const chartData = await chartGenerator(query);
-      setChatMessages((prevMessages) =>
-        prevMessages.map((message, index) =>
-          index === messageIndex ? { ...message, chart: chartData } : message
-        )
-      );
-      console.log("ChatMessages : ", chatMessages);
-    } catch (error) {
-      console.error("Error fetching chart data:", error);
-    }
-  };
-
-  const handleSuggestedQuestion = async (text) => {
-    if (!text.trim()) return;
-
-    const newMessage = {
-      userQuery: text,
-      aiResponse: "...",
-      chart: null,
-      chartType: null,
-    };
-
-    setChatMessages((prevMessages) => [...prevMessages, newMessage]);
-
-    const currentMessageIndex = chatMessages.length;
-
-    try {
-      const response = await exceuteQuery(text);
-      if (response) {
-        console.log("Response Form TextAreaBox: ", response);
-      }
-
-      setChatMessages((prevMessages) =>
-        prevMessages.map((message, index) =>
-          index === currentMessageIndex
-            ? { ...message, aiResponse: response }
-            : message
-        )
-      );
-
-      await fetchChartData(text, currentMessageIndex);
-    } catch (e) {
-      console.error("Error fetching AI response:", e);
-      setChatMessages((prevMessages) =>
-        prevMessages.map((message, index) =>
-          index === prevMessages.length - 1
-            ? { ...message, aiResponse: "Error fetching response." }
-            : message
-        )
-      );
-    }
-    console.log(chatMessages);
-  };
-
-  const containerWidth = isSliderVisible ? "max-w-[75vw]" : "max-w-[95%]";
+  const containerWidth = isSliderVisible ? "max-w-[74vw]" : "max-w-[93%]";
 
   return (
     <motion.div
@@ -126,7 +67,7 @@ const TextAreaBox = ({
                   className="text-gray-500 hover:text-gray-700 transition"
                   onClick={() => setShowSuggestions(false)}
                 >
-                  <X className="w-4 h-4" />
+                  <MdKeyboardArrowDown className="h-5 w-5" />
                 </button>
               </div>
 
@@ -138,7 +79,8 @@ const TextAreaBox = ({
                   <motion.button
                     key={index}
                     onClick={() => {
-                      handleSuggestedQuestion(text);
+                      setQuery(text);
+                      sendMessage();
                     }}
                     className="px-3 py-1 rounded-full text-sm border border-[#a8d3ff] bg-white text-[#515253] hover:bg-[#eff6fd] transition hover:text-blue-500"
                     variants={itemVariants}
@@ -231,12 +173,21 @@ const TextAreaBox = ({
             </button>
           </div>
 
-          <button
-            onClick={sendMessage}
-            className="bg-gray-200 hover:bg-gray-300 p-2 rounded-full"
-          >
-            <ArrowUp className="w-5 h-5 text-gray-700" />
-          </button>
+          {!queryRunning ? (
+            <button
+              onClick={sendMessage}
+              className="bg-gray-200 hover:bg-gray-300 p-2 rounded-full"
+            >
+              <ArrowUp className="w-5 h-5 text-gray-700" />
+            </button>
+          ) : (
+            <button
+              onClick={stopExecution}
+              className="bg-gray-200 hover:bg-gray-300 p-2 rounded-full"
+            >
+              <FaStop className="w-5 h-5 text-gray-700" />
+            </button>
+          )}
         </div>
       </div>
     </motion.div>

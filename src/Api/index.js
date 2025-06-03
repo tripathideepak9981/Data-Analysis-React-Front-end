@@ -19,6 +19,58 @@ export const joinTables = async (data) => {
   }
 };
 
+export const deleteTable = async (tableName) => {
+  const token = localStorage.getItem("access_token")
+  try {
+    const response = await axios.delete(`${API_BASE_URL}/api/delete_table/${tableName}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // if using JWT
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting table:", error);
+    throw error.response?.data || { message: "Unknown error" };
+  }
+};
+
+
+export const getTablesData = async () => {
+  const token = localStorage.getItem("access_token");
+  console.log("token" , token)
+  try{
+    const response = await axios.get(`${API_BASE_URL}/api/load_user_tables_with_preview`, 
+      {headers: {
+          Authorization: `Bearer ${token}`,
+      }}
+    )
+    if (response.data && response.data.tables) {
+  const previews = {};
+  const tableNames = [];
+
+  response.data.tables.forEach((table) => {
+    previews[table.table_name] = table.preview;
+
+    // Add metadata
+    tableNames.push({
+      name: table.table_name,
+      createdDate: new Date().toISOString().split("T")[0], // You can customize date format
+    });
+  });
+
+  localStorage.setItem("previews", JSON.stringify(previews));
+  localStorage.setItem("uploadedFiles", JSON.stringify(tableNames));
+}
+
+    console.log(response.data)
+  }catch (error) {
+  console.error("Error fetching tables:", error.response?.data || error.message);
+  throw error;
+}
+
+}
+
 
 export const avilableTables = async () => {
   try {
@@ -80,16 +132,18 @@ export const uploadFilesAPI = async (selectedFiles) => {
   selectedFiles.forEach((file) => {
     formData.append("files", file);
   });
+  const access_token = localStorage.getItem("access_token");
 
   try {
     const response = await axios.post(
       `${API_BASE_URL}/api/upload`,
       formData,
       {
-        headers: {
+       headers: {
+          Authorization: `Bearer ${access_token}`,
           "Content-Type": "multipart/form-data",
-        },
-        ...axiosConfig,
+
+        }
       }
     );
 
@@ -101,8 +155,11 @@ export const uploadFilesAPI = async (selectedFiles) => {
 
 
 export const suggestedQueryResponse = async () => {
+  const token = localStorage.getItem("access_token")
   const response = await axios.get(
-    `${API_BASE_URL}/api/initial_suggestions`
+    `${API_BASE_URL}/api/initial_suggestions`, {headers: {
+        Authorization: `Bearer ${token}`,
+      }}
   )
   console.log("Suggested Response : ", suggestedQueryResponse.data)
   return response.data;
@@ -125,34 +182,12 @@ export const exceuteQuery = async (query, signal) => {
     );
     console.log("Execute Query : ", response.data)
 
-    //     const suggestedQueryResponse = await axios.get(
-    //   `${API_BASE_URL}/api/followup_suggestions`
-    // )
-    // console.log("Suggested Response : " ,suggestedQueryResponse.data)
-
     return response.data;
   } catch (error) {
     return handleError(error, "execute query");
   }
 }
 
-
-export const chartGenerator = async (query) => {
-  try {
-    console.log("Query : " + query)
-    const response = await axios.post(`${API_BASE_URL}/chart/chart`, { query }, {
-      headers: {
-        "Content-Type": "application/json"
-      },
-      ...axiosConfig,
-    });
-    console.log("Chart Generation: ", response.data)
-    return response.data;
-  } catch (error) {
-    console.error(error)
-    // return handleError(error, "chart generation");
-  }
-}
 
 export const cleanFile = async (table_name) => {
   const token = localStorage.getItem("access_token");
@@ -200,30 +235,6 @@ export const connectToDatabase = async (dbParams) => {
     return handleError(error, "connecting to database");;
   }
 }
-
-
-export const addMessageApi = async (messageData) => {
-  const token = localStorage.getItem("access_token")
-  try {
-    console.log("Sending Chat Message:", messageData);
-
-    const response = await axios.post(
-      `${API_BASE_URL}/api/add_message`,
-      messageData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error storing message:", error);
-    throw error.response?.data || { detail: "Unknown error occurred" };
-  }
-};
-
 
 
 export const loadTablesApi = async (table_name) => {
@@ -275,11 +286,10 @@ export const sendSignInData = async (username, password) => {
     const { access_token } = response.data;
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("username", username);
-    const suggestedQueryResponse = await axios.get(
-      `${API_BASE_URL}/api/initial_suggestions`
-    )
-    console.log("Suggested Response from login : ", suggestedQueryResponse.data)
-    localStorage.setItem("suggested_question", JSON.stringify(suggestedQueryResponse.data));
+      setTimeout(async () => {
+         await getTablesData();
+      })
+
     return response.data;
   } catch (error) {
     throw (error.message);
@@ -309,5 +319,13 @@ export const logoutUser = async () => {
     localStorage.removeItem("username");
     localStorage.removeItem("access_token");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("uploadedFile")
+    localStorage.removeItem("uploadedFiles")
+    localStorage.removeItem("suggested_question")
+    localStorage.removeItem("selectedDataSource")
+    localStorage.removeItem("DbType")
+    localStorage.removeItem("DbResponse")
+    localStorage.removeItem("tablePreview")
+
   }
 };

@@ -1,27 +1,34 @@
 export const formatMarkdown = (text) => {
   if (!text) return '';
-  
+
   return text
-    // Headers
-    .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mb-4">$1</h1>')
-    .replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mb-3">$1</h2>')
-    // Lists
-    .replace(/^(\s*)\* (.*$)/gm, '<li class="ml-$1">$2</li>')
-    .replace(/^( +)/gm, match => 'ml-' + (match.length * 4))
-    // Bold text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    // Italics
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    // Table names (wrapped in backticks)
-    .replace(/`([^`]+)`/g, '<code class="bg-gray-100 text-purple-600 px-1 rounded font-mono">$1</code>')
-    // Metrics formatting
-    // Format percentage values (e.g., 42% or 42.5%)
-    .replace(/(\d+(\.\d+)?%)/g, '<span class="text-gray-800 font-bold">$1</span>')
-    // Format currency values (e.g., $42 or $42.50), including escaped dollar signs
-    .replace(/\\\$(\d+(\.\d+)?)/g, '<span class="text-gray-700 font-bold">$$$1</span>')
-    // Numbers with commas
-    .replace(/\b(\d{1,3}(,\d{3})+)\b/g, '<span class="text-gray-700 font-bold">$1</span>')
-    // Section titles
-    .replace(/^([^:]+):/, '<span class="font-bold">$1:</span>');
+    // H1 and H2 headers
+    .replace(/^# (.*$)/gm, '<h1 class=" chat-ui text-xl font-bold text-gray-900 mb-3 font-[Roboto Flex]">$1</h1>')
+    .replace(/^## (.*$)/gm, '<h2 class="chat-ui text-lg font-semibold text-gray-900 mb-2 font-[Roboto Flex]">$1</h2>')
+
+    // List items (supports leading spaces)
+    .replace(/^(\s*)\* (.*$)/gm, (_, space, content) =>
+      `<li class="ml-${space.length * 2} chat-ui list-disc text-sm font-[Roboto Flex]">${content}</li>`
+    )
+
+    // Bold text: **text**
+    .replace(/\*\*(.*?)\*\*/g, '<span class="font-semibold text-gray-800 font-[Roboto Flex]">$1</span>')
+
+    // Italics: *text*
+    .replace(/\*(.*?)\*/g, '<span class="italic text-gray-700 font-[Roboto Flex]">$1</span>')
+
+    // Inline code: `code`
+    .replace(/`([^`]+)`/g, '<code class="bg-gray-100 text-gray-800 font-mono text-sm px-1.5 py-0.5 rounded">$1</code>')
+
+    // Percentages like 45% or 12.3%
+    .replace(/(\d+(\.\d+)?%)/g, '<span class="font-bold font-[Roboto Flex]">$1</span>')
+
+    // Dollar values like \$45 or \$45.50
+    .replace(/\\\$(\d+(\.\d+)?)/g, '<span class="font-semibold text-gray-800 font-[Roboto Flex]">$$$1</span>')
+
+    // Numbers with commas: 1,000 or 12,000,000
+    .replace(/\b(\d{1,3}(,\d{3})+)\b/g, '<span class="text-gray-800 font-medium font-[Roboto Flex]">$1</span>')
+
+    // Labels like "Total:" → bolded label
+    .replace(/^([^:\n]+):/gm, '<span class="font-bold font-[Roboto Flex]">$1:</span>');
 };
- 

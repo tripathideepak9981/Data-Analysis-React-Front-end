@@ -74,30 +74,60 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
   function formatSummary(summaryObj) {
     if (!summaryObj) return null;
 
-    let summary = summaryObj.trim();
+    const formatText = (text) => {
+      // Wrap quoted text (single, double quotes or backticks)
+      text = text.replace(
+        /(["'])([^"']+?)\1/g,
+        '<span class="font-bold">"$2"</span>'
+      );
+
+      // Wrap percentages in bold
+      text = text.replace(
+        /(\d+(\.\d+)?%)/g,
+        '<span class="font-bold">$1</span>'
+      );
+
+      // Highlight numeric values
+      text = text.replace(
+        /(?<![a-zA-Z])(\d+(\.\d+)?)(?![%\w])/g,
+        '<span class="font-roboto font-bold">$1</span>'
+      );
+
+      return text;
+    };
+
+    const summary = summaryObj.trim();
     const paragraphs = summary.split("\n").filter((para) => para.trim() !== "");
 
     return (
       <TypeWriterProvider>
-        <div className="bg-white py-2 px-4 space-y-3 text-gray-900">
-          {paragraphs.map((para, index) => (
-            <TypeWriter
-              key={index}
-              index={index}
-              text={para}
-              className={`text-sm font-medium leading-relaxed ${
-                /^# /.test(para)
-                  ? "text-xl font-semibold border-b pb-1"
-                  : /^## /.test(para)
-                  ? "text-xl font-semibold mt-3"
-                  : /^\*\*(.*?)\*\*/.test(para)
-                  ? "font-light"
-                  : /^\* /.test(para)
-                  ? "ml-6 list-disc"
-                  : "text-gray-800"
-              }`}
-            />
-          ))}
+        <div className="bg-white chat-ui py-2 px-4 space-y-3 text-gray-900">
+          {paragraphs.map((para, index) => {
+            let className = " leading-relaxed text-gray-800 ";
+
+            if (/^# /.test(para)) {
+              className = " border-b pb-1 text-gray-900";
+              para = para.replace(/^# /, "");
+            } else if (/^## /.test(para)) {
+              className = " mt-3 text-gray-900";
+              para = para.replace(/^## /, "");
+            } else if (/^\* /.test(para)) {
+              className = "ml-6 list-disc  text-gray-800 ";
+            }
+
+            const formattedText = formatText(para);
+
+            return (
+              <TypeWriter
+                key={index}
+                index={index}
+                text={formattedText}
+                className={className}
+                as="p"
+                dangerouslySetInnerHTML={{ __html: formattedText }}
+              />
+            );
+          })}
         </div>
       </TypeWriterProvider>
     );
@@ -277,7 +307,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
   }, [showSQL, response?.aiResponse?.sql_query]);
 
   return (
-    <div className="z-20 w-full space-y-3 bg-[#f0f1f9]">
+    <div className="z-20 chat-ui w-full space-y-3 bg-[#f0f1f9]">
       <div className="flex justify-end px-3 py-2 mt-3 ">
         <motion.div
           initial={{ opacity: 0, x: 50 }}
@@ -291,10 +321,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
       px-2 py-2 max-w-[30vw] rounded-tr-sm rounded-xl shadow-lg text-left
       transition-all duration-300 "
           >
-            <p
-              className="text-gray-900 text-label rounded-xl  leading-snug break-words whitespace-pre-wrap font-sans"
-              style={{ fontSize: "clamp(12px, 2vw, 14px)" }}
-            >
+            <p className="text-gray-900 chat-ui font-semibold rounded-xl  leading-snug break-words whitespace-pre-wrap font-sans">
               {response?.userQuery}
             </p>
 
@@ -323,10 +350,10 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
           </div>
         )}
 
-        <div className="flex flex-col w-full max-w-[78%] -space-y-1 px-0 rounded-md shadow-md bg-white">
+        <div className="flex flex-col w-full max-w-[78%]   rounded-md shadow-md bg-white">
           <>
             {!showLoading && (
-              <div className="flex justify-between mt-0 py-2 px-4 z-20 bg-gray-100 border border-gray-300">
+              <div className="flex justify-between mt-0 py-2 px-4 z-20 bg-gray-100 ">
                 <div className=" text-gray-900 text-lg font-semibold">
                   AI Response :
                 </div>
@@ -529,28 +556,30 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
             )}
 
             {showInterruptMessage ? (
-              <p className="text-gray-700 text-label px-3 py-4 ">
+              <p className="text-gray-700 text-label px-3 py-4 chat-ui">
                 Query execution was cancelled as requested. Let me know if you'd
                 like to try again or modify your query.
               </p>
             ) : (
               <>
+                {/* Show error if present */}
                 {response?.aiResponse?.error && (
-                  <p className="text-gray-700 text-label px-3 py-4 ">
+                  <p className="text-gray-700 text-label chat-ui px-3 py-4">
                     {response?.aiResponse?.message}
                   </p>
                 )}
 
-                {validateResponse?.result ? (
+                {/* Validate Result Takes Priority */}
+                {!response?.aiResponse?.error && validateResponse?.result ? (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5, duration: 0.5 }}
-                    className="bg-white rounded-tl-sm font-sans "
+                    className="bg-white rounded-tl-sm font-sans"
                   >
                     {Array.isArray(validateResponse.result) &&
                     typeof validateResponse.result[0] === "object" ? (
-                      <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
+                      <div className="max-h-[300px] chat-ui overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
                         <table className="min-w-full text-left border-collapse text-message text-gray-800">
                           <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
                             <tr>
@@ -586,13 +615,14 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                         </table>
                       </div>
                     ) : (
-                      <p className="text-label text-gray-800 px-4 pb-3 pt-3">
+                      <p className="text-label chat-ui text-gray-800 px-4 pb-3 pt-3">
                         {validateResponse.result}
                       </p>
                     )}
                   </motion.div>
                 ) : (
                   <>
+                    {/* AI Response Summary */}
                     {response?.aiResponse?.response && (
                       <typeWriterProvider>
                         <motion.div
@@ -601,23 +631,16 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                           transition={{ delay: 0.5, duration: 0.5 }}
                           className="bg-white rounded-tl-sm font-sans"
                         >
-                          <p className="text-label text-gray-800 px-4 pb-1 mt-5 mb-5">
+                          <p className="text-label chat-ui text-gray-800 px-4 pb-1 mt-3 mb-1">
                             {formatSummary(response.aiResponse.response)}
                           </p>
                         </motion.div>
                       </typeWriterProvider>
                     )}
 
-                    {response?.chart && !showResult && (
-                      <div className="w-full bg-white sm:px-2 sm:py-2 animate-fadeIn px-4">
-                        <Chart
-                          chartResponse={response.chart}
-                          chartType={response.chartType}
-                        />
-                      </div>
-                    )}
-
-                    {response?.aiResponse?.result && showResult && (
+                    {/* Chart */}
+                    {/* Show Result when chart is null */}
+                    {!response?.chart && response?.aiResponse?.result && (
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -626,8 +649,8 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                       >
                         {Array.isArray(response.aiResponse.result) &&
                         typeof response.aiResponse.result[0] === "object" ? (
-                          <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
-                            <table className="min-w-full text-left border-collapse text-message text-gray-800">
+                          <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-2 mx-2">
+                            <table className="min-w-full chat-ui text-left border-collapse text-message text-gray-800">
                               <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
                                 <tr>
                                   {Object.keys(
@@ -667,16 +690,88 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                           </div>
                         ) : (
                           <typeWriterProvider>
-                            <p className="text-label text-gray-800 px-2 pb-2">
+                            <p className="text-label chat-ui text-gray-800 px-2 pb-2">
                               {response.aiResponse.result}
                             </p>
                           </typeWriterProvider>
                         )}
                       </motion.div>
                     )}
+
+                    {/* Show Chart when chart exists and showResult is false */}
+                    {response?.chart && !showResult && (
+                      <div className="w-full bg-white sm:px-2 sm:py-2 animate-fadeIn px-4">
+                        <Chart
+                          chartResponse={response.chart}
+                          chartType={response.chartType}
+                        />
+                      </div>
+                    )}
+
+                    {/* Show Result when chart exists and showResult is true */}
+                    {response?.chart &&
+                      showResult &&
+                      response?.aiResponse?.result && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.5, duration: 0.5 }}
+                          className="bg-white rounded-tl-sm font-sans"
+                        >
+                          {Array.isArray(response.aiResponse.result) &&
+                          typeof response.aiResponse.result[0] === "object" ? (
+                            <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
+                              <table className="min-w-full chat-ui text-left border-collapse text-message text-gray-800">
+                                <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
+                                  <tr>
+                                    {Object.keys(
+                                      response.aiResponse.result[0]
+                                    ).map((key, index) => (
+                                      <th
+                                        key={index}
+                                        className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
+                                      >
+                                        {key}
+                                      </th>
+                                    ))}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {response.aiResponse.result.map(
+                                    (row, rowIndex) => (
+                                      <tr
+                                        key={rowIndex}
+                                        className="odd:bg-white even:bg-gray-50"
+                                      >
+                                        {Object.values(row).map(
+                                          (value, colIndex) => (
+                                            <td
+                                              key={colIndex}
+                                              className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
+                                            >
+                                              {value}
+                                            </td>
+                                          )
+                                        )}
+                                      </tr>
+                                    )
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
+                          ) : (
+                            <typeWriterProvider>
+                              <p className="text-label chat-ui text-gray-800 px-2 pb-2">
+                                {response.aiResponse.result}
+                              </p>
+                            </typeWriterProvider>
+                          )}
+                        </motion.div>
+                      )}
                   </>
                 )}
 
+                {/* SQL Modal */}
                 {response?.aiResponse?.sql_query && showSQL && (
                   <motion.div
                     initial={{ opacity: 0 }}
@@ -702,16 +797,16 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                         </h2>
                       </div>
 
-                      <div className="flex-1 overflow-hidden px-4 py-2 bg-gray-50">
+                      <div className="flex-1 chat-ui overflow-hidden px-4 py-2 bg-gray-50">
                         {isEditing ? (
                           <textarea
                             value={editableSQL}
                             onChange={handleChange}
-                            className="w-full h-full p-3 text-sm font-mono text-gray-800 bg-white border border-blue-300 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full h-full p-2 chat-ui text-gray-800 bg-white border border-blue-300 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
                             placeholder="Edit your SQL here..."
                           />
                         ) : (
-                          <pre className="w-full h-full p-3 overflow-auto font-mono text-sm text-gray-800 bg-white border border-gray-300 rounded-md whitespace-pre-wrap">
+                          <pre className="w-full chat-ui h-full p-3 overflow-auto font-mono text-sm text-gray-800 bg-white border border-gray-300 rounded-md whitespace-pre-wrap">
                             {editableSQL}
                           </pre>
                         )}
@@ -719,7 +814,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
 
                       <div className="px-6 py-3 bg-[#e6f0ff] border-t border-blue-400 rounded-b-2xl flex justify-between items-center">
                         <p
-                          className={`text-sm whitespace-pre-line ${
+                          className={`text-sm chat-ui whitespace-pre-line ${
                             statusMessage.type === "error"
                               ? "text-red-600"
                               : statusMessage.type === "success"
@@ -735,7 +830,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                             onClick={() => {
                               setIsEditing(!isEditing);
                               setStatusMessage({
-                                text: "Now you'r in Editing Mode, edit sql query and click on Validate",
+                                text: "Now you're in Editing Mode, edit SQL query and click on Validate",
                                 type: "info",
                               });
                             }}

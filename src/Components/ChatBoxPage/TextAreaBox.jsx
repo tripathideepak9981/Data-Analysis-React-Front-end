@@ -3,7 +3,6 @@ import { TextareaAutosize } from "@mui/material";
 import { Paperclip, ArrowUp, X } from "lucide-react";
 import { VscPreview } from "react-icons/vsc";
 import { useState } from "react";
-import { exceuteQuery, chartGenerator } from "../../Api";
 import { TbArrowsJoin2 } from "react-icons/tb";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { FaStop } from "react-icons/fa";
@@ -142,11 +141,11 @@ const TextAreaBox = ({
               sendMessage();
             }
           }}
-          className="w-full text-sm resize-none text-gray-800 placeholder-gray-500 bg-transparent border-none focus:outline-none"
+          className="w-full chat-ui resize-none text-gray-800 placeholder-gray-500 bg-transparent border-none focus:outline-none"
         />
 
         {/* Buttons */}
-        <div className="flex justify-between items-center mt-3">
+        <div className="flex justify-between items-center mt-2">
           <div className="flex gap-2">
             <button
               onClick={openAddDataPopup}

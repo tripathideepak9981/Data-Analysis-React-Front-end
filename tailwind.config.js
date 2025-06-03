@@ -6,6 +6,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        roboto: ['"Roboto Flex"', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
       fontSize: {
         header: ['1.5rem', { lineHeight: '2rem' }], // ~24px
         subheader: ['1.375rem', { lineHeight: '1.875rem' }], // ~22px

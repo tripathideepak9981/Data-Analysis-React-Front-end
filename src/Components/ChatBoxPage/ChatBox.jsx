@@ -1,22 +1,15 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import updatedColor from "../../assets/typed.svg";
 import ChatContent from "./ChatContent";
-import {
-  exceuteQuery,
-  logoutUser,
-  chartGenerator,
-  addMessageApi,
-} from "../../Api";
+import { exceuteQuery, logoutUser } from "../../Api";
 import TextAreaBox from "./TextAreaBox";
 import AddDataPopup from "./AddData/AddDataPopup";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { motion } from "framer-motion";
 import { User2Icon } from "lucide-react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { IoAddCircleOutline } from "react-icons/io5";
-import areoplane from "../../assets/areoplane.png";
 import { IoHomeOutline } from "react-icons/io5";
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
@@ -37,7 +30,6 @@ const ChatBox = () => {
   const [openPopupJoin, setOpenPopupJoin] = useState(false);
   const [queryRunning, setQueryRunning] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
-  // const [savedMessageIndexes, setSavedMessageIndexes] = useState(new Set());
 
   useEffect(() => {
     const storedData = localStorage.getItem("suggested_question");
@@ -45,30 +37,6 @@ const ChatBox = () => {
       setSuggestionQuery(JSON.parse(storedData));
     }
   }, []);
-
-  // useEffect(() => {
-  //   const unsavedIndex = chatMessages.findIndex(
-  //     (_, index) => !savedMessageIndexes.has(index)
-  //   );
-  //   if (unsavedIndex === -1) return; // Nothing to save
-
-  //   const message = chatMessages[unsavedIndex];
-
-  //   const messageToSend = {
-  //     userQuery: message.userQuery,
-  //     aiResponse: message.aiResponse,
-  //     interrupted: message.interrupted,
-  //   };
-
-  //   addMessageApi(messageToSend)
-  //     .then((res) => {
-  //       console.log("Chat message stored:", res);
-  //       setSavedMessageIndexes((prev) => new Set(prev).add(unsavedIndex));
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to store chat message:", err);
-  //     });
-  // }, [chatMessages]);
 
   useEffect(() => {
     if (!isAddDataPopupOpen) {
@@ -193,7 +161,6 @@ const ChatBox = () => {
           })
         );
       }
-      // await fetchChartData(query, newMessageIndex);
     } catch (e) {
       console.error("Error fetching AI response:", e);
 
@@ -261,20 +228,6 @@ const ChatBox = () => {
     );
   };
 
-  // const fetchChartData = async (query, messageIndex) => {
-  //   try {
-  //     const chartData = await chartGenerator(query);
-  //     setChatMessages((prevMessages) =>
-  //       prevMessages.map((message, index) =>
-  //         index === messageIndex ? { ...message, chart: chartData } : message
-  //       )
-  //     );
-  //     console.log("ChatMessages : ", chatMessages);
-  //   } catch (error) {
-  //     console.error("Error fetching chart data:", error);
-  //   }
-  // };
-
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -321,37 +274,6 @@ const ChatBox = () => {
                   onClick={() => setIsSliderVisible(!isSliderVisible)}
                   className="hover:scale-110 transition-transform flex items-center justify-center ml-2 pt-3 "
                 >
-                  {/* <svg
-                    width="27"
-                    height="27"
-                    viewBox="0 0 40 40"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <rect
-                      x="8"
-                      y="5"
-                      width="30"
-                      height="20"
-                      rx="2"
-                      ry="2"
-                      fill="none"
-                      stroke="#4B5563
-
-"
-                      stroke-width="3"
-                    />
-                    <rect
-                      x="5"
-                      y="5"
-                      width="12"
-                      height="20"
-                      rx="2"
-                      ry="2"
-                      fill="#4B5563
-
-"
-                    />
-                  </svg> */}
                   {isSliderVisible && <IoIosArrowBack />}
                   {!isSliderVisible && <IoIosArrowForward className="mx-5" />}
                 </button>
@@ -398,12 +320,12 @@ const ChatBox = () => {
                       Home Page
                     </button>
                   ) : (
-                    <span className="absolute left-[25px] ml-2 w-[6vw] px-1.5 py-1 bg-gray-100 border border-gray-800 text-gray-800 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                    <span className="absolute chat-ui left-[25px] ml-2 w-[6vw] px-1.5 py-1 bg-gray-100 border border-gray-800 text-gray-800 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                       Home Page
                     </span>
                   )}
                 </div>
-                <div className="ml-2 flex flex-row items-center hover:scale-105 relative group hover:bg-blue-600/20 rounded-xl transition-all cursor-pointer">
+                {/* <div className="ml-2 flex flex-row items-center hover:scale-105 relative group hover:bg-blue-600/20 rounded-xl transition-all cursor-pointer">
                   <div className="p-2 rounded flex items-center justify-center transition duration-200 ease-in-out cursor-pointer">
                     <svg
                       viewBox="0 0 32 32"
@@ -413,7 +335,7 @@ const ChatBox = () => {
                       <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z" />
                     </svg>
                   </div>
-
+                  
                   {isSliderVisible ? (
                     <button className="ml-2 text-label text-gray-700">
                       Saved Cards
@@ -424,7 +346,7 @@ const ChatBox = () => {
                       Saved Cards
                     </span>
                   )}
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
@@ -434,13 +356,6 @@ const ChatBox = () => {
             {isSliderVisible && (
               <div className="flex justify-start  h-36 ">
                 <div className="w-full bg-white flex flex-row items-end ">
-                  {/* <img
-                    src={updatedColor}
-                    className="w-6 h-6 text-[#2d1b54]"
-                  ></img>
-                  <p className="text-label  font-semibold text-gray-700">
-                    Upgrade Plan
-                  </p> */}
                   <button className="group border-none w-full rounded-[10px] shadow-sm transition active:scale-100">
                     <span className="flex items-center justify-center bg-[#f6f3f3] rounded-[5px] px-[2px] py-[6px]  gap-[30px] transition group-active:scale-[0.97]">
                       <span className="flex items-center gap-[5px] text-base font-semibold text-[#8c8c8c]">

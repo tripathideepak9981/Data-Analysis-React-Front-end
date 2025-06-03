@@ -33,7 +33,6 @@ export default function Login() {
       return () => clearTimeout(timer);
     }
   }, [error]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -52,19 +51,27 @@ export default function Login() {
     try {
       const response = await sendSignInData(email, password);
       console.log(response);
+
       if (!response.error) {
-        navigate("/");
+        // Delay loader and navigate
+        setTimeout(() => {
+          setLoading(false);
+          navigate("/");
+        }, 3000);
+      } else {
+        // Handle backend-reported errors (not exceptions)
+        setLoading(false);
+        setError("Login failed.");
       }
     } catch (err) {
+      // Handle exceptions like network errors
       if (err === "Network Error") {
         setError("Network Error");
-        return;
+      } else {
+        console.error(err.message);
+        setError("Incorrect Email Or Password");
       }
-
-      console.error(err.message);
-      setError("Incorrect Email Or Password");
-    } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading only on failure
     }
   };
 

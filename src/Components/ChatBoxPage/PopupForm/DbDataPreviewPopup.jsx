@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import TableDropdown from "../Dropdowns/TableDropDown";
 import { loadTablesApi } from "../../../Api";
 import Swal from "sweetalert2";
-import { Database, X, FileText } from "lucide-react";
+import { X, FileText } from "lucide-react";
 
 const DbDataPreviewPopup = ({ dbType, onClose, DbResponse }) => {
   const [selectedTable, setSelectedTable] = useState([]);

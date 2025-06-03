@@ -1,25 +1,23 @@
 import { useState, useRef, useEffect } from "react";
-import { FaDatabase, FaFileExcel, FaFilePdf } from "react-icons/fa";
+import { FaDatabase } from "react-icons/fa";
 import "../../../CoustomCss/LoadingButton.css";
 import { suggestedQueryResponse } from "../../../Api";
-import { BiData } from "react-icons/bi";
-import "../../../CoustomCss/Scrollbar.css";
-import { HiOutlineDatabase, HiArrowNarrowRight } from "react-icons/hi";
-import { FiSettings } from "react-icons/fi";
+import { HiArrowNarrowRight } from "react-icons/hi";
 import { SiMysql } from "react-icons/si";
-import File from "../../../assets/icons/file.png";
 import clsx from "clsx";
-
 import { IoEye } from "react-icons/io5";
 import { MdDeleteForever } from "react-icons/md";
-
-import { uploadFilesAPI, cleanFile, cancel_clean_file } from "../../../Api";
+import {
+  uploadFilesAPI,
+  cleanFile,
+  cancel_clean_file,
+  deleteTable,
+} from "../../../Api";
 import Swal from "sweetalert2";
 import PopupForm from "../PopupForm/PopupForm";
-import { MenuItem } from "@mui/material";
 import DbDataPreviewPopup from "../PopupForm/DbDataPreviewPopup";
-import CustomNotificationCard from "../../Cards/CustomNotificationCard";
-import ConfirmCleanModal from "../../Cards/ConfirmCleanModal";
+import CustomNotificationCard from "../../Card/CustomNotificationCard";
+import ConfirmCleanModal from "../../Card/ConfirmCleanModal";
 import { CheckCircle, Loader2 } from "lucide-react";
 import excel from "../../../assets/excel.svg";
 
@@ -53,6 +51,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
   const [showEyeHint, setShowEyeHint] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [DbResponse, setDbResponse] = useState(() => {
     const stored = sessionStorage.getItem("DbResponse");
@@ -72,12 +71,12 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
   });
 
   const [tablePreview, setTablePreview] = useState(() => {
-    const stored = localStorage.getItem("tablePreview");
+    const stored = localStorage.getItem("previews");
     return stored ? JSON.parse(stored) : {};
   });
 
   const [uploadedFiles, setUploadedFiles] = useState(() => {
-    const stored = localStorage.getItem("uploadedFile");
+    const stored = localStorage.getItem("uploadedFiles");
     return stored ? JSON.parse(stored) : [];
   });
 
@@ -205,11 +204,11 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
   }, [dbType]);
 
   useEffect(() => {
-    localStorage.setItem("tablePreview", JSON.stringify(tablePreview));
+    localStorage.setItem("previews", JSON.stringify(tablePreview));
   }, [tablePreview]);
 
   useEffect(() => {
-    localStorage.setItem("uploadedFile", JSON.stringify(uploadedFiles));
+    localStorage.setItem("uploadedFiles", JSON.stringify(uploadedFiles));
   }, [uploadedFiles]);
 
   const ShowAlert = () => {
@@ -305,48 +304,118 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
   };
   const handleRemoveFile = (indexToRemove) => {
     const fileToRemove = uploadedFiles[indexToRemove].name;
-
     Swal.fire({
-      title: '<span class="text-2xl text-gray-900">Are you sure?</span>',
-      html: '<span class="text-message text-gray-700">You won\'t be able to revert this!</span>',
+      title:
+        '<p class="text-lg font-semibold text-gray-800">Remove this file?</p>',
+      html: '<p class="text-sm text-gray-600">Are you sure you want to remove the file.</p>',
       icon: "warning",
       showCancelButton: true,
-      width: "30vw",
-      height: "30vh",
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, remove it!",
+      width: "22rem", // ~384px
+      padding: "1rem",
+      background: "#fff",
+      confirmButtonText: "Yes, remove it",
+      cancelButtonText: "Cancel",
       customClass: {
-        popup: "rounded-lg p-4",
-        confirmButton: "text-label bg-blue-600 text-white hover:bg-blue-700",
-        cancelButton: "text-label bg-red-500 text-white hover:bg-red-600",
+        popup: "rounded-xl shadow-md",
+        title: "text-center",
+        htmlContainer: "text-center",
+        confirmButton:
+          "bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 focus:outline-none",
+        cancelButton:
+          "bg-gray-200 text-gray-800 text-sm px-4 py-2 rounded hover:bg-gray-300 focus:outline-none ml-2",
+        actions: "flex justify-center gap-2 mt-4",
       },
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setUploadedFiles((prevFiles) =>
-          prevFiles.filter((_, index) => index !== indexToRemove)
-        );
+        try {
+          setIsDeleting(true); // 🔵 Start loader
 
-        setSelectedFiles((prevFiles) =>
-          prevFiles.filter((_, index) => index !== indexToRemove)
-        );
+          await deleteTable(fileToRemove); // API call
 
-        setTablePreview((prevPreview) => {
-          if (!prevPreview || typeof prevPreview !== "object") {
-            return {};
-          }
-          const updatedPreview = { ...prevPreview };
-          delete updatedPreview[fileToRemove];
-          return updatedPreview;
-        });
+          const updatedUploadedFiles = uploadedFiles.filter(
+            (_, i) => i !== indexToRemove
+          );
+          setUploadedFiles(updatedUploadedFiles);
+
+          const updatedSelectedFiles = selectedFiles.filter(
+            (_, i) => i !== indexToRemove
+          );
+          setSelectedFiles(updatedSelectedFiles);
+
+          setTablePreview((prevPreview) => {
+            const newPreview = { ...prevPreview };
+            delete newPreview[fileToRemove];
+            return newPreview;
+          });
+
+          const storedUploadedFiles = JSON.parse(
+            localStorage.getItem("uploadedFiles") || "[]"
+          );
+          const newStoredFiles = storedUploadedFiles.filter(
+            (file) => file.name !== fileToRemove
+          );
+          localStorage.setItem("uploadedFiles", JSON.stringify(newStoredFiles));
+
+          const storedPreviews = JSON.parse(
+            localStorage.getItem("previews") || "{}"
+          );
+          delete storedPreviews[fileToRemove];
+          localStorage.setItem("previews", JSON.stringify(storedPreviews));
+
+          Swal.fire({
+            icon: "success",
+            title:
+              '<p class="text-base font-medium text-green-700">Removed!</p>',
+            html: `<p class="text-sm text-gray-600">"${fileToRemove}" was removed successfully.</p>`,
+            timer: 3000,
+            width: "22rem", // ~384px
+            showConfirmButton: false,
+            background: "#f0fdf4",
+            customClass: {
+              popup: "rounded-xl shadow-md p-4",
+              title: "text-center",
+              htmlContainer: "text-center",
+            },
+          });
+        } catch (err) {
+          Swal.fire({
+            icon: "error",
+            title:
+              '<p class="text-base font-medium text-red-700">Failed to delete</p>',
+            html: `<p class="text-sm text-gray-600">${
+              err.message || "Something went wrong."
+            }</p>`,
+            width: "22rem", // ~384px
+            background: "#fef2f2",
+            confirmButtonText: "Okay",
+            customClass: {
+              popup: "rounded-xl shadow-md p-4",
+              title: "text-center",
+              htmlContainer: "text-center",
+              confirmButton:
+                "bg-red-600 text-white text-sm px-4 py-2 rounded hover:bg-red-700 focus:outline-none",
+            },
+          });
+        } finally {
+          setIsDeleting(false); // 🔴 Stop loader
+        }
       }
     });
   };
+
   const handleFileUpload = async (event) => {
     const input = event.target;
     const files = Array.from(input.files || event.dataTransfer.files);
 
     input.value = null; // Reset immediately after reading the files
+    if (uploadedFiles.length >= 3) {
+      setNotification({
+        visible: true,
+        title: "error",
+        text: "Only 3 files can be uploaded.",
+      });
+      return; // Prevent further file uploads
+    }
 
     const oversizedFile = files.find((file) => file.size > 10 * 1024 * 1024);
     if (oversizedFile) {
@@ -410,66 +479,6 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
     }
   };
 
-  // const handleFileUpload = async (event) => {
-  //   const files = Array.from(event.target.files || event.dataTransfer.files);
-
-  //   const newFiles = files.filter(
-  //     (file) =>
-  //       !uploadedFiles.some((fileObj) => fileObj.name === file.name) &&
-  //       !selectedFiles.some((selected) => selected.name === file.name)
-  //   );
-
-  //   // Check if any file exceeds 10MB (10 * 1024 * 1024 bytes)
-  //   const oversizedFile = files.find((file) => file.size > 10 * 1024 * 1024);
-  //   if (oversizedFile) {
-  //     showNotification("Error", "File size exceeded the limit of 10 MB.");
-  //     return;
-  //   }
-  //   setErrorMessage(null);
-  //   setSelectedFiles((prevFiles) => [...prevFiles, ...newFiles]);
-  //   queueMicrotask(() => {
-  //     setIsLoading(true);
-  //   });
-
-  //   try {
-  //     const data = await uploadFilesAPI(newFiles);
-  //     // const response = await suggestedQueryResponse();
-  //     // if (response) {
-  //     //   console.log("From add Data ", response);
-  //     //   setSuggestionQuery(response);
-  //     // }
-
-  //     console.log("API Response Files:", data.files);
-  //     console.log(
-  //       "Already Uploaded Files:",
-  //       uploadedFiles.map((f) => f.name)
-  //     );
-  //     const uploadedTableName = data.files[0].table_name;
-  //     console.log(uploadedTableName);
-  //     uploadedFiles.map((f) => {
-  //       if (f.name === uploadedTableName) {
-  //         setIsDuplicate(true);
-  //       }
-  //     });
-  //     if (isDuplicate) {
-  //       showNotification("Error", "Duplicate File can't uploaded.");
-  //     } else {
-  //       setResponseData(data);
-  //       setTablePreview((prevPreview) => ({
-  //         ...prevPreview,
-  //         ...data,
-  //       }));
-  //     }
-
-  //     setSelectedFiles([]);
-  //   } catch (error) {
-  //     setSelectedFiles([]);
-  //     setErrorMessage(error.message);
-  //   } finally {
-  //     setIsDuplicate(false);
-  //     setIsLoading(false);
-  //   }
-  // };
   const getPreviewByFileName = (fileName) => {
     const previewData = tablePreview[fileName] || [];
 
@@ -648,6 +657,37 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
     );
   };
 
+  const DeletingLoadingEffect = () => {
+    return (
+      <button
+        disabled=""
+        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg flex items-center transition duration-300 transform hover:scale-105 active:scale-95"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="animate-spin h-5 w-5 mr-3 text-white"
+        >
+          <circle
+            stroke-width="4"
+            stroke="currentColor"
+            r="10"
+            cy="12"
+            cx="12"
+            className="opacity-25"
+          ></circle>
+          <path
+            d="M4 12a8 8 0 018-8v8H4z"
+            fill="currentColor"
+            className="opacity-75"
+          ></path>
+        </svg>
+        Removing File...
+      </button>
+    );
+  };
+
   return (
     <div className="w-full max-w-4xl bg-white rounded-xl p-3">
       {/* Tabs */}
@@ -748,6 +788,12 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
             {isLoading && (
               <div className="fixed inset-0 flex justify-center items-center z-50">
                 <UploadingLoadingEffect />
+              </div>
+            )}
+
+            {isDeleting && (
+              <div className="fixed inset-0 flex justify-center items-center z-50">
+                <DeletingLoadingEffect />
               </div>
             )}
 

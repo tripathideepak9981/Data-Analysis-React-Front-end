@@ -60,16 +60,6 @@ const Chart = ({ chartResponse, chartType }) => {
 
   return (
     <div className="w-full overflow-x-auto scrollbar-hide bg-white relative">
-      {/* <div className="flex items-start justify-start">
-        <h2
-          className="text-xl font-semibold text-gray-800 flex items-center gap-3 mb-8"
-          style={{ fontSize: "clamp(10px, 2vw, 17px)" }}
-        >
-          <BsBarChartLine className="text-gray-800 animate-spin-slow h-5 w-5" />
-          Generated Chart
-        </h2>
-      </div> */}
-
       <div ref={chartRef}>
         {isLoading ? (
           <img src={SeachLoader2} className="ml-60 h-52 w-52" />

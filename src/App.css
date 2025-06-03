@@ -18,3 +18,11 @@
 .btn-standard {
   @apply px-btn-pad-x py-btn-pad-y;
 }
+
+/* Apply only to chat-specific container */
+.chat-ui {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #cee0fb;
+}

@@ -1,10 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Typed from "typed.js";
 import ResponseCard from "./ResponseCard";
 import Bot from "../../assets/serach.svg";
-import main from "../../assets/main.png";
-import ChatContentCard from "./FrontViewSuggestion/ChatContentCard";
-import { motion } from "framer-motion";
 
 const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
   const aiResponseRef = useRef(null);
@@ -47,6 +44,7 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
         flex 
         flex-col
         justify-start
+        chat-ui
         ${isSliderVisible ? "lg:max-w-[100%]" : "lg:max-w-[100%]"}
       `}
     >
@@ -69,9 +67,9 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
             <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm">
               <img src={Bot} className="h-8 w-8 text-[rgb(244,242,250)]" />
             </div>
-            <div className="bg-white border border-gray-200 shadow-md rounded-xl rounded-tl-sm py-2 px-4 max-w-[40vw] font-sans">
+            <div className="bg-white border border-gray-200 shadow-md rounded-xl rounded-tl-sm py-2 px-4 max-w-[42vw] font-sans">
               <h2
-                className="text-sm font-medium text-gray-800 "
+                className="text-base font-medium text-gray-800 "
                 ref={aiResponseRef}
               ></h2>
             </div>

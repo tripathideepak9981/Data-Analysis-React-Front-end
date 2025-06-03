@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { X } from "lucide-react";
 import { avilableTables, joinTables } from "../../../Api";
-import CustomNotificationCard from "../../Cards/CustomNotificationCard";
+import CustomNotificationCard from "../../Card/CustomNotificationCard";
 import { MdJoinLeft } from "react-icons/md";
 import { MdJoinRight } from "react-icons/md";
 import { MdJoinInner } from "react-icons/md";

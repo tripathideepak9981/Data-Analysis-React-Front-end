@@ -1,5 +1,4 @@
-import React from "react";
-import { X, XCircle, Sparkles, ShieldCheck } from "lucide-react";
+import { X, XCircle, ShieldCheck } from "lucide-react";
 
 const ConfirmCleanModal = ({
   open,
@@ -40,9 +39,6 @@ const ConfirmCleanModal = ({
           <h2 className="text-xl font-semibold text-[#2d1b54] mb-1 tracking-tight">
             Data review finished. Ready to clean?
           </h2>
-          {/* <p className="text-sm text-gray-600">
-            Review the summary below before proceeding.
-          </p> */}
         </div>
 
         {/* Summary */}

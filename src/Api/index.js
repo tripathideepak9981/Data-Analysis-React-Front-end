@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 
 // Deployed backend url: http://35.154.165.174
 // Localhost url : http://127.0.0.1:8000
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "http://35.154.165.174";
 
 const axiosConfig = {
   timeout: 100000,

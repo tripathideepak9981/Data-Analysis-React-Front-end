@@ -3,10 +3,12 @@ import { Dialog } from "@headlessui/react";
 import { X } from "lucide-react";
 import { avilableTables, joinTables } from "../../../Api";
 import CustomNotificationCard from "../../Card/CustomNotificationCard";
-import { MdJoinLeft } from "react-icons/md";
-import { MdJoinRight } from "react-icons/md";
-import { MdJoinInner } from "react-icons/md";
-import { MdJoinFull } from "react-icons/md";
+import {
+  MdJoinLeft,
+  MdJoinRight,
+  MdJoinInner,
+  MdJoinFull,
+} from "react-icons/md";
 
 const Dropdown = ({
   selectedTable,
@@ -29,11 +31,12 @@ const Dropdown = ({
         }}
       >
         <option value="">Select table</option>
-        {tables.map((table) => (
-          <option key={table.table_name} value={table.table_name}>
-            {table.table_name}
-          </option>
-        ))}
+        {Array.isArray(tables) &&
+          tables.map((table) => (
+            <option key={table.table_name} value={table.table_name}>
+              {table.table_name}
+            </option>
+          ))}
       </select>
     </div>
     <div>
@@ -46,13 +49,14 @@ const Dropdown = ({
         onChange={(e) => setSelectedColumn(e.target.value)}
       >
         <option value="">Select column</option>
-        {(
-          tables.find((t) => t.table_name === selectedTable)?.columns || []
-        ).map((col) => (
-          <option key={col} value={col}>
-            {col}
-          </option>
-        ))}
+        {Array.isArray(tables) &&
+          tables
+            .find((t) => t.table_name === selectedTable)
+            ?.columns?.map((col) => (
+              <option key={col} value={col}>
+                {col}
+              </option>
+            ))}
       </select>
     </div>
   </div>
@@ -75,15 +79,19 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
     const fetchTables = async () => {
       try {
         const response = await avilableTables();
-        setTables(response);
-        console.log(response);
-
-        if (Array.isArray(response) && response.length === 0) {
-          setMessageTitle("error");
-          setMessage("No data is available, first add data!");
+        if (Array.isArray(response)) {
+          setTables(response);
+          if (response.length === 0) {
+            setMessageTitle("error");
+            setMessage("No data is available, first add data!");
+          } else {
+            setMessageTitle("");
+            setMessage("");
+          }
         } else {
-          setMessageTitle("");
-          setMessage("");
+          setTables([]);
+          setMessageTitle("error");
+          setMessage("Invalid data received from server.");
         }
       } catch (error) {
         setMessageTitle("error");
@@ -117,27 +125,32 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
       select_columns: [],
       limit: 10,
     };
+
     setIsLoading(true);
     try {
       const response = await joinTables(payload);
-      console.log(response);
-      if (response && response.preview.length > 0) {
+      if (response && response.preview?.length > 0) {
         const storedUploadedFile = localStorage.getItem("uploadedFile");
         const storedTablePreview = localStorage.getItem("tablePreview");
+
         const newFile = {
           name: response.joined_table_name?.trim(),
           createdDate: new Date().toISOString().split("T")[0],
         };
-        const existingFile = storedUploadedFile
-          ? JSON.parse(storedUploadedFile)
-          : [];
-        const updatedFile = [...existingFile, newFile];
+
+        const updatedFile = storedUploadedFile
+          ? [...JSON.parse(storedUploadedFile), newFile]
+          : [newFile];
+
         localStorage.setItem("uploadedFile", JSON.stringify(updatedFile));
+
         const existingPreview = storedTablePreview
           ? JSON.parse(storedTablePreview)
           : {};
         existingPreview[response.joined_table_name.trim()] = response.preview;
+
         localStorage.setItem("tablePreview", JSON.stringify(existingPreview));
+
         setTimeout(() => {
           setMessageTitle("success");
           setMessage(
@@ -149,9 +162,8 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
         setMessage("Join failed");
       }
     } catch (error) {
-      console.error("Join failed:", error);
       setMessageTitle("error");
-      setMessage("Join failed!", error.message);
+      setMessage("Join failed!");
     } finally {
       setTimeout(() => {
         setIsLoading(false);
@@ -179,9 +191,7 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
           <CustomNotificationCard
             title={messageTitle}
             text={message}
-            onClose={() => {
-              setMessage(null);
-            }}
+            onClose={() => setMessage("")}
           />
         )}
 
@@ -209,7 +219,7 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
             tables={tables}
           />
 
-          {/* Join Type */}
+          {/* Join Type Selector */}
           <div className="flex flex-col items-center gap-3 mt-4 md:mt-0">
             <div className="w-12 h-12 bg-white border-4 border-gray-500 rounded-full flex items-center justify-center">
               {joinType === "INNER" && (
@@ -225,7 +235,6 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
                 <MdJoinFull className="w-6 h-6 text-gray-700" />
               )}
             </div>
-
             <select
               className="text-sm border border-indigo-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               value={joinType}

@@ -64,14 +64,11 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
       >
         <div className="flex flex-row justify-start mt-1">
           <div className="flex flex-row gap-3 ">
-            <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-sm">
-              <img src={Bot} className="h-8 w-8 text-[rgb(244,242,250)]" />
+            <div className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm">
+              <img src={Bot} className="h-6 w-6 text-[rgb(244,242,250)]" />
             </div>
             <div className="bg-white border border-gray-200 shadow-md rounded-xl rounded-tl-sm py-2 px-4 max-w-[42vw] font-sans">
-              <h2
-                className="text-base font-medium text-gray-800 "
-                ref={aiResponseRef}
-              ></h2>
+              <h2 className="chat-ui text-gray-800 " ref={aiResponseRef}></h2>
             </div>
           </div>
         </div>

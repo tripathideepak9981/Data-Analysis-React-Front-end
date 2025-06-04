@@ -27,7 +27,7 @@ const Chart = ({ chartResponse, chartType }) => {
 
   const Loader = () => {
     return (
-      <div className="relative w-full h-[160px] mb-4 border border-gray-300 p-2 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden rounded-2xl shadow-md">
+      <div className="relative w-full h-[140px] mb-4 border border-gray-300 p-2 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden rounded-2xl shadow-md">
         <div className="absolute inset-0 animate-gradientMove bg-[linear-gradient(110deg,rgba(255,255,255,0)_0%,rgba(255,255,255,0)_40%,rgba(255,255,255,0.6)_50%,rgba(255,255,255,0)_60%,rgba(255,255,255,0)_100%)]" />
 
         <div className="relative w-full h-full flex flex-col justify-center gap-4">

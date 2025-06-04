@@ -9,15 +9,26 @@ const axiosConfig = {
   timeout: 100000,
 }
 
-
 export const joinTables = async (data) => {
+  const token = localStorage.getItem("access_token");
+
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/join_tables`, data, axiosConfig);
+    const response = await axios.post(
+      `${API_BASE_URL}/api/join_tables`,
+      data, // This is the body
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
-    return error;
+    return error.response?.data || { error: "Request failed" };
   }
 };
+
 
 export const deleteTable = async (tableName) => {
   const token = localStorage.getItem("access_token")
@@ -73,8 +84,16 @@ export const getTablesData = async () => {
 
 
 export const avilableTables = async () => {
+  const token = localStorage.getItem("access_token")
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/available_tables`)
+    const response = await axios.get(`${API_BASE_URL}/api/available_tables`, {
+      headers: {
+        
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+
+      }
+    })
     return response.data;
   } catch (error) {
     return handleError(error, "Avalilable Tables")

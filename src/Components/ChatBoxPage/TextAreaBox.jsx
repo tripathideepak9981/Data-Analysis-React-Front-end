@@ -47,7 +47,7 @@ const TextAreaBox = ({
 
   return (
     <motion.div
-      className={`w-full mx-auto p-4  transition-all duration-200 ${containerWidth}`}
+      className={`w-full mx-auto p-[2px] px-4  transition-all duration-200 ${containerWidth}`}
       animate="visible"
       initial="hidden"
       variants={containerVariants}
@@ -121,7 +121,7 @@ const TextAreaBox = ({
 
       {/* Textarea */}
       <div
-        className={`w-full p-3 rounded-xl border ${
+        className={`w-full p-2 px-3 rounded-xl border ${
           isFocused
             ? "border-[#3f2675] ring-1 ring-[#3f2675]"
             : "border-[#5298f4] ring-1 ring-[#5298f4]"

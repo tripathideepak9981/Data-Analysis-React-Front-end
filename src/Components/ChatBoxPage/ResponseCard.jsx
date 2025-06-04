@@ -326,11 +326,11 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
             </p>
 
             {/* User avatar positioned top-right inside the box */}
-            <div className="absolute top-0 -right-12 ">
+            <div className="absolute top-0 -right-11 ">
               <img
                 src={user1}
                 alt="User Avatar"
-                className="h-9 w-9 rounded-full bg-white border border-gray-300 shadow"
+                className="h-8 w-8 rounded-full bg-white border border-gray-300 shadow"
               />
             </div>
           </div>
@@ -338,11 +338,11 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
       </div>
 
       <div className="flex flex-row items-start space-x-3">
-        <div className="w-10 h-10 flex items-center justify-center bg-white rounded-full shadow-lg">
-          <img src={Bot} className="h-6 w-6 text-[rgb(244,242,250)]" />
+        <div className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-lg">
+          <img src={Bot} className="h-5 w-5 text-[rgb(244,242,250)]" />
         </div>
         {showLoading && (
-          <div className="flex absolute left-16 mt-3 w-[90%] items-center  space-x-3 animate-blink bg-[#f0f1f9]">
+          <div className="flex absolute left-12 mt-2 w-[90%] items-center  space-x-3 animate-blink bg-[#f0f1f9]">
             <Loader2 className="w-5 h-5 text-gray-700 animate-spin" />
             <span className="text-sm font-medium text-gray-700">
               {loaderMessage}
@@ -353,18 +353,18 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
         <div className="flex flex-col w-full max-w-[78%]   rounded-md shadow-md bg-white">
           <>
             {!showLoading && (
-              <div className="flex justify-between mt-0 py-2 px-4 z-20 bg-gray-100 ">
-                <div className=" text-gray-900 text-lg font-semibold">
+              <div className="flex justify-between mt-0 py-1 px-4 z-20 bg-gray-100 ">
+                <div className=" text-gray-900 text-base font-semibold">
                   AI Response :
                 </div>
                 <div className="flex justify-end">
                   <div className="flex relative bg-gray-100 text-message text-gray-700 z-10">
                     {/* SQL Icon */}
                     <div
-                      className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-8 h-8"
+                      className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-7 h-7"
                       onClick={() => setShowSQL(true)}
                     >
-                      <PiFileSql className="w-6 h-6 hover:scale-105 text-blue-600" />
+                      <PiFileSql className="w-5 h-5 hover:scale-105 text-blue-600" />
                       <div className="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center">
                         <div className="relative z-10 p-2 text-xs w-[8vw] flex justify-center leading-none text-white whitespace-no-wrap bg-gray-600 rounded shadow-lg">
                           SQL Query
@@ -375,10 +375,10 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
 
                     {/* Pie Chart Icon */}
                     <div
-                      className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-8 h-8"
+                      className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-7 h-7"
                       onClick={openDropdown}
                     >
-                      <MdPieChartOutline className="w-6 h-6 hover:scale-105  text-blue-600" />
+                      <MdPieChartOutline className="w-5 h-5 hover:scale-105  text-blue-600" />
                       <div className="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center">
                         <div className="relative z-10 p-2 w-[10vw] flex justify-center text-xs leading-none text-white whitespace-no-wrap bg-gray-600 rounded shadow-lg">
                           change Chart Type
@@ -470,9 +470,9 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                     {/* Download Icon */}
                     <button
                       onClick={handleDownloadClick}
-                      className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-8 h-8 text-gray-900 focus:outline-none"
+                      className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-7 h-7 text-gray-900 focus:outline-none"
                     >
-                      <BsThreeDotsVertical className="w-5 h-5 text-gray-600" />
+                      <BsThreeDotsVertical className="w-4 h-4 text-gray-600" />
                       <div className="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center">
                         <div className="relative z-10 p-2 w-[10vw] flex justify-center text-xs leading-none text-white whitespace-no-wrap bg-gray-600 rounded shadow-lg">
                           Download Chart
@@ -556,7 +556,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
             )}
 
             {showInterruptMessage ? (
-              <p className="text-gray-700 text-label px-3 py-4 chat-ui">
+              <p className="text-gray-700 text-label px-3 py-3 chat-ui">
                 Query execution was cancelled as requested. Let me know if you'd
                 like to try again or modify your query.
               </p>
@@ -564,7 +564,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
               <>
                 {/* Show error if present */}
                 {response?.aiResponse?.error && (
-                  <p className="text-gray-700 text-label chat-ui px-3 py-4">
+                  <p className="text-gray-700 text-label chat-ui px-3 py-3">
                     {response?.aiResponse?.message}
                   </p>
                 )}
@@ -579,7 +579,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                   >
                     {Array.isArray(validateResponse.result) &&
                     typeof validateResponse.result[0] === "object" ? (
-                      <div className="max-h-[300px] chat-ui overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
+                      <div className="max-h-[300px] chat-ui overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-2 mx-2">
                         <table className="min-w-full text-left border-collapse text-message text-gray-800">
                           <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
                             <tr>
@@ -615,7 +615,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                         </table>
                       </div>
                     ) : (
-                      <p className="text-label chat-ui text-gray-800 px-4 pb-3 pt-3">
+                      <p className="text-label chat-ui text-gray-800 px-4 pb-2 pt-2">
                         {validateResponse.result}
                       </p>
                     )}
@@ -631,7 +631,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                           transition={{ delay: 0.5, duration: 0.5 }}
                           className="bg-white rounded-tl-sm font-sans"
                         >
-                          <p className="text-label chat-ui text-gray-800 px-4 pb-1 mt-3 mb-1">
+                          <p className="text-label chat-ui text-gray-800 px-4 mt-1">
                             {formatSummary(response.aiResponse.response)}
                           </p>
                         </motion.div>
@@ -649,7 +649,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                       >
                         {Array.isArray(response.aiResponse.result) &&
                         typeof response.aiResponse.result[0] === "object" ? (
-                          <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-2 mx-2">
+                          <div className="max-h-[250px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-2 mx-2">
                             <table className="min-w-full chat-ui text-left border-collapse text-message text-gray-800">
                               <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
                                 <tr>
@@ -720,7 +720,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                         >
                           {Array.isArray(response.aiResponse.result) &&
                           typeof response.aiResponse.result[0] === "object" ? (
-                            <div className="max-h-[300px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-3 mx-2">
+                            <div className="max-h-[250px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-2 mx-2">
                               <table className="min-w-full chat-ui text-left border-collapse text-message text-gray-800">
                                 <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
                                   <tr>

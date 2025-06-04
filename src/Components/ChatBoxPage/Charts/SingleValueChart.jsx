@@ -310,9 +310,8 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
       <div
         style={{
           width: `${Math.max(1000, chartData.labels.length * 100)}px`,
-          height: "300px",
+          height: "260px",
         }}
-        className="mb-2"
       >
         {chartData.labels.length && (
           <ChartComponent

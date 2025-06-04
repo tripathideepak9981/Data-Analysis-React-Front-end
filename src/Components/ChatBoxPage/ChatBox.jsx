@@ -427,8 +427,8 @@ const ChatBox = () => {
             w-full 
         ${
           isSliderVisible
-            ? "flex flex-col w-full max-w-[80%] mx-auto py-1  md:py-1 bg-[#f0f1f9] shadow-lg   border"
-            : " flex flex-col w-full max-w-[94%] mx-auto py-1 md:py-1 bg-[#f0f1f9] shadow-lg  border"
+            ? "flex flex-col w-full max-w-[80%] mx-auto  bg-[#f0f1f9] shadow-lg   border"
+            : " flex flex-col w-full max-w-[94%] mx-auto py-0  bg-[#f0f1f9] shadow-lg  border"
         } 
         transition-all duration-300 style={{ fontSize: moderateScale(16) }}`}
         >

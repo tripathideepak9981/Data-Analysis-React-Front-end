@@ -303,15 +303,15 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
   const ChartComponent = chartType === "bar" ? Bar : Line;
 
   return (
-    <div className="relative w-full bg-white shadow-lg rounded-md">
+    <div className="relative w-full bg-white shadow-lg rounded-md px-2">
       {/* Scrollable Chart Container */}
       <div className="overflow-x-auto">
         <div
           style={{
             width: `${Math.max(1000, chartData.labels.length * 120)}px`,
-            height: "320px",
+            height: "260px",
           }}
-          className="mb-10"
+          className="mb-2"
         >
           {chartData.labels.length && (
             <ChartComponent
@@ -323,27 +323,9 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
         </div>
       </div>
 
-      {/* Fixed Dynamic Legend (Does Not Scroll) */}
-      {/* {chartData.datasets && chartData.datasets.length > 0 && (
-        <div
-          className=" item-center justify-center w-full absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-white mb-5 flex gap-5"
-          style={{ zIndex: 10 }}
-        >
-          {chartData.datasets.map((dataset, index) => (
-            <span
-              key={index}
-              className="font-semibold px-0 text-sm"
-              style={{ color: dataset.borderColor || dataset.backgroundColor }}
-            >
-              ⬤ {dataset.label}
-            </span>
-          ))}
-        </div>
-      )} */}
-
       {chartData.datasets && chartData.datasets.length >= 0 && (
         <div
-          className="absolute bottom-0 left-1/2  transform -translate-x-1/2 bg-white mb-5 flex gap-2"
+          className="absolute bottom-0 left-1/2  transform -translate-x-1/2 bg-white mb-3 flex gap-2"
           style={{ zIndex: 10 }}
         >
           {chartData.datasets.map((dataset, index) => (

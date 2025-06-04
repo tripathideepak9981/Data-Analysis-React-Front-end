@@ -815,8 +815,8 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                         : ""
                     }`}
                   >
-                    <table className="min-w-full table-fixed bg-white border border-gray-300 text-message text-left">
-                      <thead className="bg-gray-300 text-gray-800 sticky top-0 z-10">
+                    <table className="min-w-full table-fixed bg-white border border-gray-300 text-message text-left ">
+                      <thead className="bg-gray-300 text-gray-800 sticky top-0 z-50">
                         <tr>
                           <th className="px-4 py-2 w-[45%] pl-10">File Name</th>
                           <th className="px-4 py-2 w-[35%]">Upload Date</th>
@@ -858,7 +858,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                                       </div>
                                     )}
                                     <IoEye
-                                      className={`text-blue-600 h-6 w-6 cursor-pointer transition-transform hover:text-blue-800 ${
+                                      className={`text-blue-600 h-6 w-6 cursor-pointer transition-transform hover:text-blue-800 z-0${
                                         showEyeHint ? "animate-bounce" : ""
                                       }`}
                                       onClick={() =>

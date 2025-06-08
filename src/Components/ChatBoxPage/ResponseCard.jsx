@@ -70,29 +70,22 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
       setShowResult(false);
     }
   }, []);
-
-  function formatSummary(summaryObj) {
+  function formatSummary(summaryObj, ref = null) {
     if (!summaryObj) return null;
 
     const formatText = (text) => {
-      // Wrap quoted text (single, double quotes or backticks)
       text = text.replace(
         /(["'])([^"']+?)\1/g,
         '<span class="font-bold">"$2"</span>'
       );
-
-      // Wrap percentages in bold
       text = text.replace(
         /(\d+(\.\d+)?%)/g,
         '<span class="font-bold">$1</span>'
       );
-
-      // Highlight numeric values
       text = text.replace(
         /(?<![a-zA-Z])(\d+(\.\d+)?)(?![%\w])/g,
         '<span class="font-roboto font-bold">$1</span>'
       );
-
       return text;
     };
 
@@ -101,7 +94,10 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
 
     return (
       <TypeWriterProvider>
-        <div className="bg-white chat-ui py-2 px-4 space-y-3 text-gray-900">
+        <div
+          ref={ref} // ✅ Pass it from outside
+          className="bg-white chat-ui py-2 px-4 space-y-3 text-gray-900"
+        >
           {paragraphs.map((para, index) => {
             let className = " leading-relaxed text-gray-800 ";
 
@@ -151,10 +147,31 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
     response?.aiResponse?.error,
     response?.interrupted,
   ]);
-
   useEffect(() => {
-    responseEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [response?.aiResponse?.sql_query, response?.aiResponse?.result]);
+    if (response?.userQuery && responseEndRef.current) {
+      responseEndRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [response?.userQuery]);
+
+  // 2. Scroll again after response arrives to adjust for content shift
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (
+        responseEndRef.current &&
+        (response?.aiResponse?.response || response?.aiResponse?.result)
+      ) {
+        responseEndRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }, 150); // small delay ensures layout is complete
+
+    return () => clearTimeout(timeout);
+  }, [response?.aiResponse?.response, response?.aiResponse?.result]);
 
   const loaderMessages = [
     "AI is Analyzing your data...",
@@ -307,7 +324,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
   }, [showSQL, response?.aiResponse?.sql_query]);
 
   return (
-    <div className="z-20 chat-ui w-full space-y-3 bg-[#f0f1f9]">
+    <div ref={responseEndRef} className="z-20 w-full space-y-3 bg-[#f0f1f9]">
       <div className="flex justify-end px-3 py-2 mt-3 ">
         <motion.div
           initial={{ opacity: 0, x: 50 }}
@@ -317,11 +334,11 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
         >
           {/* User message box */}
           <div
-            className="relative bg-[#dbeafe] border border-[#e0e3f3] right-10
+            className="relative  bg-[#dbeafe] border border-[#e0e3f3] right-10
       px-2 py-2 max-w-[30vw] rounded-tr-sm rounded-xl shadow-lg text-left
       transition-all duration-300 "
           >
-            <p className="text-gray-900 chat-ui font-semibold rounded-xl  leading-snug break-words whitespace-pre-wrap font-sans">
+            <p className="text-gray-900 user-query font-semibold rounded-xl  leading-snug break-words whitespace-pre-wrap font-sans">
               {response?.userQuery}
             </p>
 
@@ -624,7 +641,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                   <>
                     {/* AI Response Summary */}
                     {response?.aiResponse?.response && (
-                      <typeWriterProvider>
+                      <TypeWriterProvider>
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
@@ -632,10 +649,13 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                           className="bg-white rounded-tl-sm font-sans"
                         >
                           <p className="text-label chat-ui text-gray-800 px-4 mt-1">
-                            {formatSummary(response.aiResponse.response)}
+                            {formatSummary(
+                              response.aiResponse.response,
+                              responseEndRef
+                            )}
                           </p>
                         </motion.div>
-                      </typeWriterProvider>
+                      </TypeWriterProvider>
                     )}
 
                     {/* Chart */}
@@ -689,11 +709,11 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                             </table>
                           </div>
                         ) : (
-                          <typeWriterProvider>
+                          <TypeWriterProvider>
                             <p className="text-label chat-ui text-gray-800 px-2 pb-2">
                               {response.aiResponse.result}
                             </p>
-                          </typeWriterProvider>
+                          </TypeWriterProvider>
                         )}
                       </motion.div>
                     )}
@@ -760,11 +780,11 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                               </table>
                             </div>
                           ) : (
-                            <typeWriterProvider>
+                            <TypeWriterProvider>
                               <p className="text-label chat-ui text-gray-800 px-2 pb-2">
                                 {response.aiResponse.result}
                               </p>
-                            </typeWriterProvider>
+                            </TypeWriterProvider>
                           )}
                         </motion.div>
                       )}
@@ -782,6 +802,10 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                     <div className="bg-white w-[46%] max-w-2xl h-[60vh] rounded-2xl shadow-2xl border border-blue-500 flex flex-col relative">
                       <button
                         onClick={() => {
+                          setStatusMessage({
+                            text: "View your SQL. You can edit or validate the query.",
+                            type: "info",
+                          });
                           setShowSQL(false);
                           setIsEditing(false);
                         }}
@@ -814,12 +838,14 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
 
                       <div className="px-6 py-3 bg-[#e6f0ff] border-t border-blue-400 rounded-b-2xl flex justify-between items-center">
                         <p
-                          className={`text-sm chat-ui whitespace-pre-line ${
+                          className={`pr-10 text-sm chat-ui whitespace-pre-line ${
                             statusMessage.type === "error"
                               ? "text-red-600"
                               : statusMessage.type === "success"
                               ? "text-green-600"
-                              : "text-gray-700"
+                              : statusMessage.type === "info"
+                              ? "text-blue-700"
+                              : ""
                           }`}
                         >
                           {statusMessage.text}
@@ -858,8 +884,6 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
             )}
           </>
         </div>
-
-        <div ref={responseEndRef}></div>
       </div>
     </div>
   );

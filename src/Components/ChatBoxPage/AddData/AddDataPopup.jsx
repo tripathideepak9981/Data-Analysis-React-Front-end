@@ -689,7 +689,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl bg-white rounded-xl p-3">
+    <div className="w-full h-full bg-white rounded-xl">
       {/* Tabs */}
       <div className="flex flex-row m-2 border-b">
         <button
@@ -730,7 +730,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
             {/* Clickable Dropbox */}
             <div
               onClick={handleDropBoxClick}
-              className="flex flex-col border-2 border-dashed border-purple-400 rounded-md p-6 text-center text-purple-600 hover:bg-purple-50 transition-all w-full max-w-md cursor-pointer"
+              className="flex flex-col border-2 border-dashed border-purple-400 rounded-md p-3 text-center text-purple-600 hover:bg-purple-50 transition-all w-full max-w-md cursor-pointer"
             >
               <p className="mb-2 text-label">
                 <span className="underline">Click to upload</span> or drag and
@@ -739,14 +739,18 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
               <p className="text-message text-gray-500">
                 Supports multiple files: CSV, XLSX, XLS
               </p>
+
+              <p className="text-message text-gray-500">
+                Max file Limit (10 MB)
+              </p>
             </div>
           </div>
 
           <div>
-            <p className="text-message text-purple-500 mb-2">
+            {/* <p className="text-message text-purple-500 mb-2">
               For optimal results, follow best practices when uploading files
-            </p>
-            <div className="flex justify-between items-center px-4 py-3 bg-gray-100 rounded-md shadow-sm">
+            </p> */}
+            <div className="flex justify-between items-center my-1 px-4 py-2 bg-gray-100 rounded-md shadow-sm">
               <div>
                 <h2 className="text-label text-gray-800">Available Files</h2>
                 <p className="text-xs text-gray-500">
@@ -754,7 +758,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                 </p>
               </div>
 
-              <div className="relative w-[55vh]">
+              {/* <div className="relative w-[55vh]">
                 <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
                   <svg
                     className="h-4 w-4"
@@ -777,7 +781,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10  pr-4 py-2 text-sm w-full border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800"
                 />
-              </div>
+              </div> */}
             </div>
 
             {isCleaning && (
@@ -797,13 +801,13 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
               </div>
             )}
 
-            <div>
+            <div className="border border-gray-400 h-[30vh] rounded-lg">
               {uploadedFiles.length === 0 ? (
                 <div className="text-center text-gray-600 text-label py-4">
                   No files uploaded yet!
                 </div>
               ) : (
-                <div className="overflow-x-auto mt-4 rounded-lg shadow">
+                <div className="overflow-x-auto mt-0 rounded-lg ">
                   <div
                     className={`${
                       uploadedFiles.filter((file) =>
@@ -811,12 +815,12 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                           ?.toLowerCase()
                           .includes((searchTerm || "").toLowerCase())
                       ).length > 2
-                        ? "h-[25vh] overflow-y-auto"
+                        ? "h-[29vh] overflow-y-auto scrollbar-xy"
                         : ""
                     }`}
                   >
-                    <table className="min-w-full table-fixed bg-white border border-gray-300 text-message text-left ">
-                      <thead className="bg-gray-300 text-gray-800 sticky top-0 z-50">
+                    <table className="min-w-full table-fixed bg-white text-message text-left ">
+                      <thead className="bg-gray-300 text-gray-800 sticky top-0 z-10">
                         <tr>
                           <th className="px-4 py-2 w-[45%] pl-10">File Name</th>
                           <th className="px-4 py-2 w-[35%]">Upload Date</th>
@@ -852,7 +856,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                                 <div className="flex items-center gap-4">
                                   <div className="relative flex items-center">
                                     {showEyeHint && (
-                                      <div className="absolute left-[-150px] top-1/2 -translate-y-1/2 w-max bg-blue-500 text-white text-xs px-3 py-2 rounded shadow-lg whitespace-nowrap z-10 animate-fadeIn">
+                                      <div className="absolute left-[-150px] top-1/2 -translate-y-1/2 w-max bg-blue-500 text-white text-xs px-3 py-2 rounded shadow-lg whitespace-nowrap z-5 animate-fadeIn">
                                         Click here to Preview
                                         <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-blue-500 rotate-45 z-[-1]" />
                                       </div>

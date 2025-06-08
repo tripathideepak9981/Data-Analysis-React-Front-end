@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTypeWriter } from "./TypeWriterContext";
 import { formatMarkdown } from "../../utils/textFormater.js";
 
@@ -6,6 +6,8 @@ const TypeWriter = ({ text, className, index, delay = 3 }) => {
   const [displayText, setDisplayText] = useState("");
   const { activeIndex, activeLine, nextLine, nextSequence } = useTypeWriter();
   const isActive = activeIndex === index;
+
+  const containerRef = useRef(null); // 👈 Ref to scroll to
 
   useEffect(() => {
     if (!isActive) {
@@ -42,6 +44,15 @@ const TypeWriter = ({ text, className, index, delay = 3 }) => {
             const formattedLine = formatMarkdown(currentLineText);
             return prev.slice(0, -currentLineText.length) + formattedLine;
           });
+
+          // 👇 Scroll to this line after it's done
+          setTimeout(() => {
+            containerRef.current?.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }, 50); // tiny delay to ensure DOM update
+
           nextLine();
         }, 100);
       }
@@ -52,6 +63,7 @@ const TypeWriter = ({ text, className, index, delay = 3 }) => {
 
   return (
     <div
+      ref={containerRef}
       className={`${className} space-y-2`}
       dangerouslySetInnerHTML={{ __html: displayText }}
     />

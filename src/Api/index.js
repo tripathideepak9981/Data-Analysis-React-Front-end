@@ -105,20 +105,21 @@ export const validateSQLQuery = async (sql_query, original_question = "") => {
     console.log("SQL Query:", sql_query);
     console.log("Original Question:", original_question);
     console.log("Token:", token);
+    console.log("Sql Query : ", sql_query);
+const response = await axios.post(
+  `${API_BASE_URL}/api/validate_sql`,
+  {
+    sql_query: String(sql_query),               // force string if needed
+    original_question: original_question || "", // fallback to empty string
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    }
+  }
+);
 
-    const response = await axios.post(
-      `${API_BASE_URL}/api/validate_sql`,
-      {
-        sql_query,
-        original_question,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        }
-      }
-    );
 
     return response.data;
   } catch (error) {
@@ -174,14 +175,14 @@ export const uploadFilesAPI = async (selectedFiles) => {
 
 
 export const suggestedQueryResponse = async () => {
-  const token = localStorage.getItem("access_token")
-  const response = await axios.get(
-    `${API_BASE_URL}/api/initial_suggestions`, {headers: {
-        Authorization: `Bearer ${token}`,
-      }}
-  )
-  console.log("Suggested Response : ", suggestedQueryResponse.data)
-  return response.data;
+  // const token = localStorage.getItem("access_token")
+  // const response = await axios.get(
+  //   `${API_BASE_URL}/api/initial_suggestions`, {headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     }}
+  // )
+  // console.log("Suggested Response : ", suggestedQueryResponse.data)
+  // return response.data;
 }
 
 export const exceuteQuery = async (query, signal) => {

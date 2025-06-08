@@ -4,15 +4,15 @@ import image4 from "../../assets/image2.png";
 const About = () => {
   return (
     <section id="about" className="bg-white scroll-mt-20  py-0 text-white">
-      <div className="max-w-6xl mx-auto px-4 py-2 font-sans">
+      <div className="max-w-6xl mx-auto px-4 font-sans">
         {/* Intro Header */}
         <div className="mb-2 flex flex-col md:flex-row items-center justify-center">
           <div className="text-center md:text-center md:w-2/3">
-            <h1 className="text-5xl font-extrabold mb-2 font-serif bg-[#2d1b54] text-transparent bg-clip-text">
-              Excel, Python and ChatGPT
+            <h1 className="text-4xl font-extrabold font-serif bg-[#2d1b54] text-transparent bg-clip-text">
+              Your Data, Your Questions, Instant Answers
             </h1>
-            <h2 className="text-2xl font-bold font-mono bg-[#2d1b54] text-transparent bg-clip-text">
-              Unified for a Seamless Data Experience
+            <h2 className="text-xl font-bold font-mono bg-[#2d1b54] text-transparent bg-clip-text">
+              (Even if you don’t know SQL.)
             </h2>
           </div>
           <div className="md:w-1/4 flex justify-center md:justify-start mt-6 md:mt-0">

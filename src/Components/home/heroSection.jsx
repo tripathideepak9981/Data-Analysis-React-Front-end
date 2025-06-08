@@ -49,11 +49,12 @@ const HeroSection = ({ isLoggedIn }) => {
             </span>
             <span className="text-white"> with AI</span>
           </h1>
-{/* We empower data analysis by enabling on-the-fly SQL query generation and editing, coupled with instant creation of insightful charts */}
+          {/* We empower data analysis by enabling on-the-fly SQL query generation and editing, coupled with instant creation of insightful charts */}
           <p className="text-base text-yellow-100 leading-relaxed max-w-lg mx-auto md:mx-0 border-l-4 border-yellow-400 pl-4 italic shadow-sm">
             We empower{" "}
             <span className="font-semibold text-white">Data Analysis</span> by{" "}
-            <span className="">enabling</span> the SQL query generation and editing, coupled with instant creation of insightful charts
+            <span className="">enabling</span> the SQL query generation and
+            editing, coupled with instant creation of insightful charts
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start sm:justify-start justify-center mt-4">
@@ -65,9 +66,9 @@ const HeroSection = ({ isLoggedIn }) => {
             >
               🚀 Try for free
             </button>
-            <button className="border-2 border-purple-300 text-purple-200 px-6 py-3 rounded-full font-bold transition-all hover:bg-purple-200 hover:text-purple-900 shadow-lg">
+            {/* <button className="border-2 border-purple-300 text-purple-200 px-6 py-3 rounded-full font-bold transition-all hover:bg-purple-200 hover:text-purple-900 shadow-lg">
               📺 See how it works
-            </button>
+            </button> */}
           </div>
         </motion.div>
 

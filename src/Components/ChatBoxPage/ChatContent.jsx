@@ -6,17 +6,15 @@ import Bot from "../../assets/serach.svg";
 const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
   const aiResponseRef = useRef(null);
   const chatContainerRef = useRef(null);
-  const responseEndRef = useRef(null);
-
-  useEffect(() => {
-    if (
-      chatMessages.chart &&
-      chatMessages.chartType &&
-      responseEndRef.current
-    ) {
-      responseEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [chatMessages.chart, chatMessages.chartType]);
+  // const responseEndRef = useRef(null);
+  // useEffect(() => {
+  //   if (responseEndRef.current) {
+  //     responseEndRef.current.scrollIntoView({
+  //       behavior: "smooth",
+  //       block: "start", // or "center" for vertical centering
+  //     });
+  //   }
+  // }, [chatMessages.length]); // trigger when a new query is added
 
   useEffect(() => {
     if (aiResponseRef.current) {
@@ -84,31 +82,38 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
           "
             style={{ fontSize: "clamp(10px, 2vw, 20px)" }}
           >
-            {chatMessages &&
-              chatMessages.map((chat, index) => (
-                <ResponseCard
-                  key={index}
-                  response={chat}
-                  showInterruptMessage={chat.interrupted === true}
-                  onUpdateSQL={(updatedSQL) => {
-                    setChatMessages((prevMessages) =>
-                      prevMessages.map((msg, i) =>
-                        i === index
-                          ? {
-                              ...msg,
-                              aiResponse: {
-                                ...msg.aiResponse,
-                                sql_query: updatedSQL,
-                              },
-                            }
-                          : msg
-                      )
-                    );
-                  }}
-                />
-              ))}
+            {chatMessages.map((chat, index) => {
+              const isLast = index === chatMessages.length - 1;
 
-            <div ref={responseEndRef}></div>
+              return (
+                <div
+                  key={index}
+                  // ref={isLast ? responseEndRef : null} // Apply ref only to last item
+                >
+                  <ResponseCard
+                    response={chat}
+                    showInterruptMessage={chat.interrupted === true}
+                    onUpdateSQL={(updatedSQL) => {
+                      setChatMessages((prevMessages) =>
+                        prevMessages.map((msg, i) =>
+                          i === index
+                            ? {
+                                ...msg,
+                                aiResponse: {
+                                  ...msg.aiResponse,
+                                  sql_query: updatedSQL,
+                                },
+                              }
+                            : msg
+                        )
+                      );
+                    }}
+                  />
+                </div>
+              );
+            })}
+
+            {/* <div ref={responseEndRef}></div>? */}
           </div>
         </div>
       </div>

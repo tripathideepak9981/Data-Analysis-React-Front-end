@@ -54,7 +54,7 @@ const Navbar = ({ isLoggedIn, username, setUsername }) => {
         {/* Logo */}
         <div className="flex items-center space-x-2 text-[#2d1b54] text-xl font-bold">
           <FaRobot className="text-2xl" />
-          <span>My Data Analysis</span>
+          <span>Data Analysis</span>
         </div>
 
         {/* Desktop Navigation */}

@@ -2,13 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+/* index.css */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: auto;
+
+  /* Hide scrollbar in all browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
 /* Apply only to chat-specific container */
 .chat-ui {
+  font-family: Georgia, serif;
+  font-size: 15px;
+  line-height: 1.4;
+  font-weight: 400; /* Or 400 for regular weight */
+  /* color: #222; */
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+/* Apply only to chat-specific container */
+.user-query {
   font-family: "Inter", "Segoe UI", Tahoma, Verdana, sans-serif;
   font-size: 14px;
-  line-height: 1.2;
-  color: #24292f; /* Dark text */
-  font-weight: 200;
+  line-height: 1.4;
+  font-weight: 500;
   max-width: 100%;
   word-wrap: break-word;
 }

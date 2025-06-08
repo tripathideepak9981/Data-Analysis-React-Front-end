@@ -232,15 +232,17 @@ const ChatBox = () => {
 
   const handleLogout = async () => {
     setLogoutLoading(true);
-
-    const response = await logoutUser();
-    console.log(response);
-    setTimeout(async () => {
-      setLogoutLoading(false);
-      if (response) {
+    try {
+      const response = await logoutUser();
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setTimeout(async () => {
+        setLogoutLoading(false);
         navigate("/");
-      }
-    }, 2000);
+      }, 2000);
+    }
   };
 
   return (
@@ -525,17 +527,17 @@ const ChatBox = () => {
                 className="fixed inset-0 flex items-center 
               justify-center bg-black bg-opacity-40 z-50"
               >
-                <div className="bg-white rounded-xl left-14 -top-8 px-8 py-4 shadow-lg max-w-[65%] h-full max-h-[82%] w-full relative">
-                  <button
-                    className="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-xl"
-                    onClick={closeAddDataPopup}
-                  >
-                    &times;
-                  </button>
+                <div className="bg-white rounded-xl left-14 -top-8 px-6 py-2 shadow-lg max-w-[65%] h-full max-h-[82%] w-full relative">
                   <AddDataPopup
                     setShowChatNotification={setShowChatNotification}
                     setSuggestionQuery={setSuggestionQuery}
                   />
+                  <button
+                    onClick={closeAddDataPopup}
+                    className="absolute bottom-3 right-7 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-1 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             )}

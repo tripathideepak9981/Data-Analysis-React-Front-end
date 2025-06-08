@@ -47,7 +47,7 @@ const TextAreaBox = ({
 
   return (
     <motion.div
-      className={`w-full mx-auto p-[2px] px-4  transition-all duration-200 ${containerWidth}`}
+      className={`w-full mx-auto p-[8px] px-4  transition-all duration-200 ${containerWidth}`}
       animate="visible"
       initial="hidden"
       variants={containerVariants}
@@ -55,7 +55,7 @@ const TextAreaBox = ({
       {suggestionQuery?.suggested_questions?.length > 0 && (
         <>
           {showSuggestions ? (
-            <div className="border border-[#d3eaff] rounded-xl bg-white p-3 mb-2">
+            <div className=" border border-[#d3eaff] rounded-xl bg-white p-3 mb-2">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2 text-gray-700 font-medium text-sm">
                   <span className="text-base font-semibold">
@@ -125,7 +125,7 @@ const TextAreaBox = ({
           isFocused
             ? "border-[#3f2675] ring-1 ring-[#3f2675]"
             : "border-[#5298f4] ring-1 ring-[#5298f4]"
-        } transition-all bg-white`}
+        } transition-all bg-white user-query`}
       >
         <TextareaAutosize
           minRows={1}
@@ -141,11 +141,11 @@ const TextAreaBox = ({
               sendMessage();
             }
           }}
-          className="w-full chat-ui resize-none text-gray-800 placeholder-gray-500 bg-transparent border-none focus:outline-none"
+          className="w-full resize-none text-gray-800 placeholder-gray-500 bg-transparent border-none focus:outline-none user-query"
         />
 
         {/* Buttons */}
-        <div className="flex justify-between items-center mt-2">
+        <div className="flex user-query justify-between items-center mt-2">
           <div className="flex gap-2">
             <button
               onClick={openAddDataPopup}

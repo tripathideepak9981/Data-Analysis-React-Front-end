@@ -81,11 +81,12 @@ const Footer = () => {
                 </p>
                 <p className="text-base mb-2">
                   <span className="text-gray-200 font-semibold">Email:</span>{" "}
-                  tripathideepak9981@gmail.com
+                  tarunk@tanishanalytics.com
                 </p>
                 <p className="text-base mb-4">
                   <span className="text-gray-200 font-semibold">Location:</span>{" "}
-                  Bhopal (Madhya Pradesh)
+                  A-17 Gujarati Colony, Phase 1, Rohit Nagar, Bhopal, Madhya
+                  Pradesh 462039
                 </p>
                 <div className="flex gap-3">
                   {[

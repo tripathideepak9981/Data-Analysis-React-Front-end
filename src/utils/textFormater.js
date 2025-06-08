@@ -3,8 +3,8 @@ export const formatMarkdown = (text) => {
 
   return text
     // H1 and H2 headers
-    .replace(/^# (.*$)/gm, '<h1 class=" chat-ui text-xl font-bold text-gray-900 mb-3 font-[Roboto Flex]">$1</h1>')
-    .replace(/^## (.*$)/gm, '<h2 class="chat-ui text-lg font-semibold text-gray-900 mb-2 font-[Roboto Flex]">$1</h2>')
+    .replace(/^# (.*$)/gm, '<h1 class=" text-lg font-bold text-gray-900 mb-3 font-[Roboto Flex]">$1</h1>')
+    .replace(/^## (.*$)/gm, '<h2 class=" text-lg font-semibold text-gray-900 mb-2 font-[Roboto Flex]">$1</h2>')
 
     // List items (supports leading spaces)
     .replace(/^(\s*)\* (.*$)/gm, (_, space, content) =>

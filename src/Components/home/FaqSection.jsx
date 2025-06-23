@@ -73,11 +73,11 @@ const FaqSection = () => {
         </div>
 
         {/* Right: Image */}
-        <div className="w-full h-[80vh] rounded-xl shadow-blue-950 bg-[#2d1b54] lg:w-1/2 flex justify-center items-center">
+        <div className="w-full px-10 h-[60vh] lg:w-1/2 flex justify-center items-center">
           <img
             src={FaqImage}
             alt="FAQ Illustration"
-            className="w-[90%] max-w-md object-contain drop-shadow-2xl"
+            className="w-[80%] max-w-md object-contain drop-shadow-2xl"
           />
         </div>
       </div>

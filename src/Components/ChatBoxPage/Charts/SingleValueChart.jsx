@@ -29,6 +29,12 @@ ChartJS.register(
 const SingleValueChart = ({ chartResponse, chartType }) => {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
 
+  // 🔧 Format metric key (e.g., total_admission → Total Admission)
+  const formattedMetricLabel =
+    chartResponse?.keys?.[0]
+      ?.replace(/_/g, " ")
+      ?.replace(/\b\w/g, (c) => c.toUpperCase()) || "Value";
+
   useEffect(() => {
     if (!chartResponse?.labels || !chartResponse?.data) {
       console.warn("Invalid chart response.");
@@ -38,7 +44,6 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
     setChartData(() => {
       let { labels, data } = chartResponse;
 
-      // Sort data for both bar and line charts
       const sortedData = labels
         .map((label, index) => ({ label, value: data[index] }))
         .sort((a, b) => b.value - a.value);
@@ -50,7 +55,7 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
         labels,
         datasets: [
           {
-            label: "Total Admission",
+            label: chartResponse.keys[0],
             data: data || [],
             backgroundColor: "#2caffe",
             borderColor: chartType === "line" ? "#2caffe" : "transparent",
@@ -72,13 +77,12 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
       if (el) el.remove();
     };
   }, []);
+
   const commonOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        display: false,
-      },
+      legend: { display: false },
       tooltip: {
         enabled: false,
         external: function (context) {
@@ -111,12 +115,15 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
           }
 
           if (tooltip.body) {
-            const title = tooltip.title[0] || "";
-            const body = tooltip.body[0]?.lines[0] || "";
+            const title = tooltip.title?.[0] || "";
+            const rawValue = tooltip.dataPoints?.[0]?.raw ?? "";
+            const formattedValue = new Intl.NumberFormat("en-US").format(
+              rawValue
+            );
 
             tooltipEl.innerHTML = `
               <div style="font-weight: 600; font-size: 13px; margin-bottom: 4px;">${title}</div>
-              <div>${body}</div>
+              <div>${formattedMetricLabel}: ${formattedValue}</div>
               <div id="tooltip-arrow" style="
                 position: absolute;
                 top: -6px;
@@ -134,11 +141,7 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
           const canvasRect = chart.canvas.getBoundingClientRect();
           tooltipEl.style.opacity = 1;
           tooltipEl.style.left =
-            canvasRect.left +
-            window.scrollX +
-            tooltip.caretX +
-            tooltip.width / 22 +
-            "px";
+            canvasRect.left + window.scrollX + tooltip.caretX + "px";
           tooltipEl.style.top =
             canvasRect.top + window.scrollY + tooltip.caretY + 10 + "px";
           tooltipEl.style.transform = "translateX(-50%)";
@@ -153,25 +156,14 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
     },
   };
 
-  // const maxDataValue = Math.max(...(chartResponse?.data || []));
-  // const maxDataValue = Math.max(
-  //   ...(Array.isArray(chartResponse?.data) ? chartResponse.data : [0])
-  // );
-  // const stepSize = 500;
-  // const adjustedMax = Math.ceil(maxDataValue / stepSize) * stepSize + stepSize;
-
   const maxDataValue = Math.max(
     ...(Array.isArray(chartResponse?.data) ? chartResponse.data : [0])
   );
 
   const getDynamicYAxisScale = (data, minSteps = 4, maxSteps = 8) => {
     const maxDataValue = Math.max(...(Array.isArray(data) ? data : [0]));
+    if (maxDataValue === 0) return { adjustedMax: 100, stepSize: 20 };
 
-    if (maxDataValue === 0) {
-      return { adjustedMax: 100, stepSize: 20 };
-    }
-
-    // Determine rough step size to keep steps between minSteps and maxSteps
     const rawStep = Math.pow(8, Math.floor(Math.log10(maxDataValue)));
     let stepSize = rawStep;
 
@@ -184,7 +176,6 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
       }
     }
 
-    // Round the max up to nearest multiple of stepSize
     const adjustedMax =
       Math.ceil(maxDataValue / stepSize) * stepSize + stepSize;
 
@@ -196,12 +187,6 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
   const chartOptions = {
     bar: {
       ...commonOptions,
-      grid: {
-        display: false,
-        drawBorder: false,
-        drawTicks: false,
-      },
-
       plugins: {
         ...commonOptions.plugins,
         datalabels: {
@@ -251,9 +236,6 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
       ...commonOptions,
       plugins: {
         ...commonOptions.plugins,
-        legend: {
-          display: false,
-        },
         datalabels: {
           display: chartResponse.multi_value ? false : true,
           color: "#333",
@@ -306,7 +288,7 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
   const ChartComponent = chartType === "bar" ? Bar : Line;
 
   return (
-    <div className="w-full overflow-x-auto scrollbar-xy  bg-white">
+    <div className="w-full overflow-x-auto scrollbar-xy bg-white">
       <div
         style={{
           width: `${Math.max(1000, chartData.labels.length * 100)}px`,
@@ -322,10 +304,10 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
         )}
       </div>
 
-      {/* Fixed Dynamic Legend (Does Not Scroll) */}
+      {/* Fixed Dynamic Legend */}
       {chartData.datasets && chartData.datasets.length >= 0 && (
         <div
-          className="absolute bottom-0 left-1/2  transform -translate-x-1/2 bg-white mb-5 flex gap-2"
+          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-white mb-5 flex gap-2"
           style={{ zIndex: 10 }}
         >
           {chartData.datasets.map((dataset, index) => (
@@ -333,9 +315,7 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
               key={index}
               className="flex items-center gap-1 top-1 px-3 text-sm font-medium text-gray-700"
             >
-              {/* Line with centered circle */}
               <span className="relative w-4 h-2 flex items-center justify-center pt-1">
-                {/* Horizontal Line */}
                 <span
                   className="absolute top-1.5 left-0 right-0 h-0.5 transform -translate-y-1/2 rounded"
                   style={{
@@ -345,7 +325,6 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
                         : dataset.borderColor || dataset.backgroundColor,
                   }}
                 ></span>
-                {/* Center Circle */}
                 <span
                   className="w-2 h-2 rounded-full z-10"
                   style={{

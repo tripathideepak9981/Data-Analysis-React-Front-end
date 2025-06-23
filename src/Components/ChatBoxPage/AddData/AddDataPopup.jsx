@@ -446,6 +446,10 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
       const isDuplicate = uploadedFiles.some(
         (f) => f.name === uploadedTableName
       );
+      // if ((data.name = "AxiosError")) {
+      //   showNotifications("Error", "This file has already been uploaded.");
+      //   return;
+      // }
       if (isDuplicate) {
         showNotifications("Error", "This file has already been uploaded.");
         return;
@@ -471,7 +475,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
       }
     } catch (error) {
       setSelectedFiles([]);
-      showNotifications("Error", error.message || "Upload failed.");
+      showNotifications("Error", "Something wrong on server, try again later.");
     } finally {
       input.value = null; // Reset again, just in case
       setSelectedFiles([]);
@@ -747,9 +751,6 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
           </div>
 
           <div>
-            {/* <p className="text-message text-purple-500 mb-2">
-              For optimal results, follow best practices when uploading files
-            </p> */}
             <div className="flex justify-between items-center my-1 px-4 py-2 bg-gray-100 rounded-md shadow-sm">
               <div>
                 <h2 className="text-label text-gray-800">Available Files</h2>
@@ -757,31 +758,6 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                   Select static files to associate with your analysis
                 </p>
               </div>
-
-              {/* <div className="relative w-[55vh]">
-                <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
-                    />
-                  </svg>
-                </span>
-                <input
-                  type="text"
-                  placeholder="Search files"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10  pr-4 py-2 text-sm w-full border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white text-gray-800"
-                />
-              </div> */}
             </div>
 
             {isCleaning && (
@@ -801,7 +777,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
               </div>
             )}
 
-            <div className="border border-gray-400 h-[30vh] rounded-lg">
+            <div className=" min-h-[35vh] mt-3 max-h-[40%] rounded-lg">
               {uploadedFiles.length === 0 ? (
                 <div className="text-center text-gray-600 text-label py-4">
                   No files uploaded yet!
@@ -919,100 +895,161 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
           </div>
         </>
       )}
-      {/* Connected Data Sources Tab */}
       {activeTab === "connected" && (
-        <div className="p-4 rounded-xl bg-white">
-          {/* Header Section */}
-          <div className="flex flex-col pb-4 gap-2">
-            <h1 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-              Connect Data Sources
-            </h1>
-            <p className="text-base font-normal text-gray-700 pl-1">
-              Retrieve data from your connected sources with ease.
-            </p>
-          </div>
+        <div className="p-8 bg-white rounded-xl flex gap-8">
+          {/* Left Section: DB Cards */}
+          <div className="flex-1">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+              Connect Database
+            </h2>
 
-          {/* Table Container */}
-          <div className="w-full max-w-4xl mx-auto mt-2 shadow-md rounded-lg overflow-hidden border border-gray-300">
-            <div className="divide-y divide-gray-200 bg-white">
-              {/* MySQL Row */}
-              <div className="grid grid-cols-2 items-center px-10 py-4 hover:bg-gray-50 transition duration-200">
-                <div className="flex flex-col text-gray-800">
+            <div className="grid grid-cols-2 gap-4">
+              {/* PostgreSQL */}
+              <div className="px-4 py-6 border rounded-lg hover:shadow-md transition space-y-4">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <SiMysql className="h-8 w-8 text-blue-500" />
-                    <span className="text-base font-medium">
-                      Connect to MySql
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"
+                      alt="PostgreSQL"
+                      className="h-6 w-6"
+                    />
+                    <span className="text-base font-medium text-gray-700">
+                      PostgreSQL
                     </span>
                   </div>
+                  <button
+                    onClick={() => {
+                      setDbType("postgresql");
+                      setIsPopupOpen(true);
+                    }}
+                    className="text-gray-400 text-lg font-bold hover:text-blue-500 transition"
+                  >
+                    +
+                  </button>
                 </div>
-                <div className="flex justify-end gap-10">
+                <button
+                  onClick={() => setIsDataPreviewPopupOpen(true)}
+                  disabled={dbType !== "postgresql" && DbResponse !== null}
+                  title={
+                    dbType !== "postgresql" ? "Connect to PostgreSQL first" : ""
+                  }
+                  className={`w-full px-5 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition duration-200 ${
+                    dbType === "postgresql"
+                      ? "bg-gray-600 text-white hover:bg-gray-700 cursor-pointer"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+                  }`}
+                >
+                  Data preview
+                </button>
+              </div>
+
+              {/* MySQL */}
+              <div className="px-4 py-6 border rounded-lg hover:shadow-md transition space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <SiMysql className="h-6 w-6 text-blue-500" />
+                    <span className="text-base font-medium text-gray-700">
+                      MySQL
+                    </span>
+                  </div>
                   <button
                     onClick={() => {
                       setDbType("mysql");
                       setIsPopupOpen(true);
                     }}
-                    className="bg-blue-600 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-blue-700 flex items-center gap-2 transition duration-200"
+                    className="text-gray-400 text-lg font-bold hover:text-blue-500 transition"
                   >
-                    Connect
-                    <HiArrowNarrowRight className="text-lg" />
-                  </button>
-                  <button
-                    onClick={() => setIsDataPreviewPopupOpen(true)}
-                    disabled={dbType !== "mysql" && DbResponse !== null}
-                    title={dbType !== "mysql" ? "Connect to MySQL first" : ""}
-                    className={`px-5 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition duration-200
-        ${
-          dbType === "mysql"
-            ? "bg-gray-600 text-white hover:bg-gray-700 cursor-pointer"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
-        }`}
-                  >
-                    Data preview
+                    +
                   </button>
                 </div>
+                <button
+                  onClick={() => setIsDataPreviewPopupOpen(true)}
+                  disabled={dbType !== "mysql" && DbResponse !== null}
+                  title={dbType !== "mysql" ? "Connect to MySQL first" : ""}
+                  className={`w-full px-5 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition duration-200 ${
+                    dbType === "mysql"
+                      ? "bg-gray-600 text-white hover:bg-gray-700 cursor-pointer"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+                  }`}
+                >
+                  Data preview
+                </button>
               </div>
+            </div>
 
-              {/* Vertica Row */}
-              <div className="grid grid-cols-2 items-center px-10 py-4 hover:bg-gray-50 transition duration-200">
-                <div className="flex flex-col text-gray-800">
-                  <div className="flex items-center gap-3">
-                    <FaDatabase className="h-8 w-8 text-blue-500" />
-                    <span className="text-base font-medium">
-                      Connect to Vertica
-                    </span>
-                  </div>
-                </div>
-                <div className="flex justify-end gap-10">
-                  <button
-                    onClick={() => {
-                      setDbType("vertica");
-                      setIsPopupOpen(true);
-                    }}
-                    className="bg-blue-600 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-blue-700 flex items-center gap-2 transition duration-200"
-                  >
-                    Connect <HiArrowNarrowRight className="text-lg" />
-                  </button>
-                  <button
-                    onClick={() => setIsDataPreviewPopupOpen(true)}
-                    disabled={dbType !== "vertica" && DbResponse !== null}
-                    title={
-                      dbType !== "vertica" ? "Connect to Vertica first" : ""
-                    }
-                    className={`px-5 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition duration-200
-        ${
-          dbType === "vertica"
-            ? "bg-gray-600 text-white hover:bg-gray-700 cursor-pointer"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
-        }`}
-                  >
-                    Data preview
-                  </button>
-                </div>
+            {/* No connections block */}
+            <div className="flex flex-col items-center justify-center mt-10 text-center text-gray-600">
+              <div className="w-16 h-16 border rounded-md flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-gray-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 7h.01M7 11h.01M7 15h.01M11 7h.01M11 11h.01M11 15h.01M15 7h.01M15 11h.01M15 15h.01"
+                  />
+                </svg>
+              </div>
+              <p className="mt-4 font-medium text-gray-700">No connections</p>
+              <p className="text-sm text-gray-500">
+                Create a connection from the options above !
+              </p>
+            </div>
+          </div>
+
+          {/* Right Panel */}
+          <div className="w-[280px] mt-5 flex-shrink-0 text-sm space-y-8 text-gray-700">
+            <div>
+              <span className="font-semibold">About connections:</span> A
+              connection lets you and your team pull outside data into your
+              sheets.{" "}
+              <a
+                href="#"
+                className="text-blue-600 inline-flex items-center gap-1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Docs
+              </a>
+            </div>
+
+            <div>
+              <span className="font-semibold">Security & privacy:</span> Your
+              data and credentials are encrypted and stored securely.{" "}
+              <a
+                href="#"
+                className="text-blue-600 inline-flex items-center gap-1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Trust center
+              </a>
+            </div>
+
+            <div>
+              <span className="font-semibold">IP allow-list:</span> Add both of
+              our IPs to your network allow-list.{" "}
+              <a
+                href="#"
+                className="text-blue-600 inline-flex items-center gap-1"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn more
+              </a>
+              <div className="mt-2 bg-gray-100 p-2 rounded-md font-mono text-sm text-gray-800">
+                <div>44.240.255.40</div>
+                <div>54.68.134.35</div>
               </div>
             </div>
           </div>
 
-          {/* Popup (conditionally rendered) */}
+          {/* Popups */}
           {isPopupOpen && (
             <PopupForm
               isOpen={isPopupOpen}
@@ -1021,7 +1058,6 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
               dbType={dbType}
             />
           )}
-
           {isDataPreviewPopupOpen && (
             <DbDataPreviewPopup
               DbResponse={DbResponse}

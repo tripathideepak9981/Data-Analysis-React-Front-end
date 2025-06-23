@@ -18,6 +18,7 @@ module.exports = {
         query: ['0.8125rem', { lineHeight: '1.125rem' }], // ~13px
       },
       animation: {
+        
         gradientMove: 'gradientMove 1.2s linear infinite',
         bounceSlow: 'bounceSlow 1s infinite ease-in-out', 
         
@@ -102,6 +103,7 @@ module.exports = {
           '100%': { transform: 'translate(0, 0)' },
         },
       },
+      
       fontFamily: {
         'poppins': ['Poppins', 'sans-serif'],
       },

@@ -117,45 +117,53 @@ const ChatBox = () => {
 
     setQuery("");
     setQueryRunning(true);
-
     try {
       const response = await exceuteQuery(query);
 
       if (response) {
         console.log("Response : ", response);
       }
-      if (response.status == "error") {
-        console.log(response.message);
+
+      if (response.name == "AxiosError") {
+        console.log("errors : ", response.message);
 
         // Safely update the AI response
         setChatMessages((prevMessages) =>
           prevMessages.map((message, index) => {
             if (index !== newMessageIndex) return message;
-
             if (message.interrupted) return message;
 
             return {
               ...message,
-              aiResponse: response,
+              aiResponse: {
+                error: "Your session has been experied, Relogin again to query",
+              },
               interrupted: false,
             };
           })
         );
       } else {
+        // ✅ Check for at least one numeric value in result
+        const hasNumericData =
+          Array.isArray(response.result) &&
+          response.result.some((obj) =>
+            Object.values(obj).some((value) => typeof value === "number")
+          );
+
         // Safely update the AI response
         setChatMessages((prevMessages) =>
           prevMessages.map((message, index) => {
             if (index !== newMessageIndex) return message;
-
             if (message.interrupted) return message;
 
             return {
               ...message,
               aiResponse: response,
-              ...(response?.result?.length > 2 && {
-                chart: transformChartData(response.result),
-                chartType: "bar",
-              }),
+              ...(response?.result?.length > 2 &&
+                hasNumericData && {
+                  chart: transformChartData(response.result),
+                  chartType: "bar",
+                }),
               interrupted: false,
             };
           })
@@ -322,33 +330,11 @@ const ChatBox = () => {
                       Home Page
                     </button>
                   ) : (
-                    <span className="absolute chat-ui left-[25px] ml-2 w-[6vw] px-1.5 py-1 bg-gray-100 border border-gray-800 text-gray-800 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                    <span className="absolute left-[35px] px-2 py-1 bg-gray-100  border border-gray-800 text-gray-800 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 whitespace-nowrap">
                       Home Page
                     </span>
                   )}
                 </div>
-                {/* <div className="ml-2 flex flex-row items-center hover:scale-105 relative group hover:bg-blue-600/20 rounded-xl transition-all cursor-pointer">
-                  <div className="p-2 rounded flex items-center justify-center transition duration-200 ease-in-out cursor-pointer">
-                    <svg
-                      viewBox="0 0 32 32"
-                      className="w-[15px] h-[15px] stroke-gray-800 fill-none"
-                      strokeWidth="3"
-                    >
-                      <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z" />
-                    </svg>
-                  </div>
-                  
-                  {isSliderVisible ? (
-                    <button className="ml-2 text-label text-gray-700">
-                      Saved Cards
-                    </button>
-                  ) : (
-                    // Tooltip shown on hover
-                    <span className="absolute left-[25px] ml-2 w-[7vw] px-2 py-1 bg-gray-100 border border-gray-800 text-gray-800 text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-                      Saved Cards
-                    </span>
-                  )}
-                </div> */}
               </div>
             </div>
           </div>

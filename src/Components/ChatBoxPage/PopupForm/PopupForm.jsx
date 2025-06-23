@@ -23,7 +23,6 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
     e.preventDefault();
     try {
       const response = await connectToDatabase(formData);
-      console.log(response);
       if (response.error) {
         Swal.fire({
           icon: "error",
@@ -35,36 +34,41 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
         setDbResponse(response);
         Swal.fire({
           icon: "success",
-          title: "Database Connected Success!",
-          text: "Connection Established",
+          title: "Database Connected!",
+          text: "Connection established successfully",
           confirmButtonText: "OK",
         });
         onClose();
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Something went wrong!");
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong",
+        text: error.message,
+      });
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-2 overflow-y-auto">
-      <div className="bg-white w-[40vw] max-w-xl mx-auto rounded-2xl shadow-2xl relative px-4 py-6 sm:px-10 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40  p-3">
+      <div className="bg-white mb-16 h-[82vh] w-[40vw] max-w-[30vw] rounded-2xl shadow-2xl relative py-2 px-4 sm:px-4">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-600 hover:text-blue-700 transition"
+          className="absolute top-2 right-2 text-gray-500 hover:text-blue-600 transition"
+          title="Close"
         >
           <ArrowCircleLeftIcon fontSize="large" />
         </button>
 
         {/* Title */}
-        <h2 className="text-xl sm:text-2xl font-bold text-blue-600 text-center mb-6 underline">
+        <h2 className="text-2xl font-bold text-purple-600 text-left mb-6 tracking-wide">
           Enter Database Details
         </h2>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-2">
           {[
             { label: "Database Host", name: "host" },
             { label: "Database Port", name: "port" },
@@ -72,15 +76,12 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
             { label: "Username", name: "user" },
             { label: "Password", name: "password", type: "password" },
           ].map(({ label, name, type = "text" }, index) => (
-            <div
-              key={index}
-              className="flex flex-col sm:flex-row sm:items-center gap-0"
-            >
+            <div key={index}>
               <label
                 htmlFor={name}
-                className="w-full sm:w-40 font-medium text-gray-800 text-base"
+                className="block mb-1 text-sm font-medium text-gray-700"
               >
-                {label}:
+                {label}
               </label>
               <input
                 type={type}
@@ -89,8 +90,7 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
                 value={formData[name]}
                 onChange={handleChange}
                 placeholder={`Enter ${label}`}
-                className="flex-1 px-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:ring-2 
-                text-gray-800 focus:ring-blue-400 focus:outline-none text-sm sm:text-base"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
               />
             </div>
           ))}
@@ -99,9 +99,9 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold text-lg rounded-xl shadow-lg hover:scale-105 transition duration-300"
+              className="w-full py-1.5 bg-[#6646ab] text-white text-lg font-semibold rounded-xl shadow-md hover:from-blue-600 hover:to-blue-800 transition-transform duration-300 transform hover:scale-105"
             >
-              Submit
+              Connect to Database
             </button>
           </div>
         </form>

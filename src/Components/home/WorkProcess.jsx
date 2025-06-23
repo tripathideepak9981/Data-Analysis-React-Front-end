@@ -27,7 +27,7 @@ const WorkProcess = () => {
   ];
 
   return (
-    <section className="bg-[#f3f4fb] py-10 px-4 md:px-30 font-sans">
+    <section className="bg-[#f4f7ff] py-24 px-4 md:px-30 font-sans">
       <div className="max-w-7xl mx-auto text-center">
         {/* Heading */}
         <p className="text-sm font-semibold tracking-widest text-gray-500 uppercase mb-2">

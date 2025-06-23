@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import { FaChartPie } from "react-icons/fa";
 import { FaTable } from "react-icons/fa6";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Bot from "../../assets/typed.svg";
@@ -19,8 +18,9 @@ import { BsFiletypeSql } from "react-icons/bs";
 import { MdPieChartOutline } from "react-icons/md";
 import { PiFileSql } from "react-icons/pi";
 import { validateSQLQuery } from "../../Api";
-import TypeWriter from "./TypeWriter";
 import { TypeWriterProvider } from "./TypeWriterContext";
+import formatSummary from "../../utils/formatSummary";
+import CustomNotificationCard from "../Card/CustomNotificationCard";
 
 const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
   const [showSQL, setShowSQL] = useState(false);
@@ -29,6 +29,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
   const [showResult, setShowResult] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isValidating, setIsValidating] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [statusMessage, setStatusMessage] = useState({
     text: "View your SQL. You can edit or validate the query.",
     type: "info",
@@ -70,71 +71,70 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
       setShowResult(false);
     }
   }, []);
-  function formatSummary(summaryObj, ref = null) {
-    if (!summaryObj) return null;
+  // function formatSummary(summaryObj, ref = null) {
+  //   if (!summaryObj) return null;
 
-    const formatText = (text) => {
-      text = text.replace(
-        /(["'])([^"']+?)\1/g,
-        '<span class="font-bold">"$2"</span>'
-      );
-      text = text.replace(
-        /(\d+(\.\d+)?%)/g,
-        '<span class="font-bold">$1</span>'
-      );
-      text = text.replace(
-        /(?<![a-zA-Z])(\d+(\.\d+)?)(?![%\w])/g,
-        '<span class="font-roboto font-bold">$1</span>'
-      );
-      return text;
-    };
+  //   const formatText = (text) => {
+  //     text = text.replace(
+  //       /(["'])([^"']+?)\1/g,
+  //       '<span class="font-bold">"$2"</span>'
+  //     );
+  //     text = text.replace(
+  //       /(\d+(\.\d+)?%)/g,
+  //       '<span class="font-bold">$1</span>'
+  //     );
+  //     text = text.replace(
+  //       /(?<![a-zA-Z])(\d+(\.\d+)?)(?![%\w])/g,
+  //       '<span class="font-roboto font-bold">$1</span>'
+  //     );
+  //     return text;
+  //   };
 
-    const summary = summaryObj.trim();
-    const paragraphs = summary.split("\n").filter((para) => para.trim() !== "");
+  //   const summary = summaryObj.trim();
+  //   const paragraphs = summary.split("\n").filter((para) => para.trim() !== "");
 
-    return (
-      <TypeWriterProvider>
-        <div
-          ref={ref} // ✅ Pass it from outside
-          className="bg-white chat-ui py-2 px-4 space-y-3 text-gray-900"
-        >
-          {paragraphs.map((para, index) => {
-            let className = " leading-relaxed text-gray-800 ";
+  //   return (
+  //     <TypeWriterProvider>
+  //       <div
+  //         ref={ref} // ✅ Pass it from outside
+  //         className="bg-white chat-ui py-2 px-4 space-y-3 text-gray-900"
+  //       >
+  //         {paragraphs.map((para, index) => {
+  //           let className = " leading-relaxed text-gray-800 ";
 
-            if (/^# /.test(para)) {
-              className = " border-b pb-1 text-gray-900";
-              para = para.replace(/^# /, "");
-            } else if (/^## /.test(para)) {
-              className = " mt-3 text-gray-900";
-              para = para.replace(/^## /, "");
-            } else if (/^\* /.test(para)) {
-              className = "ml-6 list-disc  text-gray-800 ";
-            }
+  //           if (/^# /.test(para)) {
+  //             className = " border-b pb-1 text-gray-900";
+  //             para = para.replace(/^# /, "");
+  //           } else if (/^## /.test(para)) {
+  //             className = " mt-3 text-gray-900";
+  //             para = para.replace(/^## /, "");
+  //           } else if (/^\* /.test(para)) {
+  //             className = "ml-6 list-disc  text-gray-800 ";
+  //           }
 
-            const formattedText = formatText(para);
+  //           const formattedText = formatText(para);
 
-            return (
-              <TypeWriter
-                key={index}
-                index={index}
-                text={formattedText}
-                className={className}
-                as="p"
-                dangerouslySetInnerHTML={{ __html: formattedText }}
-              />
-            );
-          })}
-        </div>
-      </TypeWriterProvider>
-    );
-  }
+  //           return (
+  //             <TypeWriter
+  //               key={index}
+  //               index={index}
+  //               text={formattedText}
+  //               className={className}
+  //               as="p"
+  //               dangerouslySetInnerHTML={{ __html: formattedText }}
+  //             />
+  //           );
+  //         })}
+  //       </div>
+  //     </TypeWriterProvider>
+  //   );
+  // }
 
   useEffect(() => {
     const hasStartedRendering =
       response?.aiResponse?.sql_query ||
       response?.aiResponse?.result ||
       response?.aiResponse?.response ||
-      response?.aiResponse?.error ||
       response?.interrupted;
 
     if (hasStartedRendering) {
@@ -144,7 +144,6 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
     response?.aiResponse?.sql_query,
     response?.aiResponse?.result,
     response?.aiResponse?.response,
-    response?.aiResponse?.error,
     response?.interrupted,
   ]);
   useEffect(() => {
@@ -155,6 +154,14 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
       });
     }
   }, [response?.userQuery]);
+
+  const closeErrorAlert = () => {
+    setShowError(false);
+  };
+
+  useEffect(() => {
+    setShowError(true);
+  }, [response?.aiResponse?.error]);
 
   // 2. Scroll again after response arrives to adjust for content shift
   useEffect(() => {
@@ -367,7 +374,10 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
           </div>
         )}
 
-        <div className="flex flex-col w-full max-w-[78%]   rounded-md shadow-md bg-white">
+        <div
+          ref={responseEndRef}
+          className="flex flex-col w-full max-w-[78%]   rounded-md shadow-md bg-white"
+        >
           <>
             {!showLoading && (
               <div className="flex justify-between mt-0 py-1 px-4 z-20 bg-gray-100 ">
@@ -580,10 +590,18 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
             ) : (
               <>
                 {/* Show error if present */}
-                {response?.aiResponse?.error && (
-                  <p className="text-gray-700 text-label chat-ui px-3 py-3">
-                    {response?.aiResponse?.message}
-                  </p>
+                {response?.aiResponse?.error && showError && (
+                  // <p
+                  //   ref={responseEndRef}
+                  //   className="text-gray-700 text-label chat-ui px-3 py-3"
+                  // >
+                  //   {response?.aiResponse?.error}
+                  // </p>
+                  <CustomNotificationCard
+                    title="Error"
+                    text="Something wrong on server, Please relogin"
+                    onClose={closeErrorAlert}
+                  />
                 )}
 
                 {/* Validate Result Takes Priority */}
@@ -669,46 +687,66 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                       >
                         {Array.isArray(response.aiResponse.result) &&
                         typeof response.aiResponse.result[0] === "object" ? (
-                          <div className="max-h-[250px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-2 mx-2">
-                            <table className="min-w-full chat-ui text-left border-collapse text-message text-gray-800">
-                              <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
-                                <tr>
-                                  {Object.keys(
-                                    response.aiResponse.result[0]
-                                  ).map((key, index) => (
-                                    <th
-                                      key={index}
-                                      className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
-                                    >
-                                      {key}
-                                    </th>
-                                  ))}
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {response.aiResponse.result.map(
-                                  (row, rowIndex) => (
-                                    <tr
-                                      key={rowIndex}
-                                      className="odd:bg-white even:bg-gray-50"
-                                    >
-                                      {Object.values(row).map(
-                                        (value, colIndex) => (
-                                          <td
-                                            key={colIndex}
-                                            className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
-                                          >
-                                            {value}
-                                          </td>
-                                        )
-                                      )}
-                                    </tr>
-                                  )
-                                )}
-                              </tbody>
-                            </table>
-                          </div>
+                          response.aiResponse.result.length === 1 ? (
+                            // ✅ Render plain text message for single object
+                            <div className="px-4 mb-4 chat-ui text-left ml-5 text-gray-800 font-semibold">
+                              {Object.entries(
+                                response.aiResponse.result[0]
+                              ).map(([key, value], idx) => (
+                                <div key={idx}>
+                                  {key.replace(/_/g, " ")} = {value}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            // ✅ Render full table for multi-row result
+                            <div className="max-h-[250px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-2 mx-2">
+                              <table className="min-w-full text-left border-collapse text-message text-gray-800">
+                                <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
+                                  <tr>
+                                    {Object.keys(
+                                      response.aiResponse.result[0]
+                                    ).map((key, index) => (
+                                      <th
+                                        key={index}
+                                        className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
+                                      >
+                                        {key
+                                          .replace(/_/g, " ") // Replace underscores with space
+                                          .replace(/\b\w/g, (char) =>
+                                            char.toUpperCase()
+                                          )}{" "}
+                                        {/* Capitalize each word */}
+                                      </th>
+                                    ))}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {response.aiResponse.result.map(
+                                    (row, rowIndex) => (
+                                      <tr
+                                        key={rowIndex}
+                                        className="odd:bg-white even:bg-gray-50"
+                                      >
+                                        {Object.values(row).map(
+                                          (value, colIndex) => (
+                                            <td
+                                              key={colIndex}
+                                              className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
+                                            >
+                                              {value}
+                                            </td>
+                                          )
+                                        )}
+                                      </tr>
+                                    )
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
+                          )
                         ) : (
+                          // ✅ Fallback if result is not array or object
                           <TypeWriterProvider>
                             <p className="text-label chat-ui text-gray-800 px-2 pb-2">
                               {response.aiResponse.result}
@@ -741,7 +779,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                           {Array.isArray(response.aiResponse.result) &&
                           typeof response.aiResponse.result[0] === "object" ? (
                             <div className="max-h-[250px] overflow-auto scrollbar-xy max-w-full border rounded space-y-2 my-2 mx-2">
-                              <table className="min-w-full chat-ui text-left border-collapse text-message text-gray-800">
+                              <table className="min-w-full  text-left border-collapse text-message text-gray-800">
                                 <thead className="bg-gray-200 text-gray-800 sticky top-0 z-10">
                                   <tr>
                                     {Object.keys(
@@ -749,9 +787,13 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                                     ).map((key, index) => (
                                       <th
                                         key={index}
-                                        className="px-4 py-2 border border-gray-400 whitespace-nowrap text-query bg-gray-200"
+                                        className="px-4 py-2 border chat-ui border-gray-400 whitespace-nowrap text-query bg-gray-200"
                                       >
-                                        {key}
+                                        {key
+                                          .replace(/_/g, " ") // Replace underscores with space
+                                          .replace(/\b\w/g, (char) =>
+                                            char.toUpperCase()
+                                          )}
                                       </th>
                                     ))}
                                   </tr>

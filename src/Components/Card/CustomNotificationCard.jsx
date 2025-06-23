@@ -1,5 +1,6 @@
 import React from "react";
 import { CheckCircle, X, AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 const CustomNotificationCard = ({
   title = "Success",
@@ -9,35 +10,43 @@ const CustomNotificationCard = ({
   const isError = title?.toLowerCase() === "error";
 
   return (
-    <div className="fixed top-1/2 left-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2">
-      <div className="relative flex flex-col items-center px-6 py-5 gap-4 w-[360px] bg-white rounded-2xl shadow-lg border border-gray-200">
-        {/* Close Icon */}
+    <motion.div
+      initial={{ y: -60, opacity: 0 }}
+      animate={{ y: 20, opacity: 1 }}
+      exit={{ y: -60, opacity: 0 }}
+      transition={{ duration: 0.4, type: "spring", stiffness: 120 }}
+      className="fixed top-0 left-1/2 z-50 transform -translate-x-1/2 w-full max-w-xl px-4"
+    >
+      <div
+        className={`relative flex items-start px-6 py-5 gap-5 rounded-lg shadow-md transition-all duration-300 ${
+          isError ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
+        }`}
+      >
+        {/* Icon */}
+        <div className="mt-1">
+          {isError ? (
+            <AlertCircle size={28} className="text-red-500" />
+          ) : (
+            <CheckCircle size={28} className="text-green-500" />
+          )}
+        </div>
+
+        {/* Text Content */}
+        <div className="flex-1">
+          <h3 className="text-base font-semibold mb-1">{title}</h3>
+          <p className="text-sm leading-snug text-gray-800">{text}</p>
+        </div>
+
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition"
+          className="absolute top-3 right-4 text-gray-500 hover:text-gray-700 transition"
           aria-label="Close"
         >
           <X size={18} />
         </button>
-
-        {/* Icon Container */}
-        <div
-          className={`flex items-center justify-center w-14 h-14 rounded-full ${
-            isError ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"
-          } shadow-inner`}
-        >
-          {isError ? <AlertCircle size={32} /> : <CheckCircle size={32} />}
-        </div>
-
-        {/* Text Content */}
-        <div className="text-center space-y-1">
-          <h2 className="text-lg font-bold text-gray-800 tracking-wide">
-            {title.toUpperCase()}
-          </h2>
-          <p className="text-sm text-gray-600">{text}</p>
-        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

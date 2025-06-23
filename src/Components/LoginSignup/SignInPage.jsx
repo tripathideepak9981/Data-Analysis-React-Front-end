@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogIn, Eye, EyeOff } from "lucide-react";
+import { LogIn, Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { sendSignInData } from "../../Api";
-import gmail from "../../assets/icons/gmail.svg";
+import login from "../../assets/loginn.avif"; // ← Your image
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,28 +11,25 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(""), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
   const Spinner = () => (
-    <svg
-      viewBox="25 25 50 50"
-      className="w-5 h-5 animate-rotate4 origin-center text-white"
-    >
+    <svg viewBox="25 25 50 50" className="w-5 h-5 animate-spin text-white">
       <circle
         cx="50"
         cy="50"
         r="20"
-        className="fill-none stroke-current stroke-2 stroke-linecap-round animate-dash4 text-white"
+        className="fill-none stroke-current stroke-2 stroke-linecap-round"
       />
     </svg>
   );
 
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -50,136 +47,151 @@ export default function Login() {
     setLoading(true);
     try {
       const response = await sendSignInData(email, password);
-      console.log(response);
-
       if (!response.error) {
-        // Delay loader and navigate
         setTimeout(() => {
           setLoading(false);
           navigate("/");
-        }, 3000);
+        }, 2000);
       } else {
-        // Handle backend-reported errors (not exceptions)
         setLoading(false);
         setError("Login failed.");
       }
     } catch (err) {
-      // Handle exceptions like network errors
-      if (err === "Network Error") {
-        setError("Network Error");
-      } else {
-        console.error(err.message);
-        setError("Incorrect Email Or Password");
-      }
-      setLoading(false); // Stop loading only on failure
+      setError(
+        err === "Network Error"
+          ? "Network Error"
+          : "Incorrect Email Or Password"
+      );
+      setLoading(false);
     }
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-      style={{ background: "#e8efff" }}
-    >
-      <div className="">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-blue-100 flex items-center justify-center font-sans px-4">
+      <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl shadow-xl rounded-3xl bg-white/90 backdrop-blur-xl border border-gray-200 animate-fade-in">
+        {/* Left Panel */}
+        <div className="hidden md:flex flex-col items-center justify-center w-1/2 px-6 py-6 rounded-l-3xl">
+          <img
+            src={login}
+            alt="Login Illustration"
+            className="h-[300px] object-contain mb-2 select-none"
+            draggable="false"
+          />
+          <h2 className="text-2xl font-bold text-indigo-700 mb-1">
+            Welcome Back!
+          </h2>
+          <p className="text-sm text-gray-600 text-center max-w-xs">
+            “This portal makes managing my data Analysis effortless. Love it!”
+          </p>
+          <p className="text-xs mt-2 text-gray-500">— Modern AI bot</p>
+        </div>
+        {/* Right Panel - Login Form */}
         <form
           onSubmit={handleSubmit}
-          className="w-[400px] h-[450px] bg-white py-10 px-5  rounded-[30px] shadow-[0_0_40px_rgba(0,0,0,0.2)] flex flex-col space-y-8 items-center"
+          className="w-full md:w-1/2 px-7 py-4 md:py-8 flex flex-col justify-center gap-2 bg-white/80 rounded-r-3xl"
         >
+          <h1 className="text-2xl md:text-3xl font-bold text-indigo-800 mb-1 font-sans">
+            Sign in to your account
+          </h1>
+          <p className="text-sm text-gray-600 mb-3 font-medium">
+            Enter your credentials below
+          </p>
+
           {error && (
-            <div className="bg-red-100 text-red-700 p-3 rounded-xl flex text-center justify-center text-sm border border-red-300">
+            <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm text-center border border-red-300 mb-3 animate-fade-in shadow">
               {error}
             </div>
           )}
 
-          <p className="text-3xl font-bold text-gray-700  mt-5">
-            Welcome to Login
-          </p>
-
           {/* Email */}
-          <div className="relative w-full">
-            <img
-              src={gmail}
-              alt="icon"
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-700"
-            />
-
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full pl-9 pr-4 py-2 text-sm text-gray-800 border-b-2 border-gray-300 rounded-full focus:outline-none focus:border-[#845fd9]"
-            />
+          <div className="relative mb-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Email
+            </label>
+            <div className="relative">
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+                className="block w-full rounded-xl px-4 py-1.5 pl-9 bg-gray-100 focus:bg-white text-gray-900 
+        placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-2 
+        focus:ring-indigo-400 transition text-base"
+                autoComplete="email"
+              />
+              <Mail
+                className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+            </div>
           </div>
 
           {/* Password */}
-          <div className="relative w-full">
-            <svg
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-700"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              height="16"
-              width="16"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
-            </svg>
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full pl-9 pr-10 py-2 text-sm text-gray-800 border-b-2 border-gray-300 rounded-full focus:outline-none focus:border-[#845fd9]"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-700 hover:text-gray-700"
-            >
-              {showPassword ? (
-                <EyeOff className="w-5 h-5" />
-              ) : (
-                <Eye className="w-5 h-5" />
-              )}
-            </button>
+          <div className="relative mb-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Password
+            </label>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
+                className="block w-full rounded-xl px-4 py-1.5 pl-9 pr-10 bg-gray-100 focus:bg-white text-gray-900
+        placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-2 
+        focus:ring-indigo-400 transition text-base"
+                autoComplete="current-password"
+              />
+              <Lock
+                className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
+                size={18}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-full transition-all duration-300 flex items-center justify-center space-x-2 ${
-              loading
-                ? "bg-[#845fd9] cursor-not-allowed"
-                : "bg-[#503888] text-white"
-            }`}
+            className="w-full rounded-xl py-2 mt-2 font-semibold flex items-center justify-center gap-2
+      bg-gradient-to-br from-indigo-600 via-purple-500 to-blue-500 text-white focus:ring-2 focus:ring-indigo-500 shadow-lg
+      transition-all duration-200 hover:scale-[1.03] active:scale-100 disabled:opacity-80 disabled:cursor-not-allowed text-base"
           >
             {loading ? (
               <>
                 <Spinner />
-                <span className="text-white font-medium">Signing In...</span>
+                <span className="ml-2">Signing In...</span>
               </>
             ) : (
               <>
-                <LogIn className="w-5 h-5" />
+                <LogIn size={20} />
                 <span>Sign In</span>
               </>
             )}
           </button>
 
-          {/* Forgot / Create */}
-          <div className="py-5 flex justify-center text-base font-semibold text-gray-800 w-full">
-            <button type="button" className="">
-              Don't have any Account ?
-              <span
-                onClick={() => navigate("/SignUp")}
-                className="pl-1 text-blue-700 underline hover:text-blue-600 transition text-base font-normal"
-              >
-                Create one
-              </span>
+          {/* Redirect to Sign Up */}
+          <div className="mt-4 text-center text-sm text-gray-700 font-medium">
+            Don&apos;t have an account?{" "}
+            <button
+              type="button"
+              onClick={() => navigate("/SignUp")}
+              className="text-indigo-600 hover:text-indigo-800 underline font-semibold"
+              disabled={loading}
+            >
+              Create one
             </button>
           </div>
         </form>

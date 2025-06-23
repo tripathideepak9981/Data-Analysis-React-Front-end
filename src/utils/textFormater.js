@@ -8,7 +8,7 @@ export const formatMarkdown = (text) => {
 
     // List items (supports leading spaces)
     .replace(/^(\s*)\* (.*$)/gm, (_, space, content) =>
-      `<li class="ml-${space.length * 2} chat-ui list-disc text-sm font-[Roboto Flex]">${content}</li>`
+      `<li class="ml-${space.length * 2} list-disc text-sm ">${content}</li>`
     )
 
     // Bold text: **text**
@@ -21,13 +21,13 @@ export const formatMarkdown = (text) => {
     .replace(/`([^`]+)`/g, '<code class="bg-gray-100 text-gray-800 font-mono text-sm px-1.5 py-0.5 rounded">$1</code>')
 
     // Percentages like 45% or 12.3%
-    .replace(/(\d+(\.\d+)?%)/g, '<span class="font-bold font-[Roboto Flex]">$1</span>')
+    .replace(/(\d+(\.\d+)?%)/g, '<span class="font-bold ">$1</span>')
 
     // Dollar values like \$45 or \$45.50
-    .replace(/\\\$(\d+(\.\d+)?)/g, '<span class="font-semibold text-gray-800 font-[Roboto Flex]">$$$1</span>')
+    .replace(/\\\$(\d+(\.\d+)?)/g, '<span class="font-semibold text-gray-800 ">$$$1</span>')
 
     // Numbers with commas: 1,000 or 12,000,000
-    .replace(/\b(\d{1,3}(,\d{3})+)\b/g, '<span class="text-gray-800 font-medium font-[Roboto Flex]">$1</span>')
+    .replace(/\b(\d{1,3}(,\d{3})+)\b/g, '<span class="text-gray-800 font-medium">$1</span>')
 
     // Labels like "Total:" → bolded label
     .replace(/^([^:\n]+):/gm, '<span class="font-bold font-[Roboto Flex]">$1:</span>');

@@ -25,7 +25,7 @@ export default function Header() {
       <About />
       <WorkProcess />
       <Feature className="mb-4" />
-      {/* <FaqSection /> */}
+      <FaqSection />
       <Footer />
     </div>
   );

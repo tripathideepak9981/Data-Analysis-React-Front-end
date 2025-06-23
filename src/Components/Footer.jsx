@@ -5,118 +5,114 @@ import {
   FaGoogle,
   FaPinterestP,
   FaInstagram,
-  FaRobot,
 } from "react-icons/fa";
 
 const Footer = () => {
   return (
     <footer
       id="contacts"
-      className="relative w-full overflow-hidden font-sans bg-[#080a1a] text-gray-300 pt-10"
+      className="bg-[#dbe6fd] text-gray-700 pt-12 font-sans relative z-10 shadow-inner border border-t-2 border-[#bbcffb]"
     >
-      {/* Footer Content */}
-      <div className="relative z-10">
-        <div className="flex flex-col md:flex-row h-full">
+      <div className="max-w-8xl">
+        <div className="grid md:grid-cols-2 gap-10 border-b mx-10 md:mx-10 border-gray-300 pb-10">
           {/* Left Section */}
-          <div className="p-10 md:w-1/2">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-white">
-              Modern AI Data Analysis
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              🚀 Modern AI Data Analysis
             </h2>
-            <p className="text-sm text-gray-200 mb-4">
+            <p className="text-sm leading-relaxed text-gray-800 mb-6">
               Upload your Excel or CSV files and get instant insights with AI.
               Generate charts, explore patterns, and even build SQL queries — no
               coding needed.
             </p>
-            <div className="flex mt-10">
+
+            {/* Newsletter Input */}
+            <div className="flex max-w-md">
               <input
                 type="email"
-                placeholder="Your email address"
-                className="px-4 py-2 rounded-l-md w-full bg-[#0e1029] border border-[#2f3163] placeholder-gray-400 text-white focus:outline-none"
+                placeholder="Enter your email"
+                className="px-4 py-2 w-full text-sm text-gray-800 bg-gray-100 rounded-l-md border border-gray-400 placeholder-gray-500 focus:outline-none"
               />
-              <button className="bg-purple-600 text-white px-4 py-2 rounded-r-md hover:bg-purple-700 transition font-semibold">
+              <button className="bg-gradient-to-r from-purple-400 to-indigo-500 px-4 py-2 text-white font-semibold text-sm rounded-r-md hover:scale-105 hover:shadow-md transition">
                 ➤
               </button>
             </div>
           </div>
 
           {/* Right Section */}
-          <div className="p-10 md:w-1/2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Services */}
-              <div>
-                <h3 className="text-xl font-semibold mb-4 text-white">
-                  Services
-                </h3>
-                <ul className="space-y-2 text-sm">
-                  {[
-                    "Upload Excel/CSV",
-                    "Live Database Connection",
-                    "AI Data Analysis",
-                    "Chart Generator",
-                    "SQL Query Builder",
-                    "No-Code Interface",
-                    "Customer Support",
-                  ].map((item, index) => (
-                    <li key={index}>
-                      <span
-                        to="#"
-                        className="relative pl-6 before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 
-                          before:w-2 before:h-1 before:bg-white"
-                      >
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+            {/* Services List */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Services
+              </h3>
+              <ul className="space-y-2 text-sm text-gray-700 font-semibold">
+                {[
+                  "Upload Excel/CSV",
+                  "Live Database Connection",
+                  "AI Data Analysis",
+                  "Chart Generator",
+                  "SQL Query Builder",
+                  "No-Code Interface",
+                  "Customer Support",
+                ].map((item, index) => (
+                  <li key={index} className="hover:text-purple-600 transition">
+                    <span className="relative pl-5">
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-              {/* Info */}
-              <div className="ml-10">
-                <h3 className="text-xl font-semibold mb-4 text-white">
-                  Information
-                </h3>
-                <p className="text-base mb-2">
-                  <span className="text-gray-200 font-semibold">Phone:</span>{" "}
+            {/* Contact Info */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Contact
+              </h3>
+              <div className="space-y-2 text-sm text-gray-700">
+                <p>
+                  <span className="font-semibold text-gray-800">Phone:</span>{" "}
                   +91 9981633129
                 </p>
-                <p className="text-base mb-2">
-                  <span className="text-gray-200 font-semibold">Email:</span>{" "}
+                <p>
+                  <span className="font-semibold text-gray-800">Email:</span>{" "}
                   tarunk@tanishanalytics.com
                 </p>
-                <p className="text-base mb-4">
-                  <span className="text-gray-200 font-semibold">Location:</span>{" "}
-                  A-17 Gujarati Colony, Phase 1, Rohit Nagar, Bhopal, Madhya
-                  Pradesh 462039
+                <p>
+                  <span className="font-semibold text-gray-800">Location:</span>{" "}
+                  A-17 Gujarati Colony, Phase 1, Rohit Nagar, Bhopal, MP 462039
                 </p>
-                <div className="flex gap-3">
-                  {[
-                    FaFacebookF,
-                    FaTwitter,
-                    FaGoogle,
-                    FaPinterestP,
-                    FaInstagram,
-                  ].map((Icon, index) => (
-                    <a
-                      key={index}
-                      href="#"
-                      className="w-9 h-9 bg-[#0e1029] hover:bg-purple-600 text-white rounded-md flex items-center justify-center transition"
-                    >
-                      <Icon size={16} />
-                    </a>
-                  ))}
-                </div>
+              </div>
+
+              {/* Social Icons */}
+              <div className="flex gap-3 mt-4">
+                {[
+                  FaFacebookF,
+                  FaTwitter,
+                  FaGoogle,
+                  FaPinterestP,
+                  FaInstagram,
+                ].map((Icon, i) => (
+                  <a
+                    key={i}
+                    href="#"
+                    className="w-9 h-9 rounded-md bg-gray-100 hover:bg-purple-500 text-gray-700 hover:text-white flex items-center justify-center transition duration-300 shadow-sm hover:shadow-md"
+                  >
+                    <Icon size={16} />
+                  </a>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Strip */}
-        <div className="text-center py-4 text-sm bg-[#0e1029] text-gray-400">
+        <div className="text-center bg-[#cbd9f7] py-5 w-[100vw] text-sm text-gray-800  border border-t-2 border-[#b2caff]">
           © 2025{" "}
-          <span className="text-purple-400 font-semibold">
-            Data Analysis Bot
-          </span>{" "}
-          All Rights Reserved
+          <span className="text-purple-600 font-medium">Data Analysis Bot</span>{" "}
+          · All Rights Reserved
         </div>
       </div>
     </footer>

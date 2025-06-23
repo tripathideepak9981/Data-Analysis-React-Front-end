@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 
 // Deployed backend url: http://35.154.165.174
 // Localhost url : http://127.0.0.1:8000
-const API_BASE_URL = "http://35.154.165.174";
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 const axiosConfig = {
   timeout: 100000,
@@ -96,7 +96,8 @@ export const avilableTables = async () => {
     })
     return response.data;
   } catch (error) {
-    return handleError(error, "Avalilable Tables")
+    console.log("Error Avalilable Tables", error)
+    return error;
   }
 }
 export const validateSQLQuery = async (sql_query, original_question = "") => {
@@ -123,7 +124,8 @@ const response = await axios.post(
 
     return response.data;
   } catch (error) {
-    return handleError(error, "validate SQL query");
+    console.log("Error in validate SQL query : ", error);
+    return error;
   }
 };
 
@@ -135,13 +137,13 @@ const handleError = (error, action = "processing-request") => {
   } else if (error.response?.data?.detail) {
     errorMessage = error.response?.data?.detail;
   }
-  Swal.fire({
-    icon: "error",
-    title: "Error",
-    text: errorMessage,
-    confirmButtonText: "OK",
-    width: "30vw",
-  });
+  // Swal.fire({
+  //   icon: "error",
+  //   title: "Error",
+  //   text: errorMessage,
+  //   confirmButtonText: "OK",
+  //   width: "30vw",
+  // });
   console.log(errorMessage)
   return { success: false, error: error.message };
 }
@@ -169,7 +171,8 @@ export const uploadFilesAPI = async (selectedFiles) => {
 
     return response.data;
   } catch (error) {
-    return handleError(error, "uploading files")
+    console.log("Error in uploading file : ", error);
+    return error;
   }
 };
 
@@ -204,7 +207,8 @@ export const exceuteQuery = async (query, signal) => {
 
     return response.data;
   } catch (error) {
-    return handleError(error, "execute query");
+    console.log("Error in execute query : ", error);
+    return error;
   }
 }
 
@@ -222,7 +226,8 @@ export const cleanFile = async (table_name) => {
     });
     return response.data;
   } catch (error) {
-    return handleError(error, "Cleaning files")
+    console.log("error in cleaning File : ", error);
+    return error;
   }
 }
 
@@ -240,19 +245,25 @@ export const cancel_clean_file = async (table_name) => {
 
     return response.data;
   } catch (error) {
-    return handleError(error, "Cancel Cleaning files")
+     console.log("Error Cancel Cleaning files :", error);
+     return error;
   }
 }
 
 
 export const connectToDatabase = async (dbParams) => {
+  const token = localStorage.getItem("access_token")
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/db/connect_db`, dbParams, axiosConfig);
+    const response = await axios.post(`${API_BASE_URL}/api/connect_db`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    } ,  dbParams, axiosConfig);
     console.log("Database connection response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error connecting to database:", error);
-    return handleError(error, "connecting to database");;
+    return error;
   }
 }
 
@@ -268,7 +279,8 @@ export const loadTablesApi = async (table_name) => {
     })
     return response.data;
   } catch (error) {
-    return handleError(error, "loading tables");
+    console.log("Error : ", error);
+    return error;
   }
 }
 

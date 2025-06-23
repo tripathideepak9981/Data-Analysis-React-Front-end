@@ -39,6 +39,7 @@ const HeroSection = ({isLoggedIn}) => {
     <>
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-violet-50/30 to-blue-50/30 pt-16">
         {/* Animated background elements */}
+          {/* Animated background elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-2 h-2 bg-violet-400 rounded-full animate-pulse"></div>
           <div className="absolute top-40 right-20 w-1 h-1 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
@@ -98,15 +99,71 @@ const HeroSection = ({isLoggedIn}) => {
               </div>
             </div>
 
-            {/* Right - 3D AI Analysis Scene */}
-            <div className="relative">
-              <div className="relative mx-auto max-w-lg">
+          <div className="relative">
+              {/* Main dashboard container */}
+              <div className="relative mx-auto max-w-lg max-h-full">
+                
                 {/* Background glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-violet-500/20 to-blue-500/20 rounded-3xl blur-3xl scale-110"></div>
                 
-                {/* 3D AI Analysis Scene */}
-                <div className="relative transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                  <AI3DAnalysisScene />
+                {/* Main dashboard */}
+                <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-6 transform rotate-2 hover:rotate-0 transition-transform duration-500">
+                  
+                  {/* Chat interface header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-blue-500 rounded-lg flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">AI</span>
+                      </div>
+                      <span className="font-semibold text-gray-800">Data Whisperer</span>
+                    </div>
+                    <div className="flex space-x-1">
+                      <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                      <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                    </div>
+                  </div>
+
+                  {/* Chat messages */}
+                  <div className="space-y-4 mb-6">
+                    <div className="flex justify-end">
+                      <div className="bg-gradient-to-r from-violet-600 to-blue-600 text-white px-4 py-2 rounded-2xl rounded-br-md max-w-xs">
+                        <p className="text-sm">Show me revenue by region</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-start">
+                      <div className="bg-gray-50 border border-gray-200 px-4 py-3 rounded-2xl rounded-bl-md max-w-xs">
+                        <p className="text-sm text-gray-700 mb-2">Here's your revenue analysis:</p>
+                        
+                        {/* Mini chart */}
+                        <div className="bg-white rounded-lg p-3 shadow-sm">
+                          <div className="flex justify-between items-end space-x-1 h-16">
+                            <div className="bg-violet-400 rounded-t" style={{height: '80%', width: '20px'}}></div>
+                            <div className="bg-blue-400 rounded-t" style={{height: '60%', width: '20px'}}></div>
+                            <div className="bg-teal-400 rounded-t" style={{height: '100%', width: '20px'}}></div>
+                            <div className="bg-violet-300 rounded-t" style={{height: '45%', width: '20px'}}></div>
+                          </div>
+                          <div className="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>NA</span>
+                            <span>EU</span>
+                            <span>APAC</span>
+                            <span>SA</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Typing indicator */}
+                  <div className="flex items-center space-x-2 text-gray-500">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                    </div>
+                    <span className="text-sm">AI is thinking...</span>
+                  </div>
                 </div>
 
                 {/* Floating insight cards */}

@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogIn, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { LogIn, Eye, EyeOff, Mail, Lock, BarChart3 } from "lucide-react";
+import { Button } from "../home/ui/Button";
+import { Input } from "../home/ui/input";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "../home/ui/card";
+import login from "../../assets/loginn.avif";
 import { sendSignInData } from "../../Api";
-import login from "../../assets/loginn.avif"; // ← Your image
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -34,15 +43,8 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    if (email.trim() === "") {
-      setError("Email cannot be empty");
-      return;
-    }
-
-    if (password.trim() === "") {
-      setError("Password cannot be empty");
-      return;
-    }
+    if (email.trim() === "") return setError("Email cannot be empty");
+    if (password.trim() === "") return setError("Password cannot be empty");
 
     setLoading(true);
     try {
@@ -53,8 +55,8 @@ export default function Login() {
           navigate("/");
         }, 2000);
       } else {
-        setLoading(false);
         setError("Login failed.");
+        setLoading(false);
       }
     } catch (err) {
       setError(
@@ -67,134 +69,132 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-100 to-blue-100 flex items-center justify-center font-sans px-4">
-      <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-4xl shadow-xl rounded-3xl bg-white/90 backdrop-blur-xl border border-gray-200 animate-fade-in">
-        {/* Left Panel */}
-        <div className="hidden md:flex flex-col items-center justify-center w-1/2 px-6 py-6 rounded-l-3xl">
-          <img
-            src={login}
-            alt="Login Illustration"
-            className="h-[300px] object-contain mb-2 select-none"
-            draggable="false"
-          />
-          <h2 className="text-2xl font-bold text-indigo-700 mb-1">
-            Welcome Back!
-          </h2>
-          <p className="text-sm text-gray-600 text-center max-w-xs">
-            “This portal makes managing my data Analysis effortless. Love it!”
-          </p>
-          <p className="text-xs mt-2 text-gray-500">— Modern AI bot</p>
-        </div>
-        {/* Right Panel - Login Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="w-full md:w-1/2 px-7 py-4 md:py-8 flex flex-col justify-center gap-2 bg-white/80 rounded-r-3xl"
-        >
-          <h1 className="text-2xl md:text-3xl font-bold text-indigo-800 mb-1 font-sans">
-            Sign in to your account
-          </h1>
-          <p className="text-sm text-gray-600 mb-3 font-medium">
-            Enter your credentials below
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 relative">
+      {/* Background Glow Elements */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-30 z-0"></div>
+      <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-br from-violet-400/20 to-blue-400/20 rounded-full blur-3xl animate-float z-0"></div>
+      <div
+        className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-teal-400/20 rounded-full blur-3xl animate-float z-0"
+        style={{ animationDelay: "2s" }}
+      ></div>
 
-          {error && (
-            <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm text-center border border-red-300 mb-3 animate-fade-in shadow">
-              {error}
-            </div>
-          )}
+      {/* Main Content */}
+      <div className="relative z-10 w-full max-w-md">
+        {/* Login Card */}
+        <Card className="backdrop-blur-lg bg-white/90 border border-white/20 shadow-2xl">
+          <CardHeader className="text-center pb-4">
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
+              Welcome Back
+            </CardTitle>
+            <CardDescription className="text-gray-600">
+              Sign in to continue your data analysis journey
+            </CardDescription>
+          </CardHeader>
 
-          {/* Email */}
-          <div className="relative mb-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Email
-            </label>
-            <div className="relative">
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+          <CardContent className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Error */}
+              {error && (
+                <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm text-center border border-red-300 animate-fade-in shadow">
+                  {error}
+                </div>
+              )}
+
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Email Address
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password */}
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                    className="pl-10 pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={loading}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
                 disabled={loading}
-                className="block w-full rounded-xl px-4 py-1.5 pl-9 bg-gray-100 focus:bg-white text-gray-900 
-        placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-2 
-        focus:ring-indigo-400 transition text-base"
-                autoComplete="email"
-              />
-              <Mail
-                className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
-                size={18}
-              />
-            </div>
-          </div>
+                className="w-full bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-violet-500/25 transition-all duration-300 transform hover:scale-105 group"
+              >
+                <span className="flex items-center justify-center space-x-2">
+                  {loading ? <Spinner /> : <LogIn size={20} />}
+                  <span>{loading ? "Signing In..." : "Sign In"}</span>
+                </span>
+              </Button>
+            </form>
 
-          {/* Password */}
-          <div className="relative mb-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-                className="block w-full rounded-xl px-4 py-1.5 pl-9 pr-10 bg-gray-100 focus:bg-white text-gray-900
-        placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-2 
-        focus:ring-indigo-400 transition text-base"
-                autoComplete="current-password"
-              />
-              <Lock
-                className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
-                size={18}
-              />
+            {/* Redirect */}
+            <div className="text-center text-sm text-gray-700 font-medium">
+              Don&apos;t have an account?{" "}
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() => navigate("/SignUp")}
+                className="text-violet-600 hover:text-violet-800 underline font-semibold"
                 disabled={loading}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                Create one
               </button>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-xl py-2 mt-2 font-semibold flex items-center justify-center gap-2
-      bg-gradient-to-br from-indigo-600 via-purple-500 to-blue-500 text-white focus:ring-2 focus:ring-indigo-500 shadow-lg
-      transition-all duration-200 hover:scale-[1.03] active:scale-100 disabled:opacity-80 disabled:cursor-not-allowed text-base"
-          >
-            {loading ? (
-              <>
-                <Spinner />
-                <span className="ml-2">Signing In...</span>
-              </>
-            ) : (
-              <>
-                <LogIn size={20} />
-                <span>Sign In</span>
-              </>
-            )}
-          </button>
-
-          {/* Redirect to Sign Up */}
-          <div className="mt-4 text-center text-sm text-gray-700 font-medium">
-            Don&apos;t have an account?{" "}
-            <button
-              type="button"
-              onClick={() => navigate("/SignUp")}
-              className="text-indigo-600 hover:text-indigo-800 underline font-semibold"
-              disabled={loading}
-            >
-              Create one
-            </button>
-          </div>
-        </form>
+        {/* Terms */}
+        <div className="text-center mt-6 text-xs text-gray-500">
+          <p>
+            By continuing, you agree to our{" "}
+            <a href="#" className="text-violet-600 hover:underline">
+              Terms of Service
+            </a>{" "}
+            and{" "}
+            <a href="#" className="text-violet-600 hover:underline">
+              Privacy Policy
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

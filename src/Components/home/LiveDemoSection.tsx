@@ -46,7 +46,7 @@ export const LiveDemoSection = () => {
               <div className="text-gray-500 text-sm font-medium">AI Data Chat</div>
             </div>
             
-            <div className="p-8 space-y-6 min-h-[400px] bg-gradient-to-br from-white to-violet-50/20">
+            <div className="p-8 space-y-6 min-h-[400px] bg-gradient-to-br from-gray-700 to-gray-800">
               {demoSteps.slice(0, currentStep + 1).map((step, index) => (
                 <div key={index} className={`flex ${step.type === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}>
                   {step.type === 'chart' ? (

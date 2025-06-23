@@ -8,13 +8,13 @@ import {
 
 export const FooterSection = () => {
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <footer id="contact" className="bg-gray-900 text-white">
+      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-6">
         <div className="grid md:grid-cols-4 gap-10">
           {/* Logo and Description */}
           <div className="col-span-1">
             <div className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-blue-400 bg-clip-text text-transparent mb-4">
-              AI Data Whisperer
+              AI Data Analysis
             </div>
             <p className="text-gray-400 leading-relaxed mb-6">
               Upload Excel or CSV files, connect live databases, and use AI to
@@ -69,8 +69,6 @@ export const FooterSection = () => {
                 "AI Data Analysis",
                 "Chart Generator",
                 "SQL Query Builder",
-                "No-Code Interface",
-                "Customer Support",
               ].map((item, i) => (
                 <li key={i} className="text-gray-400 hover:text-violet-400 transition">
                   {item}
@@ -98,21 +96,10 @@ export const FooterSection = () => {
         </div>
 
         {/* Bottom Strip */}
-        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-gray-800 mt-8 flex flex-col md:flex-row justify-center pt-3  items-center">
           <p className="text-gray-400 text-sm text-center">
-            © 2025 <span className="text-purple-400 font-medium">Data Analysis Bot</span> · All Rights Reserved
+            © 2025 <span className="text-purple-400 font-medium text-center">Data Analysis Bot</span> · All Rights Reserved
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            {["Privacy", "Terms", "Cookies"].map((item, i) => (
-              <a
-                key={i}
-                href="#"
-                className="text-gray-400 hover:text-violet-400 text-sm transition"
-              >
-                {item}
-              </a>
-            ))}
-          </div>
         </div>
       </div>
     </footer>

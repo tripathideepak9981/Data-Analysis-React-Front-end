@@ -1,62 +1,57 @@
 
-export const Testimonials = () => {
+const Testimonials = () => {
   const testimonials = [
     {
-      quote: "DataAI transformed how I analyze customer data. What used to take hours now takes minutes. The natural language queries are incredibly intuitive.",
+      quote: "This tool transformed how we analyze customer data. What used to take hours now takes minutes. The natural language queries are incredibly intuitive.",
       author: "Sarah Chen",
       role: "Data Analyst",
-      company: "TechStart Inc"
+      company: "TechFlow Inc."
     },
     {
-      quote: "As a marketer with no SQL background, this tool is a game-changer. I can get campaign insights instantly without bothering our dev team.",
-      author: "Mike Rodriguez",
-      role: "Marketing Manager",
-      company: "GrowthCo"
+      quote: "As a marketer, I'm not technical, but this platform makes me feel like a data scientist. I can get campaign insights instantly without bothering our dev team.",
+      author: "Marcus Rodriguez",
+      role: "Marketing Director",
+      company: "GrowthLabs"
     },
     {
-      quote: "We use DataAI for investor reporting and financial analysis. The AI insights help us spot trends we might have missed manually.",
-      author: "Emily Watson",
+      quote: "Game-changer for our startup. We make data-driven decisions faster than ever. The AI recommendations have helped us optimize our entire sales funnel.",
+      author: "Emily Foster",
       role: "Startup Founder",
-      company: "InnovateLab"
+      company: "InnovateNow"
     }
   ];
 
   return (
-    <section id="testimonials" className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="about" className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Trusted by Data Teams Everywhere
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Trusted by Data-Driven Teams
           </h2>
-          <p className="text-xl text-gray-600">
-            See how professionals are transforming their data workflows
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            See how professionals across industries use our platform
           </p>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-8">
+        
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {testimonials.map((testimonial, index) => (
             <div 
               key={index}
-              className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100"
+              className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300"
             >
               <div className="mb-6">
-                <div className="text-4xl text-blue-500 mb-4">"</div>
-                <p className="text-gray-700 leading-relaxed">
-                  {testimonial.quote}
+                <svg className="w-8 h-8 text-blue-600 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                </svg>
+                <p className="text-gray-700 leading-relaxed mb-6">
+                  "{testimonial.quote}"
                 </p>
               </div>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white font-semibold">
-                  {testimonial.author.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div className="ml-4">
-                  <div className="font-semibold text-gray-900">
-                    {testimonial.author}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {testimonial.role} at {testimonial.company}
-                  </div>
-                </div>
+              
+              <div className="border-t pt-6">
+                <p className="font-bold text-gray-900">{testimonial.author}</p>
+                <p className="text-blue-600 font-medium">{testimonial.role}</p>
+                <p className="text-gray-500 text-sm">{testimonial.company}</p>
               </div>
             </div>
           ))}
@@ -65,3 +60,5 @@ export const Testimonials = () => {
     </section>
   );
 };
+
+export default Testimonials;

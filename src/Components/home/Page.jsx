@@ -1,10 +1,10 @@
 import { React, useState } from "react";
-import { Navigation } from "./Navigation";
-import  HeroSection  from "./HeroSection";
+import Navigation from "./Navigation";
+import HeroSection from "./HeroSection";
 import { HowItWorksSection } from "./HowItWorksSection";
 import { LiveDemoSection } from "./LiveDemoSection";
-import { FeaturesSection } from "./FeaturesSection";
-import { TestimonialsSection } from "./TestimonialsSection";
+import { KeyFeaturesSection } from "./KeyFeaturesSection";
+import Testimonials from "./Testimonials";
 import { FAQSection } from "./FAQSection";
 import { FooterSection } from "./FooterSection";
 
@@ -25,9 +25,11 @@ export default function Header() {
       <HeroSection isLoggedIn={isLoggedIn} />
       <HowItWorksSection />
       <LiveDemoSection />
-      <FeaturesSection />
-      <TestimonialsSection />
+      <KeyFeaturesSection />
       <FAQSection />
+
+      <Testimonials />
+
       <FooterSection />
     </div>
   );

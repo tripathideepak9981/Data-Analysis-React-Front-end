@@ -15,7 +15,7 @@ const CustomNotificationCard = ({
       animate={{ y: 20, opacity: 1 }}
       exit={{ y: -60, opacity: 0 }}
       transition={{ duration: 0.4, type: "spring", stiffness: 120 }}
-      className="fixed top-0 left-1/2 z-50 transform -translate-x-1/2 w-full max-w-xl px-4"
+      className="fixed -top-3 left-[40vw] z-50 transform -translate-x-1/2 w-full max-w-[30vw] px-4"
     >
       <div
         className={`relative flex items-start px-6 py-5 gap-5 rounded-lg shadow-md transition-all duration-300 ${

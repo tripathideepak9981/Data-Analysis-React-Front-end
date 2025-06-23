@@ -1,11 +1,12 @@
 import { React, useState } from "react";
-import Feature from "./feature";
-import About from "./about";
-import HeroSection from "./heroSection";
-import FaqSection from "./FaqSection";
-import WorkProcess from "./WorkProcess";
-import Footer from "../Footer";
-import Navbar from "../Navbar";
+import { Navigation } from "./Navigation";
+import  HeroSection  from "./HeroSection";
+import { HowItWorksSection } from "./HowItWorksSection";
+import { LiveDemoSection } from "./LiveDemoSection";
+import { FeaturesSection } from "./FeaturesSection";
+import { TestimonialsSection } from "./TestimonialsSection";
+import { FAQSection } from "./FAQSection";
+import { FooterSection } from "./FooterSection";
 
 export default function Header() {
   const [username, setUsername] = useState(localStorage.getItem("username"));
@@ -15,18 +16,19 @@ export default function Header() {
   };
 
   return (
-    <div className="header px-0 py-0">
-      <Navbar
+    <div className="min-h-screen bg-white">
+      <Navigation
         username={username}
         setUsername={setUsername}
         isLoggedIn={isLoggedIn}
       />
       <HeroSection isLoggedIn={isLoggedIn} />
-      <About />
-      <WorkProcess />
-      <Feature className="mb-4" />
-      <FaqSection />
-      <Footer />
+      <HowItWorksSection />
+      <LiveDemoSection />
+      <FeaturesSection />
+      <TestimonialsSection />
+      <FAQSection />
+      <FooterSection />
     </div>
   );
 }

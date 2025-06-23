@@ -250,39 +250,53 @@ export const cancel_clean_file = async (table_name) => {
   }
 }
 
-
 export const connectToDatabase = async (dbParams) => {
-  const token = localStorage.getItem("access_token")
+  const token = localStorage.getItem("access_token");
+
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/connect_db`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response = await axios.post(
+      `${API_BASE_URL}/api/connect_db`,
+      dbParams, // ✅ send this as body
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    } ,  dbParams, axiosConfig);
+    );
+
     console.log("Database connection response:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error connecting to database:", error);
     return error;
   }
-}
+};
 
 
 export const loadTablesApi = async (table_name) => {
   try {
+    const token = localStorage.getItem("access_token"); // 🔑 Get token
+
     console.log("Loading Tables : " + table_name);
-    const response = await axios.post(`${API_BASE_URL}/api/db/load_tables`, table_name, {
-      headers: {
-        "Content-Type": "application/json"
-      },
-      ...axiosConfig
-    })
+
+    const response = await axios.post(
+      `${API_BASE_URL}/api/load_tables`,
+      table_name, // Should be an array
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` // ✅ Send token
+        }
+      }
+    );
+
     return response.data;
   } catch (error) {
-    console.log("Error : ", error);
+    console.log("Error : ", error.response?.data || error.message);
     return error;
   }
-}
+};
+
 
 export const sendSignUpData = async (formData) => {
   try {

@@ -1,8 +1,9 @@
 import { Button } from "./ui/button";
-import { Menu, UserCircle, X } from "lucide-react";
+import { Menu, X, User, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LuCircleUser } from "react-icons/lu";
+
 
 import { logoutUser } from "../../Api";
 
@@ -67,14 +68,25 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
             </div>
             <span className="text-xl font-bold text-gray-900">DataAnalyst</span>
           </div>
+<nav className="hidden md:flex items-center space-x-8">
+  <a href="#features" className="group relative text-gray-600 transition-colors hover:text-blue-600">
+    Features
+    <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
+  </a>
+  <a href="#demo" className="group relative text-gray-600 transition-colors hover:text-blue-600">
+    Demo
+    <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
+  </a>
+  <a href="#about" className="group relative text-gray-600 transition-colors hover:text-blue-600">
+    About
+    <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
+  </a>
+  <a href="#contact" className="group relative text-gray-600 transition-colors hover:text-blue-600">
+    Contact
+    <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
+  </a>
+</nav>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8 font-semibold">
-            <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
-            <a href="#demo" className="text-gray-600 hover:text-blue-600 transition-colors">Demo</a>
-            <a href="#about" className="text-gray-600 hover:text-blue-600 transition-colors">About</a>
-            <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
-          </nav>
 
           {/* Desktop Buttons or Avatar */}
           <div className="hidden md:flex items-center space-x-4">
@@ -86,38 +98,42 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
                   className="w-10 h-10 rounded-full cursor-pointer hover:scale-110 transition"
                   alt="User"
                 /> */}
-                <UserCircle   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                 size={10}  className="w-10 h-10 rounded-full cursor-pointer hover:scale-110 transition " color="gray"
-                 />
-                {isDropdownOpen && (
-                  <div
-                    ref={dropdownRef}
-                    className="absolute right-0 top-14 w-72 bg-white rounded-xl border border-gray-200 shadow-2xl p-4 z-50 animate-fade-in"
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      {/* <img
-                        src={user2}
-                        alt="User avatar"
-                        className="w-12 h-12 rounded-full shadow-md"
-                      /> */}
-                      <UserCircle size={12} color="gray" className="w-12 h-12 bg-white "
-                      />
-                      <div>
-                        <div className="font-semibold text-gray-900">{username || "User"}</div>
-                        <div className="text-sm text-gray-500 truncate max-w-[150px]">
-                          example@email.com
-                        </div>
-                      </div>
-                    </div>
-                    <div className="border-t border-gray-200 mb-4"></div>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-2 mt-2 rounded-md transition-all duration-300"
-                    >
-                      Log Out
-                    </button>
-                  </div>
-                )}
+                <User
+  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+  size={24}
+  className="w-10 h-10 p-2 rounded-full cursor-pointer transition hover:scale-105 bg-gray-100 text-gray-500 border border-gray-300"
+/>
+
+{isDropdownOpen && (
+  <>
+    <div
+      ref={dropdownRef}
+      className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 z-50"
+    >
+      {/* Top User Info Section */}
+      <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 ">
+        <div className="w-12 h-12 flex items-center justify-center text-white text-lg font-semibold rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-md">
+          {username?.slice(0, 2).toUpperCase()}
+        </div>
+        <div>
+          <h4 className="text-sm font-semibold text-gray-900">{username}</h4>
+        </div>
+      </div>
+
+      {/* Logout Option */}
+      <div className="py-3">
+        <div
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-5 py-2 text-sm font-medium text-red-600  hover:bg-red-50 rounded-b-xl cursor-pointer transition-all"
+        >
+          <LogOut size={16} />
+          Log Out
+        </div>
+      </div>
+    </div>
+  </>
+)}
+
               </div>
             ) : (
               <>
@@ -149,18 +165,25 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
               <div className="flex flex-col space-y-2 pt-4">
                 {isLoggedIn() ? (
                   <>
-                    <div className="flex items-center gap-3">
-                      <LuCircleUser className="w-10 h-10 rounded-full shadow-md"/>
-                      <div>
-                        <div className="font-semibold text-gray-900">{username || "User"}</div>
-                      </div>
-                    </div>
-                    <Button
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 animate-fade-in">
+<div className="py-1">
+<a
+                      href="#settings"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+>
+<User size={16} className="mr-3" />
+                      {username}
+</a>
+<a
                       onClick={handleLogout}
-                      className="bg-red-500 hover:bg-red-600 text-white mt-2"
-                    >
-                      Log Out
-                    </Button>
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+>
+<LogOut size={16} className="mr-3" />
+                      Logout
+</a>
+</div>
+</div>
+                   
                   </>
                 ) : (
                   <>

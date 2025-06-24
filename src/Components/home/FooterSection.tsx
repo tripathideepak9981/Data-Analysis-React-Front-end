@@ -8,7 +8,7 @@ import {
 
 export const FooterSection = () => {
   return (
-    <footer id="contact" className="bg-gray-900 text-white">
+    <footer id="about" className="bg-gray-900 text-white">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-6">
         <div className="grid md:grid-cols-4 gap-10">
           {/* Logo and Description */}

@@ -7,6 +7,7 @@ import { KeyFeaturesSection } from "./KeyFeaturesSection";
 import Testimonials from "./Testimonials";
 import { FAQSection } from "./FAQSection";
 import { FooterSection } from "./FooterSection";
+import ModernContactSection from "./MorderContactSection";
 
 export default function Header() {
   const [username, setUsername] = useState(localStorage.getItem("username"));
@@ -27,8 +28,9 @@ export default function Header() {
       <LiveDemoSection />
       <KeyFeaturesSection />
       <FAQSection />
-
-      <Testimonials />
+      {/* 
+      <Testimonials /> */}
+      <ModernContactSection />
 
       <FooterSection />
     </div>

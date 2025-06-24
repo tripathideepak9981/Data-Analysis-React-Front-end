@@ -144,11 +144,11 @@ const ModernContactSection = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-4">
+        <div className="grid grid-cols-1 mx-40 lg:grid-cols-3 gap-12">
+          <div className="lg:col-span-3">
             <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-2xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-500">
               <CardContent className="p-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6 ">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2 group">
                       <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">Full Name *</Label>

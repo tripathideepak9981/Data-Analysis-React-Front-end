@@ -112,7 +112,7 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
     >
       {/* Top User Info Section */}
       <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 ">
-        <div className="w-12 h-12 flex items-center justify-center text-white text-lg font-semibold rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-md">
+        <div className="w-8 h-8 flex items-center justify-center text-white text-lg font-semibold rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-md">
           {username?.slice(0, 2).toUpperCase()}
         </div>
         <div>
@@ -121,7 +121,7 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
       </div>
 
       {/* Logout Option */}
-      <div className="py-3">
+      <div className="">
         <div
           onClick={handleLogout}
           className="flex items-center gap-3 px-5 py-2 text-sm font-medium text-red-600  hover:bg-red-50 rounded-b-xl cursor-pointer transition-all"

@@ -1,66 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { X } from "lucide-react";
-import { avilableTables, joinTables } from "../../../Api";
-import CustomNotificationCard from "../../Card/CustomNotificationCard";
 import {
   MdJoinLeft,
   MdJoinRight,
   MdJoinInner,
   MdJoinFull,
 } from "react-icons/md";
-
-const Dropdown = ({
-  selectedTable,
-  selectedColumn,
-  setSelectedTable,
-  setSelectedColumn,
-  tables,
-}) => (
-  <div className="bg-white rounded-xl shadow-md p-4 w-full md:w-[22vw] space-y-4">
-    <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-1">
-        Table
-      </label>
-      <select
-        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-        value={selectedTable}
-        onChange={(e) => {
-          setSelectedTable(e.target.value);
-          setSelectedColumn("");
-        }}
-      >
-        <option value="">Select table</option>
-        {Array.isArray(tables) &&
-          tables.map((table) => (
-            <option key={table.table_name} value={table.table_name}>
-              {table.table_name}
-            </option>
-          ))}
-      </select>
-    </div>
-    <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-1">
-        Column
-      </label>
-      <select
-        className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-        value={selectedColumn}
-        onChange={(e) => setSelectedColumn(e.target.value)}
-      >
-        <option value="">Select column</option>
-        {Array.isArray(tables) &&
-          tables
-            .find((t) => t.table_name === selectedTable)
-            ?.columns?.map((col) => (
-              <option key={col} value={col}>
-                {col}
-              </option>
-            ))}
-      </select>
-    </div>
-  </div>
-);
+import { avilableTables, joinTables } from "../../../Api";
+import CustomNotificationCard from "../../Card/CustomNotificationCard";
 
 const PopupJoin = ({ closeOpenedPopupJoin }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -85,20 +33,15 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
             setMessageTitle("error");
             setMessage("No data is available, first add data!");
           } else {
-            setMessageTitle("");
             setMessage("");
+            setMessageTitle("");
           }
-        } else {
-          setTables([]);
-          setMessageTitle("error");
-          setMessage("Invalid data received from server.");
         }
       } catch (error) {
         setMessageTitle("error");
         setMessage("Failed to load table data.");
       }
     };
-
     fetchTables();
   }, []);
 
@@ -130,25 +73,24 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
     try {
       const response = await joinTables(payload);
       if (response && response.preview?.length > 0) {
-        const storedUploadedFile = localStorage.getItem("uploadedFile");
-        const storedTablePreview = localStorage.getItem("tablePreview");
-
         const newFile = {
           name: response.joined_table_name?.trim(),
           createdDate: new Date().toISOString().split("T")[0],
         };
 
+        const storedUploadedFile = localStorage.getItem("uploadedFile");
+        const storedTablePreview = localStorage.getItem("tablePreview");
+
         const updatedFile = storedUploadedFile
           ? [...JSON.parse(storedUploadedFile), newFile]
           : [newFile];
-
-        localStorage.setItem("uploadedFile", JSON.stringify(updatedFile));
 
         const existingPreview = storedTablePreview
           ? JSON.parse(storedTablePreview)
           : {};
         existingPreview[response.joined_table_name.trim()] = response.preview;
 
+        localStorage.setItem("uploadedFile", JSON.stringify(updatedFile));
         localStorage.setItem("tablePreview", JSON.stringify(existingPreview));
 
         setTimeout(() => {
@@ -156,37 +98,42 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
           setMessage(
             "Joined table created. You can now run cross-table queries."
           );
-        }, 2000);
+        }, 1500);
       } else {
         setMessageTitle("error");
         setMessage("Join failed");
       }
-    } catch (error) {
+    } catch {
       setMessageTitle("error");
       setMessage("Join failed!");
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 2000);
+      setTimeout(() => setIsLoading(false), 2000);
     }
+  };
+
+  const JoinTypeIcon = {
+    INNER: <MdJoinInner className="w-6 h-6 text-white" />,
+    LEFT: <MdJoinLeft className="w-6 h-6 text-white" />,
+    RIGHT: <MdJoinRight className="w-6 h-6 text-white" />,
+    FULL: <MdJoinFull className="w-6 h-6 text-white" />,
   };
 
   return (
     <Dialog
       open={isOpen}
       onClose={() => setIsOpen(false)}
-      className="fixed -top-20 inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
     >
-      <Dialog.Panel className="relative bg-white px-6 py-4 md:px-8 md:py-4 w-[95vw] max-w-[55vw] rounded-xl shadow-xl flex flex-col gap-3">
-        {/* Close Button */}
+      <Dialog.Panel className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 w-[75vw] max-w-5xl rounded-xl shadow-2xl p-6 space-y-6 overflow-y-auto max-h-[95vh]">
+        {/* ❌ Close Button */}
         <button
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition"
           onClick={() => closeOpenedPopupJoin()}
         >
-          <X className="w-5 h-5" />
+          <X className="w-6 h-6" />
         </button>
 
-        {/* Message */}
+        {/* 🔔 Notification */}
         {message && (
           <CustomNotificationCard
             title={messageTitle}
@@ -195,50 +142,52 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
           />
         )}
 
-        {/* Joined Table Name Input */}
-        <div className="mt-3">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Enter Joined Table Name:
+        {/* 🔧 Header */}
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+            {JoinTypeIcon[joinType]}
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Create Join</h2>
+            <p className="text-sm text-gray-600">
+              Combine data from multiple tables with join operations.
+            </p>
+          </div>
+        </div>
+
+        {/* 📛 New Table Name */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">
+            Joined Table Name
           </label>
           <input
             type="text"
             value={newTableName}
             onChange={(e) => setNewTableName(e.target.value)}
             placeholder="e.g., orders_customers"
-            className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+            className="w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-2 focus:ring-indigo-500 text-sm"
           />
         </div>
 
-        {/* Dropdowns and Join Selector */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <Dropdown
+        {/* 🔗 Join Builder */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          <DropdownSelector
+            title="Left Table"
+            tables={tables}
             selectedTable={leftTable}
             selectedColumn={leftColumn}
             setSelectedTable={setLeftTable}
             setSelectedColumn={setLeftColumn}
-            tables={tables}
           />
 
-          {/* Join Type Selector */}
-          <div className="flex flex-col items-center gap-3 mt-4 md:mt-0">
-            <div className="w-12 h-12 bg-white border-4 border-gray-500 rounded-full flex items-center justify-center">
-              {joinType === "INNER" && (
-                <MdJoinInner className="w-6 h-6 text-gray-700" />
-              )}
-              {joinType === "LEFT" && (
-                <MdJoinLeft className="w-6 h-6 text-gray-700" />
-              )}
-              {joinType === "RIGHT" && (
-                <MdJoinRight className="w-6 h-6 text-gray-700" />
-              )}
-              {joinType === "FULL" && (
-                <MdJoinFull className="w-6 h-6 text-gray-700" />
-              )}
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-md flex items-center justify-center">
+              {JoinTypeIcon[joinType]}
             </div>
             <select
-              className="text-sm border border-indigo-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               value={joinType}
               onChange={(e) => setJoinType(e.target.value)}
+              className="text-sm border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-indigo-500"
             >
               <option value="INNER">INNER JOIN</option>
               <option value="LEFT">LEFT JOIN</option>
@@ -247,49 +196,28 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
             </select>
           </div>
 
-          <Dropdown
+          <DropdownSelector
+            title="Right Table"
+            tables={tables}
             selectedTable={rightTable}
             selectedColumn={rightColumn}
             setSelectedTable={setRightTable}
             setSelectedColumn={setRightColumn}
-            tables={tables}
           />
         </div>
 
-        {/* Submit Button */}
-        <div className="flex justify-center mt-0">
+        {/* 🚀 Submit Button */}
+        <div className="flex justify-center pt-2">
           <button
             onClick={handleCreateJoin}
             disabled={isLoading}
-            className={`bg-indigo-600 text-white px-8 py-3 rounded-lg shadow-md transition text-sm font-medium 
-              ${
-                isLoading
-                  ? "cursor-not-allowed opacity-70"
-                  : "hover:bg-indigo-700"
-              }`}
+            className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-lg shadow-md transition text-sm font-medium ${
+              isLoading ? "cursor-not-allowed opacity-70" : "hover:scale-105"
+            }`}
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <svg
-                  className="animate-spin h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 100 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
-                  />
-                </svg>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Creating Join...
               </div>
             ) : (
@@ -299,6 +227,62 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
         </div>
       </Dialog.Panel>
     </Dialog>
+  );
+};
+
+// 🔽 Dropdown Selector Component
+const DropdownSelector = ({
+  title,
+  tables,
+  selectedTable,
+  selectedColumn,
+  setSelectedTable,
+  setSelectedColumn,
+}) => {
+  const columns =
+    tables.find((table) => table.table_name === selectedTable)?.columns || [];
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-200 w-full space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {title}
+        </label>
+        <select
+          className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-indigo-500"
+          value={selectedTable}
+          onChange={(e) => {
+            setSelectedTable(e.target.value);
+            setSelectedColumn("");
+          }}
+        >
+          <option value="">Select table</option>
+          {tables.map((table) => (
+            <option key={table.table_name} value={table.table_name}>
+              {table.table_name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Column
+        </label>
+        <select
+          className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-indigo-500"
+          value={selectedColumn}
+          onChange={(e) => setSelectedColumn(e.target.value)}
+          disabled={!selectedTable}
+        >
+          <option value="">Select column</option>
+          {columns.map((col) => (
+            <option key={col} value={col}>
+              {col}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
   );
 };
 

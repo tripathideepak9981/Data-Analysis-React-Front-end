@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { TextareaAutosize } from "@mui/material";
-import { Paperclip, ArrowUp, X } from "lucide-react";
+import { Paperclip, Send, X } from "lucide-react";
 import { VscPreview } from "react-icons/vsc";
 import { useState } from "react";
 import { TbArrowsJoin2 } from "react-icons/tb";
@@ -35,19 +35,13 @@ const TextAreaBox = ({
   const [isFocused, setIsFocused] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(true);
 
-  const handleCreateJoin = () => {
-    openedPopupJoin();
-  };
-
-  const handlePreviewDataButton = () => {
-    openAddDataPopup();
-  };
-
-  const containerWidth = isSliderVisible ? "max-w-[74vw]" : "max-w-[93%]";
+  const handleCreateJoin = () => openedPopupJoin();
+  const handlePreviewDataButton = () => openAddDataPopup();
+  const containerWidth = isSliderVisible ? "" : "";
 
   return (
     <motion.div
-      className={`w-full mx-auto p-[8px] px-4  transition-all duration-200 ${containerWidth}`}
+      className={`w-full transition-all duration-200 ${containerWidth}`}
       animate="visible"
       initial="hidden"
       variants={containerVariants}
@@ -55,16 +49,14 @@ const TextAreaBox = ({
       {suggestionQuery?.suggested_questions?.length > 0 && (
         <>
           {showSuggestions ? (
-            <div className=" border border-[#d3eaff] rounded-xl bg-white p-3 mb-2">
+            <div className="border border-[#d3eaff] rounded-xl bg-white p-3 mb-2">
               <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2 text-gray-700 font-medium text-sm">
-                  <span className="text-base font-semibold">
-                    Suggested questions based on your Data
-                  </span>
-                </div>
+                <span className="text-base font-semibold text-gray-700">
+                  Suggested questions based on your Data
+                </span>
                 <button
-                  className="text-gray-500 hover:text-gray-700 transition"
                   onClick={() => setShowSuggestions(false)}
+                  className="text-gray-500 hover:text-gray-700 transition"
                 >
                   <MdKeyboardArrowDown className="h-5 w-5" />
                 </button>
@@ -90,8 +82,7 @@ const TextAreaBox = ({
               </motion.div>
             </div>
           ) : (
-            // Collapsed bar shown when suggestions are hidden
-            <div className="flex w-full  items-center justify-between px-4 py-2 mb-4 rounded-md bg-white border border-[#d3eaff]">
+            <div className="flex items-center justify-between px-4 py-2 mb-4 rounded-md bg-white border border-[#d3eaff]">
               <div className="text-sm font-semibold text-gray-600">
                 Suggested Query
               </div>
@@ -119,72 +110,67 @@ const TextAreaBox = ({
         </>
       )}
 
-      {/* Textarea */}
-      <div
-        className={`w-full p-2 px-3 rounded-xl border ${
-          isFocused
-            ? "border-[#3f2675] ring-1 ring-[#3f2675]"
-            : "border-[#5298f4] ring-1 ring-[#5298f4]"
-        } transition-all bg-white user-query`}
-      >
-        <TextareaAutosize
-          minRows={1}
-          maxRows={3}
-          placeholder="Add data or ask any question!"
-          value={query}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          className="w-full resize-none text-gray-800 placeholder-gray-500 bg-transparent border-none focus:outline-none user-query"
-        />
+      <div className="sticky bottom-0 bg-white/60 backdrop-blur-xl border-t border-white/20 p-5 shadow-2xl ">
+        {/* Action Buttons */}
+        <div className="flex items-center gap-3 mb-4">
+          <button
+            onClick={openAddDataPopup}
+            className="flex items-center gap-2 bg-white/50 text-purple-700 border border-purple-200/50 hover:bg-purple-50 hover:border-purple-300 rounded-xl text-sm font-medium px-3 py-2 shadow-sm transition-all duration-200 backdrop-blur-sm"
+          >
+            <Paperclip className="w-4 h-4" />
+            Add Data
+          </button>
+          <button
+            onClick={handlePreviewDataButton}
+            className="flex items-center gap-2 bg-white/50 text-blue-700 border border-blue-200/50 hover:bg-blue-50 hover:border-blue-300 rounded-xl text-sm font-medium px-3 py-2 shadow-sm transition-all duration-200 backdrop-blur-sm"
+          >
+            <VscPreview className="w-4 h-4" />
+            Data Preview
+          </button>
+          <button
+            onClick={handleCreateJoin}
+            className="flex items-center gap-2 bg-white/50 text-emerald-700 border border-emerald-200/50 hover:bg-emerald-50 hover:border-emerald-300 rounded-xl text-sm font-medium px-3 py-2 shadow-sm transition-all duration-200 backdrop-blur-sm"
+          >
+            <TbArrowsJoin2 className="w-4 h-4" />
+            Create Join
+          </button>
+        </div>
 
-        {/* Buttons */}
-        <div className="flex user-query justify-between items-center mt-2">
-          <div className="flex gap-2">
-            <button
-              onClick={openAddDataPopup}
-              className="flex items-center gap-2 px-4 py-1.5 bg-[#3a2565] text-white text-sm font-medium rounded-lg hover:bg-[#43287a] transition"
-            >
-              <Paperclip className="w-4 h-4" />
-              Add data
-            </button>
-
-            <button
-              onClick={handlePreviewDataButton}
-              className="flex items-center gap-2 px-4 py-1.5 bg-gray-100 text-sm text-gray-800 rounded-lg border hover:bg-gray-200 transition"
-            >
-              <VscPreview className="w-4 h-4" />
-              Data Preview
-            </button>
-
-            <button
-              onClick={handleCreateJoin}
-              className="flex items-center gap-2 px-4 py-1.5 bg-gray-100 text-sm text-gray-800 rounded-lg border hover:bg-gray-200 transition"
-            >
-              <TbArrowsJoin2 className="w-4 h-4" />
-              Create Join
-            </button>
+        {/* Input and Send */}
+        <div className="flex items-center gap-4">
+          <div className="flex-1 relative">
+            <TextareaAutosize
+              minRows={1}
+              maxRows={3}
+              placeholder="Ask anything or drop a file…"
+              value={query}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+              className="w-full resize-none text-base text-gray-800 placeholder-gray-500 bg-white/70 backdrop-blur-sm border border-white/30 focus:border-purple-400 focus:ring-purple-400/30 rounded-2xl px-4 py-3 shadow-sm transition-all duration-200 focus:shadow-md outline-none"
+            />
           </div>
 
           {!queryRunning ? (
             <button
               onClick={sendMessage}
-              className="bg-gray-200 hover:bg-gray-300 p-2 rounded-full"
+              disabled={!query.trim()}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white w-12 h-12 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center"
             >
-              <ArrowUp className="w-5 h-5 text-gray-700" />
+              <Send className="w-5 h-5" />
             </button>
           ) : (
             <button
               onClick={stopExecution}
-              className="bg-gray-200 hover:bg-gray-300 p-2 rounded-full"
+              className="bg-gray-200 hover:bg-gray-300 p-3 rounded-full shadow-md transition"
             >
-              <FaStop className="w-5 h-5 text-gray-700" />
+              <FaStop className="w-4 h-4 text-gray-700" />
             </button>
           )}
         </div>

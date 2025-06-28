@@ -1,20 +1,11 @@
 import { useEffect, useRef } from "react";
 import Typed from "typed.js";
 import ResponseCard from "./ResponseCard";
-import Bot from "../../assets/serach.svg";
+import { BarChart3 } from "lucide-react";
 
 const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
   const aiResponseRef = useRef(null);
   const chatContainerRef = useRef(null);
-  // const responseEndRef = useRef(null);
-  // useEffect(() => {
-  //   if (responseEndRef.current) {
-  //     responseEndRef.current.scrollIntoView({
-  //       behavior: "smooth",
-  //       block: "start", // or "center" for vertical centering
-  //     });
-  //   }
-  // }, [chatMessages.length]); // trigger when a new query is added
 
   useEffect(() => {
     if (aiResponseRef.current) {
@@ -34,7 +25,6 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
     <div
       className={`
         w-full 
-        bg-[#f0f1f9]
         border-rounded
         min-h-[40vh]
         mx-auto
@@ -42,31 +32,33 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
         flex 
         flex-col
         justify-start
-        chat-ui
-        ${isSliderVisible ? "lg:max-w-[100%]" : "lg:max-w-[100%]"}
+        user-query
+        ${isSliderVisible ? "w-[100%]" : "w-[100%]"}
       `}
     >
       <div
         ref={chatContainerRef}
         className={`
            flex-wrap
-          bg-[#f0f1f9]
           sm:p-2 
           space-y-1
           overflow-y-auto
           // scrollbar-hide
           w-full
           mt-0
-          ${isSliderVisible ? "lg:max-w-[100vw]" : "lg:max-w-[100vw]"}
+          ${isSliderVisible ? "lg:max-w-[78vw]" : "lg:max-w-[94vw]"}
         `}
       >
         <div className="flex flex-row justify-start mt-1">
           <div className="flex flex-row gap-3 ">
-            <div className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm">
-              <img src={Bot} className="h-6 w-6 text-[rgb(244,242,250)]" />
+            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 shadow-lg shadow-purple-400/30">
+              <BarChart3 className="w-5 h-5 text-white" />
             </div>
             <div className="bg-white border border-gray-200 shadow-md rounded-xl rounded-tl-sm py-2 px-4 max-w-[42vw] font-sans">
-              <h2 className="chat-ui text-gray-800 " ref={aiResponseRef}></h2>
+              <h2
+                className="user-query text-gray-800 "
+                ref={aiResponseRef}
+              ></h2>
             </div>
           </div>
         </div>

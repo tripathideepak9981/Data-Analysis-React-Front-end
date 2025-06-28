@@ -288,7 +288,7 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
   const ChartComponent = chartType === "bar" ? Bar : Line;
 
   return (
-    <div className="w-full overflow-x-auto scrollbar-xy bg-white">
+    <div className="w-full overflow-x-auto scrollbar-hide bg-white">
       <div
         style={{
           width: `${Math.max(1000, chartData.labels.length * 100)}px`,
@@ -307,7 +307,7 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
       {/* Fixed Dynamic Legend */}
       {chartData.datasets && chartData.datasets.length >= 0 && (
         <div
-          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-white mb-5 flex gap-2"
+          className="absolute  bottom-0 left-1/2 transform -translate-x-1/2 bg-white flex gap-2"
           style={{ zIndex: 10 }}
         >
           {chartData.datasets.map((dataset, index) => (

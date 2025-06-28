@@ -20,6 +20,7 @@ import CustomNotificationCard from "../../Card/CustomNotificationCard";
 import ConfirmCleanModal from "../../Card/ConfirmCleanModal";
 import { CheckCircle, Loader2 } from "lucide-react";
 import excel from "../../../assets/excel.svg";
+import { X } from "lucide-react";
 
 const steps = [
   "Execution is in Progress",
@@ -39,7 +40,12 @@ const mockFiles = [
   },
 ];
 
-const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
+const AddDataPopup = ({
+  setShowChatNotification,
+  setSuggestionQuery,
+  closeAddDataPopup,
+}) => {
+  // ... keep existing code (all state variables and hooks remain the same)
   const [isLoading, setIsLoading] = useState();
   const [isCleaning, setIsCleaning] = useState();
   const [activeTab, setActiveTab] = useState("static");
@@ -111,73 +117,104 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
     const allStepsDone = completedSteps.length === dynamicSteps.length;
 
     return (
-      <div className="w-full max-w-sm mx-auto mt-12 p-6 bg-gradient-to-br from-white to-indigo-50 shadow-2xl rounded-3xl border border-indigo-200">
-        <h2 className="text-2xl font-bold text-center text-indigo-700 tracking-wide mb-6">
-          Data Processing
-        </h2>
+      <div className="w-full max-w-lg mx-auto mt-12 p-8 bg-gradient-to-br from-white via-blue-50 to-indigo-100 backdrop-blur-lg border border-blue-200/50 shadow-2xl rounded-3xl">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4">
+            <svg
+              className="w-8 h-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+            Data Processing
+          </h2>
+          <p className="text-gray-600 text-sm">
+            Processing your data with precision
+          </p>
+        </div>
 
-        <div className="flex flex-col gap-6 relative px-4">
+        <div className="space-y-6">
           {dynamicSteps.map((step, index) => {
             const isCurrent = currentStep === index;
             const isCompleted = completedSteps.includes(index);
             const isLast = index === dynamicSteps.length - 1;
 
             return (
-              <div key={index} className="relative flex items-center gap-4">
-                {/* Connector */}
+              <div key={index} className="relative flex items-center gap-5">
+                {/* Connector Line */}
                 {!isLast && (
-                  <span className="absolute left-3 top-6 w-px h-5 bg-gradient-to-b from-indigo-200 to-indigo-500 z-0" />
+                  <div className="absolute left-5 top-12 w-0.5 h-8 bg-gradient-to-b from-blue-300 to-indigo-400" />
                 )}
 
-                {/* Icon */}
-                <div className="z-10">
+                {/* Step Icon */}
+                <div className="relative z-10">
                   {isCompleted ? (
-                    <CheckCircle
-                      className="text-green-500 drop-shadow-md"
-                      size={26}
-                    />
+                    <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full shadow-lg">
+                      <CheckCircle className="text-white" size={20} />
+                    </div>
                   ) : isCurrent ? (
-                    <div className="relative flex items-center justify-center">
-                      <span className="absolute w-7 h-7 bg-indigo-100 rounded-full animate-ping" />
+                    <div className="relative flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg">
+                      <div className="absolute inset-0 bg-blue-400 rounded-full animate-ping opacity-75" />
                       <Loader2
-                        className="text-indigo-500 animate-spin"
-                        size={24}
+                        className="text-white animate-spin z-10"
+                        size={20}
                       />
                     </div>
                   ) : (
-                    <div className="w-5 h-5 rounded-full bg-gray-300 shadow-inner" />
+                    <div className="w-10 h-10 bg-gray-200 rounded-full border-4 border-gray-100 shadow-inner" />
                   )}
                 </div>
 
-                {/* Step Text */}
-                <p
-                  className={clsx(
-                    "text-base font-medium transition-all duration-300",
-                    isCompleted
-                      ? "text-green-700"
-                      : isCurrent
-                      ? "text-indigo-700 font-semibold"
-                      : "text-gray-500"
+                {/* Step Content */}
+                <div className="flex-1">
+                  <p
+                    className={clsx(
+                      "text-base font-semibold transition-all duration-500",
+                      isCompleted
+                        ? "text-green-700"
+                        : isCurrent
+                        ? "text-blue-700"
+                        : "text-gray-500"
+                    )}
+                  >
+                    {step}
+                  </p>
+                  {isCurrent && (
+                    <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+                      <div
+                        className="bg-gradient-to-r from-blue-500 to-indigo-600 h-1.5 rounded-full animate-pulse"
+                        style={{ width: "60%" }}
+                      />
+                    </div>
                   )}
-                >
-                  {step}
-                </p>
+                </div>
               </div>
             );
           })}
         </div>
 
         {allStepsDone && (
-          <div className="mt-8 text-center">
-            <p className="text-md text-indigo-600 animate-pulse font-semibold">
-              Finishing up... please wait
-            </p>
+          <div className="mt-8 text-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
+            <div className="inline-flex items-center gap-2 text-blue-700">
+              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+              <p className="font-semibold">Finishing up... please wait</p>
+            </div>
           </div>
         )}
       </div>
     );
   };
 
+  // ... keep existing code (all useEffect hooks and other functions remain the same)
   useEffect(() => {
     if (showNotification) {
       const timer = setTimeout(() => {
@@ -302,6 +339,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
       [data.table_name]: data.preview,
     }));
   };
+
   const handleRemoveFile = (indexToRemove) => {
     const fileToRemove = uploadedFiles[indexToRemove].name;
     Swal.fire({
@@ -310,7 +348,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
       html: '<p class="text-sm text-gray-600">Are you sure you want to remove the file.</p>',
       icon: "warning",
       showCancelButton: true,
-      width: "22rem", // ~384px
+      width: "22rem",
       padding: "1rem",
       background: "#fff",
       confirmButtonText: "Yes, remove it",
@@ -328,9 +366,9 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          setIsDeleting(true); // 🔵 Start loader
+          setIsDeleting(true);
 
-          await deleteTable(fileToRemove); // API call
+          await deleteTable(fileToRemove);
 
           const updatedUploadedFiles = uploadedFiles.filter(
             (_, i) => i !== indexToRemove
@@ -368,7 +406,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
               '<p class="text-base font-medium text-green-700">Removed!</p>',
             html: `<p class="text-sm text-gray-600">"${fileToRemove}" was removed successfully.</p>`,
             timer: 3000,
-            width: "22rem", // ~384px
+            width: "22rem",
             showConfirmButton: false,
             background: "#f0fdf4",
             customClass: {
@@ -385,7 +423,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
             html: `<p class="text-sm text-gray-600">${
               err.message || "Something went wrong."
             }</p>`,
-            width: "22rem", // ~384px
+            width: "22rem",
             background: "#fef2f2",
             confirmButtonText: "Okay",
             customClass: {
@@ -397,7 +435,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
             },
           });
         } finally {
-          setIsDeleting(false); // 🔴 Stop loader
+          setIsDeleting(false);
         }
       }
     });
@@ -407,14 +445,14 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
     const input = event.target;
     const files = Array.from(input.files || event.dataTransfer.files);
 
-    input.value = null; // Reset immediately after reading the files
+    input.value = null;
     if (uploadedFiles.length >= 3) {
       setNotification({
         visible: true,
         title: "error",
         text: "Only 3 files can be uploaded.",
       });
-      return; // Prevent further file uploads
+      return;
     }
 
     const oversizedFile = files.find((file) => file.size > 10 * 1024 * 1024);
@@ -446,10 +484,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
       const isDuplicate = uploadedFiles.some(
         (f) => f.name === uploadedTableName
       );
-      // if ((data.name = "AxiosError")) {
-      //   showNotifications("Error", "This file has already been uploaded.");
-      //   return;
-      // }
+
       if (isDuplicate) {
         showNotifications("Error", "This file has already been uploaded.");
         return;
@@ -477,7 +512,7 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
       setSelectedFiles([]);
       showNotifications("Error", "Something wrong on server, try again later.");
     } finally {
-      input.value = null; // Reset again, just in case
+      input.value = null;
       setSelectedFiles([]);
       setIsLoading(false);
     }
@@ -631,97 +666,154 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
 
   const UploadingLoadingEffect = () => {
     return (
-      /* From Uiverse.io by RaunakSpak */
-      <button
-        disabled=""
-        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg flex items-center transition duration-300 transform hover:scale-105 active:scale-95"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="animate-spin h-5 w-5 mr-3 text-white"
-        >
-          <circle
-            stroke-width="4"
-            stroke="currentColor"
-            r="10"
-            cy="12"
-            cx="12"
-            className="opacity-25"
-          ></circle>
-          <path
-            d="M4 12a8 8 0 018-8v8H4z"
-            fill="currentColor"
-            className="opacity-75"
-          ></path>
-        </svg>
-        Uploading File...
-      </button>
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200 max-w-sm w-full mx-4">
+          <div className="text-center">
+            <div className="relative inline-flex items-center justify-center w-16 h-16 mb-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full animate-pulse"></div>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="animate-spin h-8 w-8 text-white relative z-10"
+              >
+                <circle
+                  strokeWidth="3"
+                  stroke="currentColor"
+                  r="10"
+                  cy="12"
+                  cx="12"
+                  className="opacity-25"
+                ></circle>
+                <path
+                  d="M4 12a8 8 0 018-8v8H4z"
+                  fill="currentColor"
+                  className="opacity-75"
+                ></path>
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              Uploading Files
+            </h3>
+            <p className="text-gray-600 text-sm">
+              Please wait while we process your files...
+            </p>
+            <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full animate-pulse"
+                style={{ width: "70%" }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   };
 
   const DeletingLoadingEffect = () => {
     return (
-      <button
-        disabled=""
-        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg flex items-center transition duration-300 transform hover:scale-105 active:scale-95"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="animate-spin h-5 w-5 mr-3 text-white"
-        >
-          <circle
-            stroke-width="4"
-            stroke="currentColor"
-            r="10"
-            cy="12"
-            cx="12"
-            className="opacity-25"
-          ></circle>
-          <path
-            d="M4 12a8 8 0 018-8v8H4z"
-            fill="currentColor"
-            className="opacity-75"
-          ></path>
-        </svg>
-        Removing File...
-      </button>
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200 max-w-sm w-full mx-4">
+          <div className="text-center">
+            <div className="relative inline-flex items-center justify-center w-16 h-16 mb-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-pink-600 rounded-full animate-pulse"></div>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="animate-spin h-8 w-8 text-white relative z-10"
+              >
+                <circle
+                  strokeWidth="3"
+                  stroke="currentColor"
+                  r="10"
+                  cy="12"
+                  cx="12"
+                  className="opacity-25"
+                ></circle>
+                <path
+                  d="M4 12a8 8 0 018-8v8H4z"
+                  fill="currentColor"
+                  className="opacity-75"
+                ></path>
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              Removing File
+            </h3>
+            <p className="text-gray-600 text-sm">
+              Please wait while we remove the file...
+            </p>
+            <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-gradient-to-r from-red-500 to-pink-600 h-2 rounded-full animate-pulse"
+                style={{ width: "45%" }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
     );
   };
 
   return (
-    <div className="w-full h-full bg-white rounded-xl">
-      {/* Tabs */}
-      <div className="flex flex-row m-2 border-b">
-        <button
-          onClick={() => setActiveTab("static")}
-          className={`px-4 py-1 btn-standard ${
-            activeTab === "static"
-              ? "border-b-2 border-black text-gray-800"
-              : "text-gray-400"
-          }`}
-        >
-          My Static Files
-        </button>
-        <button
-          onClick={() => setActiveTab("connected")}
-          className={`px-4 py-2 btn-standard ${
-            activeTab === "connected"
-              ? "border-b-2 border-black text-gray-800"
-              : "text-gray-400"
-          }`}
-        >
-          Connected Data Sources
-        </button>
+    <div className="w-full h-full overflow-y-scroll bg-gradient-to-br from-gray-50 via-white to-blue-50 rounded-2xl border border-gray-200/50 shadow-xl scrollbar-hide">
+      {/* Enhanced Header with Tabs */}
+      <div className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-200/80 backdrop-blur-sm">
+        <div className="flex flex-row px-6 py-1">
+          {/* ❌ Close Button */}
+          <button
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition"
+            onClick={closeAddDataPopup}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => setActiveTab("static")}
+            className={`relative px-6 py-4 font-semibold text-sm transition-all duration-300 ${
+              activeTab === "static"
+                ? "text-blue-700 border-b-3 border-blue-500 bg-blue-50/50"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              My Static Files
+            </div>
+          </button>
+          <button
+            onClick={() => setActiveTab("connected")}
+            className={`relative px-6 py-4 font-semibold text-sm transition-all duration-300 ${
+              activeTab === "connected"
+                ? "text-blue-700 border-b-3 border-blue-500 bg-blue-50/50"
+                : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <FaDatabase className="w-4 h-4" />
+              Connected Data Sources
+            </div>
+          </button>
+        </div>
       </div>
-      {/* Static Files Tab */}
+
+      {/* Static Files Tab Content */}
       {activeTab === "static" && (
-        <>
-          <div className="flex justify-center mb-6">
-            {/* Hidden file input */}
+        <div className="py-3 px-8 space-y-3">
+          {/* Upload Section */}
+          <div className="text-center">
             <input
               type="file"
               ref={fileInputRef}
@@ -731,80 +823,194 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
               onChange={handleFileUpload}
             />
 
-            {/* Clickable Dropbox */}
             <div
               onClick={handleDropBoxClick}
-              className="flex flex-col border-2 border-dashed border-purple-400 rounded-md p-3 text-center text-purple-600 hover:bg-purple-50 transition-all w-full max-w-md cursor-pointer"
+              className="relative group max-w-lg mx-auto p-2 border-2 border-dashed border-blue-300 rounded-2xl bg-gradient-to-br from-blue-50/50 to-indigo-50/50 hover:from-blue-100/60 hover:to-indigo-100/60 transition-all duration-300 cursor-pointer overflow-hidden"
             >
-              <p className="mb-2 text-label">
-                <span className="underline">Click to upload</span> or drag and
-                drop
-              </p>
-              <p className="text-message text-gray-500">
-                Supports multiple files: CSV, XLSX, XLS
-              </p>
+              {/* Background decoration */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-              <p className="text-message text-gray-500">
-                Max file Limit (10 MB)
-              </p>
+              {/* Upload icon */}
+              <div className="relative z-10 mb-2">
+                <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              {/* Upload text */}
+              <div className="relative z-10 space-y-2">
+                <p className="text-base font-semibold text-gray-800">
+                  <span className="text-blue-600 underline hover:text-blue-700">
+                    Click to upload
+                  </span>{" "}
+                  or drag and drop
+                </p>
+                <p className="text-gray-600">
+                  Supports multiple files: CSV, XLSX, XLS
+                </p>
+                <p className="text-sm text-gray-500">
+                  Maximum file size: 10 MB
+                </p>
+              </div>
+
+              {/* Visual enhancements */}
+              <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full blur-xl"></div>
+              <div className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 rounded-full blur-lg"></div>
             </div>
           </div>
 
-          <div>
-            <div className="flex justify-between items-center my-1 px-4 py-2 bg-gray-100 rounded-md shadow-sm">
-              <div>
-                <h2 className="text-label text-gray-800">Available Files</h2>
-                <p className="text-xs text-gray-500">
-                  Select static files to associate with your analysis
-                </p>
+          {/* Files Section */}
+          <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
+            {/* Section Header */}
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100/80 px-6 py-3 border-b border-gray-200/60">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
+                    <svg
+                      className="w-5 h-5 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                      />
+                    </svg>
+                    Available Files
+                  </h3>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                    {uploadedFiles.length} files
+                  </span>
+                </div>
               </div>
             </div>
 
+            {/* Loading States */}
             {isCleaning && (
-              <div className="fixed -top-20 -right-20 inset-0 flex justify-center items-center z-50 bg-black/40">
+              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
                 <DataProcessingLoader fileCleaning={fileCleaning} />
               </div>
             )}
-            {isLoading && (
-              <div className="fixed inset-0 flex justify-center items-center z-50">
-                <UploadingLoadingEffect />
-              </div>
-            )}
+            {isLoading && <UploadingLoadingEffect />}
+            {isDeleting && <DeletingLoadingEffect />}
 
-            {isDeleting && (
-              <div className="fixed inset-0 flex justify-center items-center z-50">
-                <DeletingLoadingEffect />
-              </div>
-            )}
-
-            <div className=" min-h-[35vh] mt-3 max-h-[40%] rounded-lg">
+            {/* Files Table */}
+            <div className="min-h-[20vh]">
               {uploadedFiles.length === 0 ? (
-                <div className="text-center text-gray-600 text-label py-4">
-                  No files uploaded yet!
+                <div className="flex flex-col items-center justify-start py-8 text-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6">
+                    <svg
+                      className="w-8 h-8 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-700 mb-2">
+                    No files uploaded yet
+                  </h4>
+                  <p className="text-base text-gray-500">
+                    Start by uploading your first file above
+                  </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto mt-0 rounded-lg ">
+                <div className="overflow-x-auto">
                   <div
                     className={`${
                       uploadedFiles.filter((file) =>
                         file?.name
                           ?.toLowerCase()
                           .includes((searchTerm || "").toLowerCase())
-                      ).length > 2
-                        ? "h-[29vh] overflow-y-auto scrollbar-xy"
+                      ).length > 3
+                        ? "max-h-[40vh] overflow-y-auto"
                         : ""
                     }`}
                   >
-                    <table className="min-w-full table-fixed bg-white text-message text-left ">
-                      <thead className="bg-gray-300 text-gray-800 sticky top-0 z-10">
+                    <table className="w-full">
+                      <thead className="bg-gradient-to-r from-gray-100 to-gray-200/80 border-b border-gray-200 sticky top-0 z-10">
                         <tr>
-                          <th className="px-4 py-2 w-[45%] pl-10">File Name</th>
-                          <th className="px-4 py-2 w-[35%]">Upload Date</th>
-                          <th className="px-4 py-2 w-[25%]">Actions</th>
+                          <th className="px-8 py-2 text-left text-sm font-bold text-gray-800 tracking-wide">
+                            <div className="flex items-center gap-2">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                />
+                              </svg>
+                              File Name
+                            </div>
+                          </th>
+                          <th className="px-6 py-2 text-left text-sm font-bold text-gray-800 tracking-wide">
+                            <div className="flex items-center gap-2">
+                              {/* <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M8 7V3a2 2 0 012-2h6l2 2h6a2 2 0 012 2v4M8 7l4 8 4-8M8 7h16"
+                                />
+                              </svg> */}
+                              Upload Date
+                            </div>
+                          </th>
+                          <th className="px-6 py-2 text-left text-sm font-bold text-gray-800 tracking-wide">
+                            <div className="flex items-center gap-2">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                                />
+                              </svg>
+                              Actions
+                            </div>
+                          </th>
                         </tr>
                       </thead>
 
-                      <tbody>
+                      <tbody className="divide-y divide-gray-100">
                         {uploadedFiles
                           .filter((file) =>
                             file?.name
@@ -814,42 +1020,86 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                           .map((file, index) => (
                             <tr
                               key={index}
-                              className="border-b hover:bg-gray-100"
+                              className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-200"
                             >
-                              <td className="px-4 py-3 w-[45%] pl-4 break-words whitespace-pre-wrap">
-                                <div className="flex items-start gap-2">
-                                  <img src={excel} />
-                                  <span className="text-gray-800">
-                                    {file.name}
+                              <td className="px-8 py-2">
+                                <div className="flex items-center gap-4">
+                                  <div className="flex-shrink-0">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center shadow-sm">
+                                      <svg
+                                        className="w-5 h-5 text-white"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-semibold text-gray-900 break-words max-w-xs">
+                                      {file.name}
+                                    </p>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                      CSV File
+                                    </p>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td className="px-6 py-5">
+                                <div className="flex items-center gap-2">
+                                  {/* <svg
+                                    className="w-4 h-4 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M8 7V3a2 2 0 012-2h6l2 2h6a2 2 0 012 2v4M8 7l4 8 4-8M8 7h16"
+                                    />
+                                  </svg> */}
+                                  <span className="text-sm text-gray-700 font-medium">
+                                    {file.createdDate}
                                   </span>
                                 </div>
                               </td>
 
-                              <td className="px-4 py-3 w-[35%] text-gray-700">
-                                {file.createdDate}
-                              </td>
-                              <td className="px-4 py-3 w-[25%]">
+                              <td className="px-6 py-5">
                                 <div className="flex items-center gap-4">
-                                  <div className="relative flex items-center">
+                                  <div className="relative group">
                                     {showEyeHint && (
-                                      <div className="absolute left-[-150px] top-1/2 -translate-y-1/2 w-max bg-blue-500 text-white text-xs px-3 py-2 rounded shadow-lg whitespace-nowrap z-5 animate-fadeIn">
+                                      <div className="absolute left-[-180px] top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs px-4 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 animate-bounce">
                                         Click here to Preview
-                                        <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-blue-500 rotate-45 z-[-1]" />
+                                        <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-blue-500 rotate-45"></div>
                                       </div>
                                     )}
-                                    <IoEye
-                                      className={`text-blue-600 h-6 w-6 cursor-pointer transition-transform hover:text-blue-800 z-0${
-                                        showEyeHint ? "animate-bounce" : ""
-                                      }`}
+                                    <button
                                       onClick={() =>
                                         getPreviewByFileName(file.name)
                                       }
-                                    />
+                                      className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200 group-hover:scale-110"
+                                      title="Preview file"
+                                    >
+                                      <IoEye className="w-5 h-5" />
+                                    </button>
                                   </div>
-                                  <MdDeleteForever
-                                    className="text-red-800 h-6 w-6 cursor-pointer"
+
+                                  <button
                                     onClick={() => handleRemoveFile(index)}
-                                  />
+                                    className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+                                    title="Delete file"
+                                  >
+                                    <MdDeleteForever className="w-5 h-5" />
+                                  </button>
                                 </div>
                               </td>
                             </tr>
@@ -859,197 +1109,342 @@ const AddDataPopup = ({ setShowChatNotification, setSuggestionQuery }) => {
                   </div>
                 </div>
               )}
-              <ConfirmCleanModal
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
-                cleaningSummary={cleaningSummary}
+            </div>
+          </div>
+
+          {/* Modals and Notifications - keeping existing functionality */}
+          <ConfirmCleanModal
+            open={showModal}
+            onClose={() => setShowModal(false)}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+            cleaningSummary={cleaningSummary}
+          />
+
+          {notification.visible && (
+            <CustomNotificationCard
+              title={notification.title}
+              text={notification.text}
+              onClose={() =>
+                setNotification({ visible: false, title: "", text: "" })
+              }
+            />
+          )}
+
+          {showNotification &&
+            (card === "clean" ? (
+              <CustomNotificationCard
+                title="Data Cleaned!"
+                text="Your Data has been cleaned and stored, Successfully"
+                onClose={() => setShowNotification(false)}
               />
-
-              {notification.visible && (
-                <CustomNotificationCard
-                  title={notification.title}
-                  text={notification.text}
-                  onClose={() =>
-                    setNotification({ visible: false, title: "", text: "" })
-                  }
-                />
-              )}
-
-              {showNotification &&
-                (card === "clean" ? (
-                  <CustomNotificationCard
-                    title="Data Cleaned!"
-                    text="Your Data has been cleaned and stored, Successfully"
-                    onClose={() => setShowNotification(false)}
-                  />
-                ) : (
-                  <CustomNotificationCard
-                    title="You choose Skip! now"
-                    text="Your data has been stored, Successfully"
-                    onClose={() => setShowNotification(false)}
-                  />
-                ))}
-            </div>
-          </div>
-        </>
+            ) : (
+              <CustomNotificationCard
+                title="You choose Skip! now"
+                text="Your data has been stored, Successfully"
+                onClose={() => setShowNotification(false)}
+              />
+            ))}
+        </div>
       )}
+
+      {/* Connected Data Sources Tab */}
       {activeTab === "connected" && (
-        <div className="p-8 bg-white rounded-xl flex gap-8">
-          {/* Left Section: DB Cards */}
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              Connect Database
-            </h2>
+        <div className="p-8 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Database Connection Cards */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+                  Connect Database
+                </h2>
+                <p className="text-gray-600">
+                  Choose your database provider to establish a connection
+                </p>
+              </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {/* PostgreSQL */}
-              <div className="px-4 py-6 border rounded-lg hover:shadow-md transition space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"
-                      alt="PostgreSQL"
-                      className="h-6 w-6"
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* PostgreSQL Card */}
+                <div className="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-blue-300 transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <img
+                          src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"
+                          alt="PostgreSQL"
+                          className="h-7 w-7 brightness-0 invert"
+                        />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-800">
+                          PostgreSQL
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Advanced open source database
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setDbType("postgresql");
+                        setIsPopupOpen(true);
+                      }}
+                      className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center shadow-lg hover:scale-110"
+                      title="Connect PostgreSQL"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => setIsDataPreviewPopupOpen(true)}
+                    disabled={dbType !== "postgresql" && DbResponse !== null}
+                    className={`w-full px-6 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
+                      dbType === "postgresql"
+                        ? "bg-gradient-to-r from-gray-700 to-gray-800 text-white hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl"
+                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                    Data Preview
+                  </button>
+                </div>
+
+                {/* MySQL Card */}
+                <div className="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-orange-300 transition-all duration-300 hover:-translate-y-1">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <SiMysql className="h-7 w-7 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-800">
+                          MySQL
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Popular relational database
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setDbType("mysql");
+                        setIsPopupOpen(true);
+                      }}
+                      className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full hover:from-orange-600 hover:to-orange-700 transition-all duration-200 flex items-center justify-center shadow-lg hover:scale-110"
+                      title="Connect MySQL"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => setIsDataPreviewPopupOpen(true)}
+                    disabled={dbType !== "mysql" && DbResponse !== null}
+                    className={`w-full px-6 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
+                      dbType === "mysql"
+                        ? "bg-gradient-to-r from-gray-700 to-gray-800 text-white hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl"
+                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      />
+                    </svg>
+                    Data Preview
+                  </button>
+                </div>
+              </div>
+
+              {/* No Connections State */}
+              <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+                <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg
+                    className="w-10 h-10 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
                     />
-                    <span className="text-base font-medium text-gray-700">
-                      PostgreSQL
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setDbType("postgresql");
-                      setIsPopupOpen(true);
-                    }}
-                    className="text-gray-400 text-lg font-bold hover:text-blue-500 transition"
-                  >
-                    +
-                  </button>
+                  </svg>
                 </div>
-                <button
-                  onClick={() => setIsDataPreviewPopupOpen(true)}
-                  disabled={dbType !== "postgresql" && DbResponse !== null}
-                  title={
-                    dbType !== "postgresql" ? "Connect to PostgreSQL first" : ""
-                  }
-                  className={`w-full px-5 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition duration-200 ${
-                    dbType === "postgresql"
-                      ? "bg-gray-600 text-white hover:bg-gray-700 cursor-pointer"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
-                  }`}
-                >
-                  Data preview
-                </button>
-              </div>
-
-              {/* MySQL */}
-              <div className="px-4 py-6 border rounded-lg hover:shadow-md transition space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <SiMysql className="h-6 w-6 text-blue-500" />
-                    <span className="text-base font-medium text-gray-700">
-                      MySQL
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setDbType("mysql");
-                      setIsPopupOpen(true);
-                    }}
-                    className="text-gray-400 text-lg font-bold hover:text-blue-500 transition"
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  No Active Connections
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Create a connection from the database options above to get
+                  started
+                </p>
+                <div className="inline-flex items-center gap-2 text-sm text-blue-600">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    +
-                  </button>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Select a database provider to begin
                 </div>
-                <button
-                  onClick={() => setIsDataPreviewPopupOpen(true)}
-                  disabled={dbType !== "mysql" && DbResponse !== null}
-                  title={dbType !== "mysql" ? "Connect to MySQL first" : ""}
-                  className={`w-full px-5 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition duration-200 ${
-                    dbType === "mysql"
-                      ? "bg-gray-600 text-white hover:bg-gray-700 cursor-pointer"
-                      : "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
-                  }`}
-                >
-                  Data preview
-                </button>
               </div>
             </div>
 
-            {/* No connections block */}
-            <div className="flex flex-col items-center justify-center mt-10 text-center text-gray-600">
-              <div className="w-16 h-16 border rounded-md flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 7h.01M7 11h.01M7 15h.01M11 7h.01M11 11h.01M11 15h.01M15 7h.01M15 11h.01M15 15h.01"
-                  />
-                </svg>
+            {/* Information Panel */}
+            <div className="lg:col-span-1 space-y-6">
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-6">
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <h4 className="font-bold text-gray-800">
+                      About Connections
+                    </h4>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    A connection lets you and your team pull outside data into
+                    your sheets seamlessly.
+                  </p>
+                  <a
+                    href="#"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 font-medium"
+                  >
+                    View documentation
+                    <HiArrowNarrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-green-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                        />
+                      </svg>
+                    </div>
+                    <h4 className="font-bold text-gray-800">
+                      Security & Privacy
+                    </h4>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Your data and credentials are encrypted and stored securely
+                    with enterprise-grade protection.
+                  </p>
+                  <a
+                    href="#"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 font-medium"
+                  >
+                    Trust center
+                    <HiArrowNarrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-purple-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        />
+                      </svg>
+                    </div>
+                    <h4 className="font-bold text-gray-800">IP Allow-list</h4>
+                  </div>
+                  <p className="text-sm text-gray-600 leading-relaxed mb-3">
+                    Add both of our IPs to your network allow-list for secure
+                    access.
+                  </p>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1">
+                    <div className="font-mono text-sm text-gray-800 bg-white px-2 py-1 rounded border">
+                      44.240.255.40
+                    </div>
+                    <div className="font-mono text-sm text-gray-800 bg-white px-2 py-1 rounded border">
+                      54.68.134.35
+                    </div>
+                  </div>
+                  <a
+                    href="#"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 font-medium"
+                  >
+                    Learn more
+                    <HiArrowNarrowRight className="w-4 h-4" />
+                  </a>
+                </div>
               </div>
-              <p className="mt-4 font-medium text-gray-700">No connections</p>
-              <p className="text-sm text-gray-500">
-                Create a connection from the options above !
-              </p>
             </div>
           </div>
 
-          {/* Right Panel */}
-          <div className="w-[280px] mt-5 flex-shrink-0 text-sm space-y-8 text-gray-700">
-            <div>
-              <span className="font-semibold">About connections:</span> A
-              connection lets you and your team pull outside data into your
-              sheets.{" "}
-              <a
-                href="#"
-                className="text-blue-600 inline-flex items-center gap-1"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Docs
-              </a>
-            </div>
-
-            <div>
-              <span className="font-semibold">Security & privacy:</span> Your
-              data and credentials are encrypted and stored securely.{" "}
-              <a
-                href="#"
-                className="text-blue-600 inline-flex items-center gap-1"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Trust center
-              </a>
-            </div>
-
-            <div>
-              <span className="font-semibold">IP allow-list:</span> Add both of
-              our IPs to your network allow-list.{" "}
-              <a
-                href="#"
-                className="text-blue-600 inline-flex items-center gap-1"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Learn more
-              </a>
-              <div className="mt-2 bg-gray-100 p-2 rounded-md font-mono text-sm text-gray-800">
-                <div>44.240.255.40</div>
-                <div>54.68.134.35</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Popups */}
+          {/* Popups - keeping existing functionality */}
           {isPopupOpen && (
             <PopupForm
               isOpen={isPopupOpen}

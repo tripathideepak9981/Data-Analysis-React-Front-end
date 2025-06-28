@@ -24,8 +24,8 @@ const ConfirmCleanModal = ({
     ));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 transition-all">
-      <div className="relative bg-white w-full max-w-2xl rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] px-3 py-3 overflow-y-auto scrollbar-hide animate-fadeIn">
+    <div className="fixed inset-0 -top-10 z-50 flex items-center justify-center bg-black/50 transition-all">
+      <div className="relative bg-white w-full max-w-2xl rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] px-3 py-4 overflow-y-auto scrollbar-hide animate-fadeIn">
         {/* ❌ Close Button */}
         <button
           onClick={onClose}

@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { FaTable } from "react-icons/fa6";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import Bot from "../../assets/typed.svg";
-import user1 from "../../assets/user1.png";
+import { BarChart3 } from "lucide-react";
+import { User } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import Chart from "./Charts/Chart";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
@@ -331,7 +331,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
   }, [showSQL, response?.aiResponse?.sql_query]);
 
   return (
-    <div ref={responseEndRef} className="z-20 w-full space-y-3 bg-[#f0f1f9]">
+    <div ref={responseEndRef} className="z-20 w-full space-y-3 ">
       <div className="flex justify-end px-3 py-2 mt-3 ">
         <motion.div
           initial={{ opacity: 0, x: 50 }}
@@ -339,34 +339,38 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
           transition={{ duration: 0.4 }}
           className="flex items-start space-x-3"
         >
-          {/* User message box */}
-          <div
-            className="relative  bg-[#dbeafe] border border-[#e0e3f3] right-10
-      px-2 py-2 max-w-[30vw] rounded-tr-sm rounded-xl shadow-lg text-left
-      transition-all duration-300 "
-          >
-            <p className="text-gray-900 user-query font-semibold rounded-xl  leading-snug break-words whitespace-pre-wrap font-sans">
-              {response?.userQuery}
-            </p>
+          {/* User message box with updated styling */}
+          <div className="flex justify-end animate-fade-in">
+            <div className="max-w-2xl flex items-start flex-row-reverse space-x-reverse space-x-3">
+              {/* User Avatar */}
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg bg-gradient-to-r from-blue-500 to-purple-500">
+                <User className="w-5 h-5 text-white" />
+              </div>
 
-            {/* User avatar positioned top-right inside the box */}
-            <div className="absolute top-0 -right-11 ">
-              <img
-                src={user1}
-                alt="User Avatar"
-                className="h-8 w-8 rounded-full bg-white border border-gray-300 shadow"
-              />
+              {/* User Message Bubble */}
+              <div className="rounded-2xl px-6 py-3 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-tr-md">
+                <p className="text-sm leading-relaxed break-words whitespace-pre-wrap font-sans font-semibold">
+                  {response?.userQuery}
+                </p>
+                {/* <p className="text-xs time-stamp mt-2 text-white/70">
+                  {new Date(response?.timestamp).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p> */}
+              </div>
             </div>
           </div>
         </motion.div>
       </div>
 
       <div className="flex flex-row items-start space-x-3">
-        <div className="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-lg">
-          <img src={Bot} className="h-5 w-5 text-[rgb(244,242,250)]" />
+        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 shadow-lg shadow-purple-400/30">
+          <BarChart3 className="w-5 h-5 text-white" />
         </div>
+
         {showLoading && (
-          <div className="flex absolute left-12 mt-2 w-[90%] items-center  space-x-3 animate-blink bg-[#f0f1f9]">
+          <div className="flex absolute left-12 mt-2 w-[90%] items-center  space-x-3 animate-blink">
             <Loader2 className="w-5 h-5 text-gray-700 animate-spin" />
             <span className="text-sm font-medium text-gray-700">
               {loaderMessage}
@@ -922,6 +926,14 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                     </div>
                   </motion.div>
                 )}
+                {/* {response?.timestamp && !showLoading && (
+                  <p className="relative time-stamp p-2 px-6  text-xs text-gray-500 text-right">
+                    {new Date(response.timestamp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p> */}
+                {/* )} */}
               </>
             )}
           </>

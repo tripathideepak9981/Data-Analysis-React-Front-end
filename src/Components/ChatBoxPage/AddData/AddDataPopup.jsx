@@ -1,19 +1,29 @@
 import { useState, useRef, useEffect } from "react";
-import { FaDatabase } from "react-icons/fa";
-import { CiCirclePlus } from "react-icons/ci";
-
-import "../../../CoustomCss/LoadingButton.css";
-import { suggestedQueryResponse } from "../../../Api";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./card";
+import { Button } from "./button";
 import {
   Database,
-  Server,
-  Eye,
+  Plus,
   Shield,
-  Network,
-  ExternalLink,
-  Info,
+  Globe,
+  ArrowRight,
+  Check,
+  AlertCircle,
 } from "lucide-react";
-import { SiMysql } from "react-icons/si";
+
+import { FaDatabase } from "react-icons/fa";
+import { CiCirclePlus } from "react-icons/ci";
+import HelpTooltip from "./HelpTooltip";
+import "../../../CoustomCss/LoadingButton.css";
+import { suggestedQueryResponse } from "../../../Api";
+import { FileText } from "lucide-react";
+import { Server, Eye, Network, ExternalLink, Info } from "lucide-react";
 import clsx from "clsx";
 import { IoEye } from "react-icons/io5";
 import { MdDeleteForever } from "react-icons/md";
@@ -29,7 +39,6 @@ import DbDataPreviewPopup from "../PopupForm/DbDataPreviewPopup";
 import CustomNotificationCard from "../../Card/CustomNotificationCard";
 import ConfirmCleanModal from "../../Card/ConfirmCleanModal";
 import { CheckCircle, Loader2 } from "lucide-react";
-import excel from "../../../assets/excel.svg";
 import { X } from "lucide-react";
 
 const steps = [
@@ -39,23 +48,11 @@ const steps = [
   "Storing data",
 ];
 
-const mockFiles = [
-  {
-    name: "Coffee_Sales.csv",
-    type: "excel",
-  },
-  {
-    name: "Bitcoin_Whitepaper.pdf",
-    type: "pdf",
-  },
-];
-
 const AddDataPopup = ({
   setShowChatNotification,
   setSuggestionQuery,
   closeAddDataPopup,
 }) => {
-  // ... keep existing code (all state variables and hooks remain the same)
   const [isLoading, setIsLoading] = useState();
   const [isCleaning, setIsCleaning] = useState();
   const [activeTab, setActiveTab] = useState("static");
@@ -764,8 +761,13 @@ const AddDataPopup = ({
     <div className="w-full h-full overflow-y-scroll bg-gradient-to-br from-gray-50 via-white to-blue-50 rounded-2xl border border-gray-200/50 shadow-xl scrollbar-hide">
       {/* Enhanced Header with Tabs */}
       <div className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-200/80 backdrop-blur-sm">
+        <div className="flex items-center px-8 pt-4">
+          <h1 className="text-3xl font-bold text-gray-900 pr-4 pt-1">
+            Data Sources
+          </h1>
+          <HelpTooltip content="Connect external data sources to pull data directly into your analysis. You can connect to databases, APIs, and other data sources." />
+        </div>
         <div className="flex flex-row px-6 py-1">
-          {/* ❌ Close Button */}
           <button
             className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition"
             onClick={closeAddDataPopup}
@@ -776,24 +778,12 @@ const AddDataPopup = ({
             onClick={() => setActiveTab("static")}
             className={`relative px-6 py-4 font-semibold text-sm transition-all duration-300 ${
               activeTab === "static"
-                ? "text-blue-700 border-b-3 border-blue-500 bg-blue-50/50"
+                ? "text-blue-700 border-b-2 border-blue-500 bg-blue-50/50"
                 : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
             }`}
           >
             <div className="flex items-center gap-2">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+              <span>📁</span>
               My Static Files
             </div>
           </button>
@@ -801,12 +791,12 @@ const AddDataPopup = ({
             onClick={() => setActiveTab("connected")}
             className={`relative px-6 py-4 font-semibold text-sm transition-all duration-300 ${
               activeTab === "connected"
-                ? "text-blue-700 border-b-3 border-blue-500 bg-blue-50/50"
+                ? "text-blue-700 border-b-2 border-blue-500 bg-blue-50/50"
                 : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
             }`}
           >
             <div className="flex items-center gap-2">
-              <FaDatabase className="w-4 h-4" />
+              <span>🗄️</span>
               Connected Data Sources
             </div>
           </button>
@@ -829,16 +819,17 @@ const AddDataPopup = ({
 
             <div
               onClick={handleDropBoxClick}
-              className="relative group max-w-lg mx-auto p-2 border-2 border-dashed border-blue-300 rounded-2xl bg-gradient-to-br from-blue-50/50 to-indigo-50/50 hover:from-blue-100/60 hover:to-indigo-100/60 transition-all duration-300 cursor-pointer overflow-hidden"
+              className={`relative max-w-lg mx-auto px-8 py-3 border-2 border-dashed rounded-xl text-center transition-all duration-200
+      border-gray-300 hover:border-blue-400 hover:bg-gray-50 cursor-pointer`}
             >
-              {/* Background decoration */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              {/* Hidden full-area click */}
+              <div className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
 
               {/* Upload icon */}
-              <div className="relative z-10 mb-2">
-                <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 rounded-full bg-blue-100 text-blue-600 transition-all duration-200">
                   <svg
-                    className="w-6 h-6"
+                    className="w-7 h-7"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -854,31 +845,74 @@ const AddDataPopup = ({
               </div>
 
               {/* Upload text */}
-              <div className="relative z-10 space-y-2">
-                <p className="text-base font-semibold text-gray-800">
-                  <span className="text-blue-600 underline hover:text-blue-700">
-                    Click to upload
-                  </span>{" "}
-                  or drag and drop
-                </p>
-                <p className="text-gray-600">
+              <div className="space-y-1">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Click to upload or drag and drop
+                </h3>
+                <p className="text-sm text-gray-600 mb-2">
                   Supports multiple files: CSV, XLSX, XLS
                 </p>
-                <p className="text-sm text-gray-500">
-                  Maximum file size: 10 MB
-                </p>
+                <p className="text-sm text-gray-500">Max file size: 10 MB</p>
               </div>
 
-              {/* Visual enhancements */}
-              <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-blue-200/30 to-indigo-200/30 rounded-full blur-xl"></div>
-              <div className="absolute bottom-4 left-4 w-12 h-12 bg-gradient-to-br from-indigo-200/20 to-purple-200/20 rounded-full blur-lg"></div>
+              {/* File type icons (CSV, XLSX, XLS) */}
+              <div className="mt-3 flex items-center justify-center space-x-6 text-xs text-gray-500">
+                <div className="flex items-center space-x-1">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6M9 16h6M9 8h6M5 8h.01M5 16h.01M4 4h16v16H4V4z"
+                    />
+                  </svg>
+                  <span>CSV</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6M9 16h6M9 8h6M5 8h.01M5 16h.01M4 4h16v16H4V4z"
+                    />
+                  </svg>
+                  <span>XLSX</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12h6M9 16h6M9 8h6M5 8h.01M5 16h.01M4 4h16v16H4V4z"
+                    />
+                  </svg>
+                  <span>XLS</span>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Files Section */}
           <div className="bg-white rounded-2xl border border-gray-200/60 shadow-sm overflow-hidden">
             {/* Section Header */}
-            <div className="bg-gradient-to-r from-gray-50 to-gray-100/80 px-6 py-3 border-b border-gray-200/60">
+            <div className="bg-gradient-to-r from-gray-200 to-gray-300/80 px-6 py-3 border-b border-gray-200/60">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-semibold text-gray-800 flex items-center gap-2">
@@ -899,7 +933,7 @@ const AddDataPopup = ({
                   </h3>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                  <span className="px-3 py-1.5 bg-white border border-gray-400 text-blue-700 rounded-full text-sm font-medium">
                     {uploadedFiles.length} files
                   </span>
                 </div>
@@ -914,14 +948,13 @@ const AddDataPopup = ({
             )}
             {isLoading && <UploadingLoadingEffect />}
             {isDeleting && <DeletingLoadingEffect />}
-
             {/* Files Table */}
             <div className="min-h-[20vh]">
               {uploadedFiles.length === 0 ? (
                 <div className="flex flex-col items-center justify-start py-8 text-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6">
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                     <svg
-                      className="w-8 h-8 text-gray-400"
+                      className="w-7 h-7 text-gray-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -934,138 +967,77 @@ const AddDataPopup = ({
                       />
                     </svg>
                   </div>
-                  <h4 className="text-lg font-semibold text-gray-700 mb-2">
+                  <h4 className="text-lg font-semibold text-gray-700 mb-1">
                     No files uploaded yet
                   </h4>
-                  <p className="text-base text-gray-500">
+                  <p className="text-sm text-gray-500">
                     Start by uploading your first file above
                   </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <div
-                    className={`${
+                    className={`rounded-lg shadow border border-gray-200 bg-white ${
                       uploadedFiles.filter((file) =>
                         file?.name
-                          ?.toLowerCase()
-                          .includes((searchTerm || "").toLowerCase())
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
                       ).length > 3
                         ? "max-h-[40vh] overflow-y-auto"
                         : ""
                     }`}
                   >
-                    <table className="w-full">
-                      <thead className="bg-gradient-to-r from-gray-100 to-gray-200/80 border-b border-gray-200 sticky top-0 z-10">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gray-50 border-b">
                         <tr>
-                          <th className="px-8 py-2 text-left text-sm font-bold text-gray-800 tracking-wide">
-                            <div className="flex items-center gap-2">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                />
-                              </svg>
-                              File Name
-                            </div>
+                          <th className="px-6 py-3 text-left font-semibold text-gray-700">
+                            File Name
                           </th>
-                          <th className="px-6 py-2 text-left text-sm font-bold text-gray-800 tracking-wide">
-                            <div className="flex items-center gap-2">
-                              {/* <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M8 7V3a2 2 0 012-2h6l2 2h6a2 2 0 012 2v4M8 7l4 8 4-8M8 7h16"
-                                />
-                              </svg> */}
-                              Upload Date
-                            </div>
+                          <th className="px-6 py-3 text-left font-semibold text-gray-700">
+                            Upload Date
                           </th>
-                          <th className="px-6 py-2 text-left text-sm font-bold text-gray-800 tracking-wide">
-                            <div className="flex items-center gap-2">
-                              Actions
-                            </div>
+                          <th className="px-6 py-3 text-left font-semibold text-gray-700">
+                            Actions
                           </th>
                         </tr>
                       </thead>
-
-                      <tbody className="divide-y divide-gray-100">
+                      <tbody>
                         {uploadedFiles
                           .filter((file) =>
                             file?.name
-                              ?.toLowerCase()
+                              .toLowerCase()
                               .includes(searchTerm.toLowerCase())
                           )
                           .map((file, index) => (
                             <tr
                               key={index}
-                              className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-indigo-50/30 transition-all duration-200"
+                              className="border-b hover:bg-gray-50 transition-colors duration-150"
                             >
-                              <td className="px-8 py-2">
-                                <div className="flex items-center gap-4">
-                                  <div className="flex-shrink-0">
-                                    <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center shadow-sm">
-                                      <svg
-                                        className="w-5 h-5 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                        />
-                                      </svg>
-                                    </div>
+                              {/* File Name */}
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10  flex items-center justify-center">
+                                    <FileText className="h-5 w-5 text-blue-600" />
                                   </div>
-                                  <div>
-                                    <p className="text-sm font-semibold text-gray-900 break-words max-w-xs">
-                                      {file.name}
-                                    </p>
-                                  </div>
-                                </div>
-                              </td>
-
-                              <td className="px-6 py-5">
-                                <div className="flex items-center gap-2">
-                                  {/* <svg
-                                    className="w-4 h-4 text-gray-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M8 7V3a2 2 0 012-2h6l2 2h6a2 2 0 012 2v4M8 7l4 8 4-8M8 7h16"
-                                    />
-                                  </svg> */}
-                                  <span className="text-sm text-gray-700 font-medium">
-                                    {file.createdDate}
+                                  <span className="font-medium text-gray-900 break-all max-w-xs">
+                                    {file.name}
                                   </span>
                                 </div>
                               </td>
 
-                              <td className="px-6 py-5">
+                              {/* Upload Date */}
+                              <td className="px-6 py-4">
+                                <span className="text-gray-700">
+                                  {file.createdDate}
+                                </span>
+                              </td>
+
+                              {/* Actions */}
+                              <td className="px-6 py-4">
                                 <div className="flex items-center gap-4">
                                   <div className="relative group">
                                     {showEyeHint && (
-                                      <div className="absolute left-[-152px] top-[8px] -translate-y-1/2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs px-4 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 animate-bounce">
+                                      <div className="absolute left-[-152px] top-[8px] -translate-y-1/2 bg-blue-600 text-white text-xs px-4 py-2 rounded shadow-lg whitespace-nowrap z-20 animate-bounce">
                                         Click here to Preview
                                         <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-3 h-3 bg-blue-600 rotate-45"></div>
                                       </div>
@@ -1074,7 +1046,7 @@ const AddDataPopup = ({
                                       onClick={() =>
                                         getPreviewByFileName(file.name)
                                       }
-                                      className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-all duration-200 group-hover:scale-110"
+                                      className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-all duration-200 group-hover:scale-110"
                                       title="Preview file"
                                     >
                                       <IoEye className="w-5 h-5" />
@@ -1083,7 +1055,7 @@ const AddDataPopup = ({
 
                                   <button
                                     onClick={() => handleRemoveFile(index)}
-                                    className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+                                    className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-all duration-200 hover:scale-110"
                                     title="Delete file"
                                   >
                                     <MdDeleteForever className="w-5 h-5" />
@@ -1136,186 +1108,178 @@ const AddDataPopup = ({
         </div>
       )}
       {activeTab === "connected" && (
-        <div className="px-6 py-4 overflow-y-scroll scrollbar-hide bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Database Connection Cards */}
-            <div className="lg:col-span-2 space-y-2">
-              <div className="mb-3">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
-                  Connect Database
-                </h2>
-                <p className="text-gray-600">
-                  Choose your database provider to establish a connection
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* PostgreSQL Card */}
-                <div className="group bg-white border border-gray-200 rounded-2xl px-6 py-3 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10  bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <Database className="h-7 w-7 text-emerald-600  " />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-800">
-                          PostgreSQL
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Advanced open source database
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setDbType("postgresql");
-                        setIsPopupOpen(true);
-                      }}
-                      className="w-10 h-10  transition-all duration-200 flex items-center justify-center   "
-                      title="Connect PostgreSQL"
-                    >
-                      <CiCirclePlus className="w-8 h-8 text-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 hover:scale-110  hover:from-emerald-600 hover:to-teal-700" />
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => setIsDataPreviewPopupOpen(true)}
-                    disabled={dbType !== "postgresql" && DbResponse !== null}
-                    className={`w-full px-6 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
-                      dbType === "postgresql"
-                        ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow-lg hover:shadow-xl"
-                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    }`}
-                  >
-                    <Eye className="w-4 h-4" />
-                    Data Preview
-                  </button>
-                </div>
-
-                {/* MySQL Card */}
-                <div className="group bg-white border border-gray-200 rounded-2xl px-6 py-3 hover:shadow-xl hover:border-rose-300 transition-all duration-300 hover:-translate-y-1">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <Server className="h-7 w-7 text-rose-600" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-800">
-                          MySQL
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                          Popular relational database
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => {
-                        setDbType("mysql");
-                        setIsPopupOpen(true);
-                      }}
-                      className="w-10 h-10  transition-all duration-200 flex items-center justify-center hover:scale-110 focus:outline-none "
-                      title="Connect MySQL"
-                    >
-                      <CiCirclePlus className="w-8 h-8 hover:from-rose-600 hover:to-pink-700 text-pink-600 focus:ring-2 focus:ring-offset-2  focus:ring-rose-500" />
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => setIsDataPreviewPopupOpen(true)}
-                    disabled={dbType !== "mysql" && DbResponse !== null}
-                    className={`w-full px-6 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
-                      dbType === "mysql"
-                        ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow-lg hover:shadow-xl"
-                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    }`}
-                  >
-                    <Eye className="w-4 h-4" />
-                    Data Preview
-                  </button>
-                </div>
-              </div>
-
-              {/* No Connections State */}
-              <div className="bg-white border border-gray-200 rounded-2xl px-8 py-4 pb-10 text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Database className="w-9 h-9 text-gray-400" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  No Active Connections
-                </h3>
-
-                <div className="inline-flex items-center gap-2 text-sm text-blue-600">
-                  <Info className="w-4 h-4" />
-                  Select a database provider to begin
-                </div>
-              </div>
-            </div>
-
-            {/* Information Panel */}
-            <div className="lg:col-span-1 ">
-              <div className="bg-white border border-gray-200 rounded-2xl px-6 py-6 pb-[75px] space-y-5">
-                {/* <div>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    A connection lets you and your team pull outside data into
-                    your sheets seamlessly.
-                  </p>
-                  <a
-                    href="#"
-                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 font-medium"
-                  >
-                    View documentation
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </div> */}
-
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                      <Shield className="w-4 h-4 text-green-600" />
-                    </div>
-                    <h4 className="font-bold text-gray-800">
-                      Security & Privacy
-                    </h4>
-                  </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Your data and credentials are encrypted and stored securely
-                    with enterprise-grade protection.
-                  </p>
-                  <a
-                    href="#"
-                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 font-medium"
-                  >
-                    Trust center
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <Network className="w-4 h-4 text-purple-600" />
-                    </div>
-                    <h4 className="font-bold text-gray-800">IP Allow-list</h4>
-                  </div>
-                  <p className="text-sm text-gray-600 leading-relaxed mb-3">
-                    Add both of our IPs to your network allow-list for secure
-                    access.
-                  </p>
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 space-y-1">
-                    <div className="font-mono text-sm text-gray-800 bg-white px-2 py-1 rounded border">
-                      44.240.255.40
-                    </div>
-                  </div>
-                  <a
-                    href="#"
-                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 font-medium"
-                  >
-                    Learn more
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
+        <div className="px-6 py-4 overflow-y-scroll scrollbar-hide bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 text-gray-800">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900  mb-2">
+                Connect Database
+              </h2>
+              <p className="text-gray-600 ">
+                Choose your database provider to establish a connection.
+              </p>
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:col-span-2">
+            {/* PostgreSQL Card */}
+            <Card className="hover:shadow-lg transition-shadow duration-200 border-2 hover:border-emerald-300">
+              <CardHeader className="flex flex-row items-center space-y-0 pb-3">
+                <div className="text-3xl mr-3">🐘</div>
+                <div className="flex-1">
+                  <CardTitle className="text-lg">PostgreSQL</CardTitle>
+                  <CardDescription>
+                    Advanced open-source database
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setDbType("postgresql");
+                    setIsPopupOpen(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Connect
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  onClick={() => setIsDataPreviewPopupOpen(true)}
+                  disabled={dbType !== "postgresql" && DbResponse !== null}
+                  className={`w-full mt-2 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all duration-300 ${
+                    dbType === "postgresql"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  <Eye className="w-4 h-4" />
+                  Data Preview
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* MySQL Card */}
+            <Card className="hover:shadow-lg transition-shadow duration-200 border-2 hover:border-rose-300">
+              <CardHeader className="flex flex-row items-center space-y-0 pb-3">
+                <div className="text-3xl mr-3">🐬</div>
+                <div className="flex-1">
+                  <CardTitle className="text-lg">MySQL</CardTitle>
+                  <CardDescription>Popular relational database</CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setDbType("mysql");
+                    setIsPopupOpen(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Connect
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  onClick={() => setIsDataPreviewPopupOpen(true)}
+                  disabled={dbType !== "mysql" && DbResponse !== null}
+                  className={`w-full mt-2 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all duration-300 ${
+                    dbType === "mysql"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  <Eye className="w-4 h-4" />
+                  Data Preview
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* MongoDB Card */}
+            <Card className="hover:shadow-lg transition-shadow duration-200 border-2 hover:border-green-300">
+              <CardHeader className="flex flex-row items-center space-y-0 pb-3">
+                <div className="text-3xl mr-3">🍃</div>
+                <div className="flex-1">
+                  <CardTitle className="text-lg">MongoDB</CardTitle>
+                  <CardDescription>NoSQL document database</CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setDbType("mongodb");
+                    setIsPopupOpen(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Connect
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  onClick={() => setIsDataPreviewPopupOpen(true)}
+                  disabled={dbType !== "mongodb" && DbResponse !== null}
+                  className={`w-full mt-2 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all duration-300 ${
+                    dbType === "mongodb"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  <Eye className="w-4 h-4" />
+                  Data Preview
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* SQLite Card */}
+            <Card className="hover:shadow-lg transition-shadow duration-200 border-2 hover:border-gray-300">
+              <CardHeader className="flex flex-row items-center space-y-0 pb-3">
+                <div className="text-3xl mr-3">💾</div>
+                <div className="flex-1">
+                  <CardTitle className="text-lg">SQLite</CardTitle>
+                  <CardDescription>
+                    Lightweight file-based database
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setDbType("sqlite");
+                    setIsPopupOpen(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Connect
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  onClick={() => setIsDataPreviewPopupOpen(true)}
+                  disabled={dbType !== "sqlite" && DbResponse !== null}
+                  className={`w-full mt-2 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all duration-300 ${
+                    dbType === "sqlite"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  <Eye className="w-4 h-4" />
+                  Data Preview
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* No Connections */}
+          <div className="text-center py-12 mt-10 bg-gray-50  rounded-lg border-2 border-dashed border-gray-300 ">
+            <Database className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900  mb-2">
+              No Active Connections
+            </h3>
+            <p className="text-gray-600 ">
+              Select a database provider to begin.
+            </p>
+          </div>
           {/* Popups */}
           {isPopupOpen && (
             <PopupForm

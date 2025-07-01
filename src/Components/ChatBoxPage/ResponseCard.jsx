@@ -348,7 +348,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
               </div>
 
               {/* User Message Bubble */}
-              <div className="rounded-2xl px-6 py-3 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-tr-md">
+              <div className="rounded-2xl px-6 py-3 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl bg-white text-gray-800 rounded-tr-md">
                 <p className="text-sm leading-relaxed break-words whitespace-pre-wrap font-sans font-semibold">
                   {response?.userQuery}
                 </p>

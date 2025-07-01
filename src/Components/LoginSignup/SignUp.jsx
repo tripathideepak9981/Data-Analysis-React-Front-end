@@ -9,7 +9,6 @@ import {
   BarChart3,
   Sparkles,
 } from "lucide-react";
-import signupImg from "../../assets/signupp.avif";
 import { sendSignUpData } from "../../Api";
 
 const SignUpPage = () => {

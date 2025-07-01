@@ -1,20 +1,13 @@
 import { useRef, useState, useEffect } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Sidebar from "./Sidebar";
-import { FileText, Plus, BarChart3, LogOut, Crown } from "lucide-react";
-import updatedColor from "../../assets/typed.svg";
 import ChatContent from "./ChatContent";
 import { exceuteQuery, logoutUser } from "../../Api";
 import TextAreaBox from "./TextAreaBox";
 import AddDataPopup from "./AddData/AddDataPopup";
-import LogoutIcon from "@mui/icons-material/Logout";
 import { motion } from "framer-motion";
-import { User2Icon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { IoHomeOutline } from "react-icons/io5";
-import { IoIosArrowBack } from "react-icons/io";
-import { IoIosArrowForward } from "react-icons/io";
 import PopupJoin from "./PopupForm/PopupJoin";
 import { CheckCircle, X } from "lucide-react"; // or use any icon library
 
@@ -367,7 +360,7 @@ const ChatBox = () => {
                 className="fixed inset-0 flex items-center 
               justify-center bg-black bg-opacity-40 z-50"
               >
-                <div className="left-14 -top-8 px-6 py-2 max-w-[70%] h-full max-h-[85%] w-full relative">
+                <div className="left-14 -top-8  px-6 py-2 max-w-[70%] h-full max-h-[95%] w-full relative">
                   <AddDataPopup
                     closeAddDataPopup={closeAddDataPopup}
                     setShowChatNotification={setShowChatNotification}

@@ -10,7 +10,6 @@ import {
   CardDescription,
   CardContent,
 } from "../home/ui/card";
-import login from "../../assets/loginn.avif";
 import { sendSignInData } from "../../Api";
 
 export default function Login() {

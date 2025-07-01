@@ -124,7 +124,7 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
       onClose={() => setIsOpen(false)}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
     >
-      <Dialog.Panel className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 w-[75vw] max-w-5xl rounded-xl shadow-2xl p-6 space-y-6 overflow-y-auto max-h-[95vh]">
+      <Dialog.Panel className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 w-[70vw] max-w-4xl rounded-xl shadow-2xl p-5 space-y-4 overflow-y-auto max-h-[95vh]">
         {/* ❌ Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition"
@@ -170,7 +170,7 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
         </div>
 
         {/* 🔗 Join Builder */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 items-start">
           <DropdownSelector
             title="Left Table"
             tables={tables}

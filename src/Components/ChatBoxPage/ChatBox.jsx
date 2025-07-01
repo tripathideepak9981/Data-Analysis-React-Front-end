@@ -82,7 +82,7 @@ const ChatBox = () => {
   };
 
   const openedPopupJoin = () => {
-    setOpenPopupJoin(true);
+    setOpenPopupJoin(!openPopupJoin);
   };
 
   const closeOpenedPopupJoin = () => {

@@ -2,6 +2,7 @@ import { useState } from "react";
 import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
 import { connectToDatabase } from "../../../Api";
 import Swal from "sweetalert2";
+import { Eye, EyeOff } from "lucide-react";
 
 const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
   if (!isOpen) return null;
@@ -14,6 +15,8 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
     user: "",
     password: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -51,31 +54,31 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40  p-3">
-      <div className="bg-white mb-16 h-[82vh] w-[40vw] max-w-[30vw] rounded-2xl shadow-2xl relative py-2 px-4 sm:px-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-3">
+      <div className="w-full -mt-12 max-w-[30vw] bg-white rounded-3xl shadow-2xl px-6 py-3 pt-4 relative animate-fadeIn">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-blue-600 transition"
+          className="absolute top-3 right-3 text-gray-500 hover:text-purple-600 transition-transform hover:scale-105"
           title="Close"
         >
           <ArrowCircleLeftIcon fontSize="large" />
         </button>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-purple-600 text-left mb-6 tracking-wide">
+        <h2 className="text-2xl sm:text-3xl font-bold text-indigo-600 mb-6 border-b border-gray-200 pb-2">
           Enter Database Details
         </h2>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-2">
+          {/* Common Input Fields */}
           {[
             { label: "Database Host", name: "host" },
             { label: "Database Port", name: "port" },
             { label: "Database Name", name: "database" },
             { label: "Username", name: "user" },
-            { label: "Password", name: "password", type: "password" },
-          ].map(({ label, name, type = "text" }, index) => (
+          ].map(({ label, name }, index) => (
             <div key={index}>
               <label
                 htmlFor={name}
@@ -84,22 +87,53 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
                 {label}
               </label>
               <input
-                type={type}
+                type="text"
                 id={name}
                 name={name}
                 value={formData[name]}
                 onChange={handleChange}
                 placeholder={`Enter ${label}`}
-                className=" text-gray-800 w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-gray-800 shadow-sm transition"
               />
             </div>
           ))}
+
+          {/* Password Field with Toggle Eye */}
+          <div className="relative">
+            <label
+              htmlFor="password"
+              className="block mb-1 text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Enter Password"
+              className="w-full px-4 py-2 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-gray-800 shadow-sm transition"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-[34px] right-3 text-gray-500 hover:text-indigo-600 transition"
+              title={showPassword ? "Hide Password" : "Show Password"}
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
 
           {/* Submit Button */}
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full py-1.5 bg-[#6646ab] text-white text-lg font-semibold rounded-xl shadow-md hover:from-blue-600 hover:to-blue-800 transition-transform duration-300 transform hover:scale-105"
+              className="w-full py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-base sm:text-lg font-semibold rounded-xl shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
             >
               Connect to Database
             </button>

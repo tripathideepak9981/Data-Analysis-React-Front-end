@@ -47,7 +47,7 @@ const Sidebar = ({
     <TooltipProvider>
       <div
         className={cn(
-          "h-screen bg-white/95 backdrop-blur-xl border-r border-slate-200/50 transition-all duration-300 ease-in-out flex flex-col  shadow-2xl shadow-slate-900/5 ",
+          "h-screen bg-white/95 backdrop-blur-xl border-r border-slate-200/50 transition-all duration-300 ease-in-out flex flex-col  shadow-2xl shadow-slate-900/5 z-50 ",
           collapsed ? "w-[6vw]" : "w-[26vw]"
         )}
       >
@@ -143,15 +143,16 @@ const Sidebar = ({
             </ul>
           </nav>
 
-          {!collapsed && (
-            <div className="p-2 pt-28">
-              <UpgradeCard />
-            </div>
-          )}
         </div>
 
         {/* Bottom Section */}
         <div className="p-4 border-t border-slate-100/60 space-y-2">
+        
+          {!collapsed && (
+            <div className="p-2 py-8">
+              <UpgradeCard />
+            </div>
+          )}
           <Tooltip>
             <TooltipTrigger asChild>
               <div
@@ -190,13 +191,13 @@ const Sidebar = ({
                 variant="ghost"
                 className={cn(
                   "w-full justify-start transition-all duration-300 hover:bg-red-50 hover:text-red-600 rounded-xl font-medium text-slate-600",
-                  collapsed ? "px-3 h-10" : "px-5 h-10"
+                  collapsed ? "px-4 h-12" : "px-5 h-10"
                 )}
               >
                 {logoutLoading ? (
                   <div className="h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <LogOut className="w-5 h-5" />
+                  <LogOut className="w-6 h-6" />
                 )}
                 {!collapsed && <span className="ml-4">Logout</span>}
               </Button>

@@ -1,8 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { FaDatabase } from "react-icons/fa";
+import { CiCirclePlus } from "react-icons/ci";
+
 import "../../../CoustomCss/LoadingButton.css";
 import { suggestedQueryResponse } from "../../../Api";
-import { HiArrowNarrowRight } from "react-icons/hi";
+import {
+  Database,
+  Server,
+  Eye,
+  Shield,
+  Network,
+  ExternalLink,
+  Info,
+} from "lucide-react";
 import { SiMysql } from "react-icons/si";
 import clsx from "clsx";
 import { IoEye } from "react-icons/io5";
@@ -117,9 +127,9 @@ const AddDataPopup = ({
     const allStepsDone = completedSteps.length === dynamicSteps.length;
 
     return (
-      <div className="w-full max-w-lg mx-auto mt-12 p-8 bg-gradient-to-br from-white via-blue-50 to-indigo-100 backdrop-blur-lg border border-blue-200/50 shadow-2xl rounded-3xl">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4">
+      <div className="w-full max-w-md mx-auto mt-10 px-8 py-8 bg-gradient-to-br from-white via-blue-50 to-indigo-100 border border-blue-200/50 shadow-2xl rounded-3xl">
+        <div className="text-center mb-3">
+          <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4">
             <svg
               className="w-8 h-8 text-white"
               fill="none"
@@ -134,12 +144,6 @@ const AddDataPopup = ({
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
-            Data Processing
-          </h2>
-          <p className="text-gray-600 text-sm">
-            Processing your data with precision
-          </p>
         </div>
 
         <div className="space-y-6">
@@ -666,7 +670,7 @@ const AddDataPopup = ({
 
   const UploadingLoadingEffect = () => {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200 max-w-sm w-full mx-4">
           <div className="text-center">
             <div className="relative inline-flex items-center justify-center w-16 h-16 mb-6">
@@ -712,7 +716,7 @@ const AddDataPopup = ({
 
   const DeletingLoadingEffect = () => {
     return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-50">
         <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200 max-w-sm w-full mx-4">
           <div className="text-center">
             <div className="relative inline-flex items-center justify-center w-16 h-16 mb-6">
@@ -904,7 +908,7 @@ const AddDataPopup = ({
 
             {/* Loading States */}
             {isCleaning && (
-              <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
+              <div className="fixed inset-0 bg-black/50 flex justify-center -top-20 items-center z-50">
                 <DataProcessingLoader fileCleaning={fileCleaning} />
               </div>
             )}
@@ -991,19 +995,6 @@ const AddDataPopup = ({
                           </th>
                           <th className="px-6 py-2 text-left text-sm font-bold text-gray-800 tracking-wide">
                             <div className="flex items-center gap-2">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                                />
-                              </svg>
                               Actions
                             </div>
                           </th>
@@ -1045,9 +1036,6 @@ const AddDataPopup = ({
                                     <p className="text-sm font-semibold text-gray-900 break-words max-w-xs">
                                       {file.name}
                                     </p>
-                                    <p className="text-xs text-gray-500 mt-1">
-                                      CSV File
-                                    </p>
                                   </div>
                                 </div>
                               </td>
@@ -1077,9 +1065,9 @@ const AddDataPopup = ({
                                 <div className="flex items-center gap-4">
                                   <div className="relative group">
                                     {showEyeHint && (
-                                      <div className="absolute left-[-180px] top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs px-4 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 animate-bounce">
+                                      <div className="absolute left-[-152px] top-[8px] -translate-y-1/2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs px-4 py-2 rounded-lg shadow-lg whitespace-nowrap z-20 animate-bounce">
                                         Click here to Preview
-                                        <div className="absolute right-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-blue-500 rotate-45"></div>
+                                        <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-3 h-3 bg-blue-600 rotate-45"></div>
                                       </div>
                                     )}
                                     <button
@@ -1147,14 +1135,12 @@ const AddDataPopup = ({
             ))}
         </div>
       )}
-
-      {/* Connected Data Sources Tab */}
       {activeTab === "connected" && (
-        <div className="p-8 bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30">
+        <div className="px-6 py-4 overflow-y-scroll scrollbar-hide bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Database Connection Cards */}
-            <div className="lg:col-span-2 space-y-6">
-              <div className="mb-6">
+            <div className="lg:col-span-2 space-y-2">
+              <div className="mb-3">
                 <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
                   Connect Database
                 </h2>
@@ -1165,15 +1151,11 @@ const AddDataPopup = ({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* PostgreSQL Card */}
-                <div className="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-blue-300 transition-all duration-300 hover:-translate-y-1">
+                <div className="group bg-white border border-gray-200 rounded-2xl px-6 py-3 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 hover:-translate-y-1">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <img
-                          src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"
-                          alt="PostgreSQL"
-                          className="h-7 w-7 brightness-0 invert"
-                        />
+                      <div className="w-10 h-10  bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <Database className="h-7 w-7 text-emerald-600  " />
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-gray-800">
@@ -1189,10 +1171,10 @@ const AddDataPopup = ({
                         setDbType("postgresql");
                         setIsPopupOpen(true);
                       }}
-                      className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center justify-center shadow-lg hover:scale-110"
+                      className="w-10 h-10  transition-all duration-200 flex items-center justify-center   "
                       title="Connect PostgreSQL"
                     >
-                      +
+                      <CiCirclePlus className="w-8 h-8 text-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 hover:scale-110  hover:from-emerald-600 hover:to-teal-700" />
                     </button>
                   </div>
                   <button
@@ -1200,39 +1182,21 @@ const AddDataPopup = ({
                     disabled={dbType !== "postgresql" && DbResponse !== null}
                     className={`w-full px-6 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
                       dbType === "postgresql"
-                        ? "bg-gradient-to-r from-gray-700 to-gray-800 text-white hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl"
+                        ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow-lg hover:shadow-xl"
                         : "bg-gray-100 text-gray-400 cursor-not-allowed"
                     }`}
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
+                    <Eye className="w-4 h-4" />
                     Data Preview
                   </button>
                 </div>
 
                 {/* MySQL Card */}
-                <div className="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-orange-300 transition-all duration-300 hover:-translate-y-1">
+                <div className="group bg-white border border-gray-200 rounded-2xl px-6 py-3 hover:shadow-xl hover:border-rose-300 transition-all duration-300 hover:-translate-y-1">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <SiMysql className="h-7 w-7 text-white" />
+                      <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <Server className="h-7 w-7 text-rose-600" />
                       </div>
                       <div>
                         <h3 className="text-lg font-bold text-gray-800">
@@ -1248,10 +1212,10 @@ const AddDataPopup = ({
                         setDbType("mysql");
                         setIsPopupOpen(true);
                       }}
-                      className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-full hover:from-orange-600 hover:to-orange-700 transition-all duration-200 flex items-center justify-center shadow-lg hover:scale-110"
+                      className="w-10 h-10  transition-all duration-200 flex items-center justify-center hover:scale-110 focus:outline-none "
                       title="Connect MySQL"
                     >
-                      +
+                      <CiCirclePlus className="w-8 h-8 hover:from-rose-600 hover:to-pink-700 text-pink-600 focus:ring-2 focus:ring-offset-2  focus:ring-rose-500" />
                     </button>
                   </div>
                   <button
@@ -1259,101 +1223,36 @@ const AddDataPopup = ({
                     disabled={dbType !== "mysql" && DbResponse !== null}
                     className={`w-full px-6 py-3 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-300 ${
                       dbType === "mysql"
-                        ? "bg-gradient-to-r from-gray-700 to-gray-800 text-white hover:from-gray-800 hover:to-gray-900 shadow-lg hover:shadow-xl"
+                        ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow-lg hover:shadow-xl"
                         : "bg-gray-100 text-gray-400 cursor-not-allowed"
                     }`}
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                      />
-                    </svg>
+                    <Eye className="w-4 h-4" />
                     Data Preview
                   </button>
                 </div>
               </div>
 
               {/* No Connections State */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
-                <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg
-                    className="w-10 h-10 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
-                    />
-                  </svg>
+              <div className="bg-white border border-gray-200 rounded-2xl px-8 py-4 pb-10 text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Database className="w-9 h-9 text-gray-400" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">
                   No Active Connections
                 </h3>
-                <p className="text-gray-600 mb-4">
-                  Create a connection from the database options above to get
-                  started
-                </p>
+
                 <div className="inline-flex items-center gap-2 text-sm text-blue-600">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Info className="w-4 h-4" />
                   Select a database provider to begin
                 </div>
               </div>
             </div>
 
             {/* Information Panel */}
-            <div className="lg:col-span-1 space-y-6">
-              <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-6">
-                <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-blue-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    <h4 className="font-bold text-gray-800">
-                      About Connections
-                    </h4>
-                  </div>
+            <div className="lg:col-span-1 ">
+              <div className="bg-white border border-gray-200 rounded-2xl px-6 py-6 pb-[75px] space-y-5">
+                {/* <div>
                   <p className="text-sm text-gray-600 leading-relaxed">
                     A connection lets you and your team pull outside data into
                     your sheets seamlessly.
@@ -1363,26 +1262,14 @@ const AddDataPopup = ({
                     className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 font-medium"
                   >
                     View documentation
-                    <HiArrowNarrowRight className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4" />
                   </a>
-                </div>
+                </div> */}
 
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-green-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                        />
-                      </svg>
+                      <Shield className="w-4 h-4 text-green-600" />
                     </div>
                     <h4 className="font-bold text-gray-800">
                       Security & Privacy
@@ -1397,26 +1284,14 @@ const AddDataPopup = ({
                     className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 font-medium"
                   >
                     Trust center
-                    <HiArrowNarrowRight className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>
 
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <svg
-                        className="w-4 h-4 text-purple-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
+                      <Network className="w-4 h-4 text-purple-600" />
                     </div>
                     <h4 className="font-bold text-gray-800">IP Allow-list</h4>
                   </div>
@@ -1428,23 +1303,20 @@ const AddDataPopup = ({
                     <div className="font-mono text-sm text-gray-800 bg-white px-2 py-1 rounded border">
                       44.240.255.40
                     </div>
-                    <div className="font-mono text-sm text-gray-800 bg-white px-2 py-1 rounded border">
-                      54.68.134.35
-                    </div>
                   </div>
                   <a
                     href="#"
                     className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 mt-2 font-medium"
                   >
                     Learn more
-                    <HiArrowNarrowRight className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Popups - keeping existing functionality */}
+          {/* Popups */}
           {isPopupOpen && (
             <PopupForm
               isOpen={isPopupOpen}

@@ -23,6 +23,8 @@ export const joinTables = async (data) => {
         },
       }
     );
+    
+      console.log("Joined Response : " , response)
     return response.data;
   } catch (error) {
     return error.response?.data || { error: "Request failed" };
@@ -314,8 +316,14 @@ export const sendSignUpData = async (formData) => {
     throw (error.message);
   }
 }
+
+
 export const sendSignInData = async (username, password) => {
+  console.log("Here"); // Confirm function is called
   try {
+    console.log("Preparing API call to:", `${API_BASE_URL}/api/auth/login`);
+    console.log("Payload:", { username, password });
+
     const response = await axios.post(
       `${API_BASE_URL}/api/auth/login`,
       new URLSearchParams({
@@ -326,21 +334,29 @@ export const sendSignInData = async (username, password) => {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
+        timeout: 5000, // 5 sec timeout so we can catch hangs
       }
     );
-    console.log("Sigin Response : ", response)
-    const { access_token } = response.data;
-    localStorage.setItem("access_token", access_token);
-    localStorage.setItem("username", username);
-      setTimeout(async () => {
-         await getTablesData();
-      })
 
+    console.log("✅ API call success:", response);
     return response.data;
+
   } catch (error) {
-    throw (error.message);
+    console.error("❌ API call failed:", error);
+
+    if (error.response) {
+      console.error("Response status:", error.response.status);
+      console.error("Response data:", error.response.data);
+    } else if (error.request) {
+      console.error("No response received. Request was:", error.request);
+    } else {
+      console.error("Error setting up request:", error.message);
+    }
+    throw error;
   }
 };
+
+
 
 export const logoutUser = async () => {
   try {

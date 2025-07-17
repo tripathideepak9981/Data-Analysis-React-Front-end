@@ -54,7 +54,7 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
             <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 shadow-lg shadow-purple-400/30">
               <BarChart3 className="w-5 h-5 text-white" />
             </div>
-            <div className="bg-white border border-gray-200 shadow-md rounded-xl rounded-tl-sm py-2 px-4 max-w-[42vw] font-sans">
+            <div className="bg-white border border-gray-200 shadow-md rounded-xl rounded-tl-sm py-2 px-4 max-w-[50vw] font-sans">
               <h2
                 className="user-query text-gray-800 "
                 ref={aiResponseRef}

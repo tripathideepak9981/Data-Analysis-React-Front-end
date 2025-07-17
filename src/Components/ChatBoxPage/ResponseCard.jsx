@@ -3,6 +3,15 @@ import { motion } from "framer-motion";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { FaTable } from "react-icons/fa6";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import {
+  X,
+  Edit3,
+  CheckCircle,
+  AlertCircle,
+  Database,
+  Code2,
+  Play,
+} from "lucide-react";
 import { BarChart3 } from "lucide-react";
 import { User } from "lucide-react";
 import { Loader2 } from "lucide-react";
@@ -288,6 +297,7 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
           text: "Calculation is correct",
           type: "success",
         });
+        response.chartType = "";
         if (onUpdateSQL) {
           onUpdateSQL(editableSQL);
         }
@@ -384,204 +394,197 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
         >
           <>
             {!showLoading && (
-              <div className="flex justify-between mt-0 py-1 px-4 z-20 bg-gray-100 ">
-                <div className=" text-gray-900 text-base font-semibold">
-                  AI Response :
-                </div>
-                <div className="flex justify-end">
-                  <div className="flex relative bg-gray-100 text-message text-gray-700 z-10">
-                    {/* SQL Icon */}
-                    <div
-                      className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-7 h-7"
-                      onClick={() => setShowSQL(true)}
-                    >
-                      <PiFileSql className="w-5 h-5 hover:scale-105 text-blue-600" />
-                      <div className="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center">
-                        <div className="relative z-10 p-2 text-xs w-[8vw] flex justify-center leading-none text-white whitespace-no-wrap bg-gray-600 rounded shadow-lg">
-                          SQL Query
-                        </div>
-                        <div className="w-2 h-2 -mt-1 rotate-45 bg-gray-600"></div>
-                      </div>
-                    </div>
-
-                    {/* Pie Chart Icon */}
-                    <div
-                      className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-7 h-7"
-                      onClick={openDropdown}
-                    >
-                      <MdPieChartOutline className="w-5 h-5 hover:scale-105  text-blue-600" />
-                      <div className="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center">
-                        <div className="relative z-10 p-2 w-[10vw] flex justify-center text-xs leading-none text-white whitespace-no-wrap bg-gray-600 rounded shadow-lg">
-                          change Chart Type
-                        </div>
-                        <div className="w-2 h-2 -mt-1 rotate-45 bg-gray-600"></div>
-                      </div>
-                    </div>
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={closeDropdown}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "right",
-                      }}
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                      }}
-                      PaperProps={{
-                        sx: {
-                          overflow: "visible",
-                          borderRadius: "8px",
-                          boxShadow: 4,
-                          width: 200,
-                          backgroundColor: "white",
-                          position: "relative",
-                          "&::before": {
-                            content: '""',
-                            position: "absolute",
-                            top: -6,
-                            right: 5,
-                            width: 12,
-                            height: 12,
-                            backgroundColor: "white", // Tailwind's bg-blue-50
-                            transform: "rotate(45deg)",
-                            zIndex: 1,
-                            boxShadow: "-2px -2px 3px rgba(0,0,0,0.1)",
-                            borderTop: "1px solid #e5e7eb",
-                            borderLeft: "1px solid #e5e7eb",
-                          },
-                        },
-                      }}
-                    >
-                      {/* Header with blue background */}
-                      <div className="border-b flex items-center justify-between px-2 pb-1 rounded-t-md">
-                        <span className="font-semibold text-gray-800 text-sm">
-                          Change chart type
-                        </span>
-                        <button
-                          onClick={closeDropdown}
-                          className="text-gray-400 hover:text-black"
-                        >
-                          ✕
-                        </button>
-                      </div>
-
-                      {/* Rest of dropdown (default white) */}
-                      <div className="grid grid-cols-3 gap-1 px-1 py-1">
-                        {chartTypes.map(
-                          ({ title, icon, onClick, isEnabled }, idx) => (
-                            <Tooltip key={idx} title={title} placement="top">
-                              <div
-                                onClick={() => isEnabled && onClick()}
-                                className={`rounded-lg transition-all duration-200 hover:bg-gray-100 px-4 py-1 items-center ${
-                                  isEnabled ? "cursor-pointer" : "opacity-40"
-                                }`}
-                              >
-                                {icon}
-                              </div>
-                            </Tooltip>
-                          )
-                        )}
-                      </div>
-
-                      <div className="px-6 pb-1 flex flex-col items-start">
-                        <div
-                          className="grid grid-cols-1 py-1"
-                          onClick={() => {
-                            setShowResult(true);
-                            closeDropdown();
-                          }}
-                        >
-                          <FaTable className="w-5 h-5 hover:scale-105 text-blue-500" />
-                        </div>
-                      </div>
-                    </Menu>
-
-                    {/* Download Icon */}
-                    <button
-                      onClick={handleDownloadClick}
-                      className="relative group flex flex-col items-center justify-center rounded-full hover:bg-blue-50 w-7 h-7 text-gray-900 focus:outline-none"
-                    >
-                      <BsThreeDotsVertical className="w-4 h-4 text-gray-600" />
-                      <div className="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center">
-                        <div className="relative z-10 p-2 w-[10vw] flex justify-center text-xs leading-none text-white whitespace-no-wrap bg-gray-600 rounded shadow-lg">
-                          Download Chart
-                        </div>
-                        <div className="w-2 h-2 -mt-1 rotate-45 bg-gray-600"></div>
-                      </div>
-                    </button>
-
-                    <Menu
-                      anchorEl={downloadMenuAnchorEl}
-                      open={isDownloadMenuOpen}
-                      onClose={handleDownloadClose}
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "right",
-                      }}
-                      transformOrigin={{
-                        vertical: "top",
-                        horizontal: "right",
-                      }}
-                      PaperProps={{
-                        sx: {
-                          overflow: "visible",
-                          borderRadius: "8px",
-                          boxShadow: 4,
-                          width: 180,
-                          backgroundColor: "white",
-                          "&::before": {
-                            content: '""',
-                            position: "absolute",
-                            top: -6,
-                            right: 12,
-                            width: 12,
-                            height: 12,
-                            backgroundColor: "white",
-                            transform: "rotate(45deg)",
-                            zIndex: 1,
-                            boxShadow: "-2px -2px 3px rgba(0,0,0,0.1)",
-                            borderTop: "1px solid #e5e7eb",
-                            borderLeft: "1px solid #e5e7eb",
-                          },
-                        },
-                      }}
-                    >
-                      <div className="flex flex-col">
-                        <button
-                          onClick={() => handleDownload("png")}
-                          disabled={
-                            !response.aiResponse.chart &&
-                            !response.aiResponse.chartType
-                          }
-                          className={`text-left w-full px-4 py-2 text-sm ${
-                            !response.aiResponse.chart &&
-                            !response.aiResponse.chartType
-                              ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                              : "hover:bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          Download as PNG
-                        </button>
-                        <button
-                          onClick={() => handleDownload("jpg")}
-                          disabled={
-                            !response.aiResponse.chart &&
-                            !response.aiResponse.chartType
-                          }
-                          className={`text-left w-full px-4 py-2 text-sm ${
-                            !response.aiResponse.chart &&
-                            !response.aiResponse.chartType
-                              ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                              : "hover:bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          Download as JPG
-                        </button>
-                      </div>
-                    </Menu>
+              <div className="flex items-center justify-between bg-gray-100 rounded-lg px-4 py-3 shadow-sm">
+                {/* Left: Icon + Title */}
+                <div className="flex items-center space-x-2">
+                  {/* <div className="flex items-center justify-center w-8 h-8 bg-white rounded-md shadow">
+                    <PiFileSql className="w-5 h-5 text-blue-600" />
+                  </div> */}
+                  <div>
+                    <h2 className="text-gray-900 text-lg font-semibold">
+                      AI Response
+                    </h2>
+                    {/* <p className="text-gray-500 text-sm">
+                      Data insights and visualization
+                    </p> */}
                   </div>
+                </div>
+
+                {/* Right: Buttons */}
+                <div className="flex items-center space-x-2">
+                  {/* Chart Type Button */}
+                  <button
+                    onClick={openDropdown}
+                    className="flex items-center space-x-1 bg-white border border-gray-300 rounded-md px-3 py-1.5 text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <MdPieChartOutline className="w-4 h-4 text-gray-600" />
+                    <span className="text-sm">Chart Type</span>
+                  </button>
+
+                  {/* SQL Button */}
+                  <div
+                    onClick={() => setShowSQL(true)}
+                    className="flex items-center justify-center w-9 h-9 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition cursor-pointer"
+                  >
+                    <PiFileSql className="w-4 h-4 text-gray-600" />
+                  </div>
+                  {/* Download Button */}
+                  <button
+                    onClick={handleDownloadClick}
+                    className="flex items-center justify-center w-9 h-9 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition"
+                  >
+                    <BsThreeDotsVertical className="w-4 h-4 text-gray-600" />
+                  </button>
+
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={closeDropdown}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    PaperProps={{
+                      sx: {
+                        overflow: "visible",
+                        borderRadius: "8px",
+                        boxShadow: 4,
+                        width: 200,
+                        backgroundColor: "white",
+                        position: "relative",
+                        "&::before": {
+                          content: '""',
+                          position: "absolute",
+                          top: -6,
+                          right: 5,
+                          width: 12,
+                          height: 12,
+                          backgroundColor: "white", // Tailwind's bg-blue-50
+                          transform: "rotate(45deg)",
+                          zIndex: 1,
+                          boxShadow: "-2px -2px 3px rgba(0,0,0,0.1)",
+                          borderTop: "1px solid #e5e7eb",
+                          borderLeft: "1px solid #e5e7eb",
+                        },
+                      },
+                    }}
+                  >
+                    {/* Header with blue background */}
+                    <div className="border-b flex items-center justify-between px-2 pb-1 rounded-t-md">
+                      <span className="font-semibold text-gray-800 text-sm">
+                        Change chart type
+                      </span>
+                      <button
+                        onClick={closeDropdown}
+                        className="text-gray-400 hover:text-black"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    {/* Rest of dropdown (default white) */}
+                    <div className="grid grid-cols-3 gap-1 px-1 py-1">
+                      {chartTypes.map(
+                        ({ title, icon, onClick, isEnabled }, idx) => (
+                          <Tooltip key={idx} title={title} placement="top">
+                            <div
+                              onClick={() => isEnabled && onClick()}
+                              className={`rounded-lg transition-all duration-200 hover:bg-gray-100 px-4 py-1 items-center ${
+                                isEnabled ? "cursor-pointer" : "opacity-40"
+                              }`}
+                            >
+                              {icon}
+                            </div>
+                          </Tooltip>
+                        )
+                      )}
+                    </div>
+
+                    <div className="px-6 pb-1 flex flex-col items-start">
+                      <div
+                        className="grid grid-cols-1 py-1"
+                        onClick={() => {
+                          setShowResult(true);
+                          closeDropdown();
+                        }}
+                      >
+                        <FaTable className="w-5 h-5 hover:scale-105 text-blue-500" />
+                      </div>
+                    </div>
+                  </Menu>
+                  <Menu
+                    anchorEl={downloadMenuAnchorEl}
+                    open={isDownloadMenuOpen}
+                    onClose={handleDownloadClose}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                    PaperProps={{
+                      sx: {
+                        overflow: "visible",
+                        borderRadius: "8px",
+                        boxShadow: 4,
+                        width: 180,
+                        backgroundColor: "white",
+                        "&::before": {
+                          content: '""',
+                          position: "absolute",
+                          top: -6,
+                          right: 12,
+                          width: 12,
+                          height: 12,
+                          backgroundColor: "white",
+                          transform: "rotate(45deg)",
+                          zIndex: 1,
+                          boxShadow: "-2px -2px 3px rgba(0,0,0,0.1)",
+                          borderTop: "1px solid #e5e7eb",
+                          borderLeft: "1px solid #e5e7eb",
+                        },
+                      },
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => handleDownload("png")}
+                        disabled={
+                          !response.aiResponse.chart &&
+                          !response.aiResponse.chartType
+                        }
+                        className={`text-left w-full px-4 py-2 text-sm ${
+                          !response.aiResponse.chart &&
+                          !response.aiResponse.chartType
+                            ? "text-gray-400 cursor-not-allowed bg-gray-50"
+                            : "hover:bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        Download as PNG
+                      </button>
+                      <button
+                        onClick={() => handleDownload("jpg")}
+                        disabled={
+                          !response.aiResponse.chart &&
+                          !response.aiResponse.chartType
+                        }
+                        className={`text-left w-full px-4 py-2 text-sm ${
+                          !response.aiResponse.chart &&
+                          !response.aiResponse.chartType
+                            ? "text-gray-400 cursor-not-allowed bg-gray-50"
+                            : "hover:bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        Download as JPG
+                      </button>
+                    </div>
+                  </Menu>
                 </div>
               </div>
             )}
@@ -836,68 +839,127 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                       )}
                   </>
                 )}
-
-                {/* SQL Modal */}
                 {response?.aiResponse?.sql_query && showSQL && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.3 }}
-                    className="fixed -top-16 justify-items-center -inset-[10px] z-50 flex items-center justify-center bg-black/50 opacity-40"
+                    className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-6"
                   >
-                    <div className="bg-white w-[46%] max-w-2xl h-[60vh] rounded-2xl shadow-2xl border border-blue-500 flex flex-col relative">
-                      <button
-                        onClick={() => {
-                          setStatusMessage({
-                            text: "View your SQL. You can edit or validate the query.",
-                            type: "info",
-                          });
-                          setShowSQL(false);
-                          setIsEditing(false);
-                        }}
-                        className="absolute top-4 right-5 text-gray-400 hover:text-gray-800 text-xl font-bold transition"
-                      >
-                        &times;
-                      </button>
-
-                      <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200">
-                        <BsFiletypeSql className="text-2xl text-blue-600" />
-                        <h2 className="text-xl font-semibold text-gray-800">
-                          SQL Query Viewer
-                        </h2>
-                      </div>
-
-                      <div className="flex-1 chat-ui overflow-hidden px-4 py-2 bg-gray-50">
-                        {isEditing ? (
-                          <textarea
-                            value={editableSQL}
-                            onChange={handleChange}
-                            className="w-full h-full p-2 chat-ui text-gray-800 bg-white border border-blue-300 rounded-md resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Edit your SQL here..."
-                          />
-                        ) : (
-                          <pre className="w-full chat-ui h-full p-3 overflow-auto font-mono text-sm text-gray-800 bg-white border border-gray-300 rounded-md whitespace-pre-wrap">
-                            {editableSQL}
-                          </pre>
-                        )}
-                      </div>
-
-                      <div className="px-6 py-3 bg-[#e6f0ff] border-t border-blue-400 rounded-b-2xl flex justify-between items-center">
-                        <p
-                          className={`pr-10 text-sm chat-ui whitespace-pre-line ${
-                            statusMessage.type === "error"
-                              ? "text-red-600"
-                              : statusMessage.type === "success"
-                              ? "text-green-600"
-                              : statusMessage.type === "info"
-                              ? "text-blue-700"
-                              : ""
-                          }`}
+                    <div className="bg-white w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl border border-slate-200 flex flex-col relative overflow-hidden">
+                      {/* Header */}
+                      <div className="bg-gradient-to-r from-indigo-100 via-blue-100 to-indigo-100 px-8 py-3 flex items-center justify-between border-b border-slate-200 shadow-sm">
+                        <div className="flex items-center gap-5">
+                          <div className="py-1 px-2">
+                            <BsFiletypeSql className="w-7 h-7  text-indigo-600" />
+                          </div>
+                          <div>
+                            <h2 className="text-xl font-semibold text-slate-800 tracking-tight">
+                              SQL Query Viewer
+                            </h2>
+                            <p className="text-slate-600 text-sm font-medium mt-1">
+                              Edit, validate and execute your database queries
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setStatusMessage({
+                              text: "View your SQL. You can edit or validate the query.",
+                              type: "info",
+                            });
+                            setShowSQL(false);
+                            setIsEditing(false);
+                          }}
+                          className="text-slate-500 hover:text-indigo-600 hover:bg-indigo-100 rounded-xl p-2 transition-all duration-200"
                         >
-                          {statusMessage.text}
-                        </p>
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
 
-                        <div className="flex gap-3">
+                      {/* Query Editor Section */}
+                      <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-50 overflow-hidden">
+                        <div className="px-8 py-2 mt-2 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className="p-1 bg-indigo-100 rounded-lg">
+                              <Code2 className="w-4 h-4 text-indigo-600" />
+                            </div>
+                            <label className="text-base font-semibold text-slate-800">
+                              SQL Query Editor
+                            </label>
+                            {isEditing && (
+                              <span className="px-3 py-1 bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-800 text-sm font-semibold rounded-full border border-indigo-200">
+                                ✏️ Editing Mode
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex-1 py-10 px-8 overflow-hidden">
+                          <div className="h-[28vh] relative">
+                            {isEditing ? (
+                              <div className="h-full relative group">
+                                <textarea
+                                  value={editableSQL}
+                                  onChange={handleChange}
+                                  className="w-full h-full p-6 text-lg font-mono bg-white border-2 border-indigo-300 rounded-2xl resize-none focus:outline-none text-gray-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 shadow-lg hover:shadow-xl"
+                                  placeholder="Edit your SQL query here..."
+                                />
+                                <div className="absolute top-4 right-4 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-2.5 shadow-lg">
+                                  <Edit3 className="w-4 h-4 text-white" />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="h-[28vh] relative group">
+                                <pre className="w-full h-full py-4 px-6 overflow-auto font-mono text-lg text-slate-800 bg-white border-2 border-slate-200 rounded-2xl whitespace-pre-wrap shadow-lg hover:shadow-xl transition-all duration-200 leading-relaxed">
+                                  {editableSQL}
+                                </pre>
+                                <div className="absolute top-4 right-4 bg-gradient-to-r from-indigo-200 to-blue-300 rounded-xl p-2.5 shadow-md">
+                                  <Database className="w-4 h-4 text-indigo-700" />
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Status Bar */}
+                      <div
+                        className={`mx-8 mb-5 py-3 px-5 rounded-2xl border-l-4 transition-all duration-200 shadow-sm ${
+                          statusMessage.type === "error"
+                            ? "bg-red-50 border-red-200 text-red-800 border-l-red-400"
+                            : statusMessage.type === "success"
+                            ? "bg-emerald-50 border-emerald-200 text-emerald-800 border-l-emerald-400"
+                            : "bg-indigo-50 border-indigo-200 text-indigo-800 border-l-indigo-400"
+                        }`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="flex-shrink-0">
+                            {statusMessage.type === "error" ? (
+                              <AlertCircle className="w-4 h-4 text-red-500" />
+                            ) : statusMessage.type === "success" ? (
+                              <CheckCircle className="w-4 h-4 text-emerald-500" />
+                            ) : (
+                              <Code2 className="w-4 h-4 text-indigo-600" />
+                            )}
+                          </div>
+                          <p className="text-sm font-medium whitespace-pre-line flex-1 leading-relaxed">
+                            {statusMessage.text}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons Footer */}
+                      <div className="px-8 py-3 bg-gradient-to-r from-indigo-50 to-blue-50 border-t border-slate-200 flex justify-between items-center">
+                        <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
+                          <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
+                          <span>
+                            Tip: Use the Edit button to modify your query, then
+                            Validate to check syntax
+                          </span>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-4">
                           <button
                             onClick={() => {
                               setIsEditing(!isEditing);
@@ -906,26 +968,35 @@ const ResponseCard = ({ response, onUpdateSQL, showInterruptMessage }) => {
                                 type: "info",
                               });
                             }}
-                            className="bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 border border-blue-700 transition shadow"
+                            className="bg-white hover:bg-indigo-50 border-2 border-indigo-400 hover:border-indigo-500 text-indigo-700 hover:text-indigo-800 px-4 py-1 rounded-2xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 flex items-center justify-center text-base gap-4"
                           >
-                            Edit
+                            <Edit3 className="w-4 h-4 text-indigo-600" />
+                            {isEditing ? "View Mode" : "Edit Query"}
                           </button>
+
                           <button
                             onClick={() => handleValidate(editableSQL)}
-                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition shadow ${
-                              isValidating
-                                ? "bg-blue-100 text-blue-700 cursor-not-allowed"
-                                : "bg-blue-700 text-white hover:bg-blue-800"
-                            }`}
                             disabled={isValidating}
+                            className="bg-gradient-to-r from-indigo-700 to-blue-800 hover:from-indigo-800 hover:to-blue-900 text-white px-8 text-base py-2 rounded-2xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
                           >
-                            {isValidating ? "Validating..." : "Validate"}
+                            {isValidating ? (
+                              <>
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                Validating...
+                              </>
+                            ) : (
+                              <>
+                                <Play className="w-4 h-4 text-white" />
+                                Validate Query
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
                     </div>
                   </motion.div>
                 )}
+
                 {/* {response?.timestamp && !showLoading && (
                   <p className="relative time-stamp p-2 px-6  text-xs text-gray-500 text-right">
                     {new Date(response.timestamp).toLocaleTimeString([], {

@@ -150,7 +150,7 @@ const ChatBox = () => {
             return {
               ...message,
               aiResponse: response,
-              ...(response?.result?.length > 2 &&
+              ...(response?.result?.length > 3 &&
                 hasNumericData && {
                   chart: transformChartData(response.result),
                   chartType: "bar",

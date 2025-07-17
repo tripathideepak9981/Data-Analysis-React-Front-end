@@ -48,7 +48,7 @@ const Sidebar = ({
       <div
         className={cn(
           "h-screen bg-white/95 backdrop-blur-xl border-r border-slate-200/50 transition-all duration-300 ease-in-out flex flex-col  shadow-2xl shadow-slate-900/5 z-50 ",
-          collapsed ? "w-[6vw]" : "w-[26vw]"
+          collapsed ? "w-[6vw]" : "w-[30vw]"
         )}
       >
         {/* Header */}

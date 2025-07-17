@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { X } from "lucide-react";
 import {
@@ -8,7 +8,6 @@ import {
   MdJoinFull,
 } from "react-icons/md";
 import { avilableTables, joinTables } from "../../../Api";
-import CustomNotificationCard from "../../Card/CustomNotificationCard";
 
 const PopupJoin = ({ closeOpenedPopupJoin }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -19,9 +18,14 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
   const [joinType, setJoinType] = useState("INNER");
   const [newTableName, setNewTableName] = useState("");
   const [tables, setTables] = useState([]);
-  const [message, setMessage] = useState("");
-  const [messageTitle, setMessageTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState();
+  const [errors, setErrors] = useState({});
+  const newTableNameRef = useRef(null);
+  const leftTableRef = useRef(null);
+  const leftColumnRef = useRef(null);
+  const rightTableRef = useRef(null);
+  const rightColumnRef = useRef(null);
 
   useEffect(() => {
     const fetchTables = async () => {
@@ -29,34 +33,49 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
         const response = await avilableTables();
         if (Array.isArray(response)) {
           setTables(response);
-          if (response.length === 0) {
-            setMessageTitle("error");
-            setMessage("No data is available, first add data!");
-          } else {
-            setMessage("");
-            setMessageTitle("");
-          }
         }
-      } catch (error) {
-        setMessageTitle("error");
-        setMessage("Failed to load table data.");
+      } catch {
+        console.error("Failed to load table data.");
       }
     };
     fetchTables();
   }, []);
 
-  const handleCreateJoin = async () => {
-    if (
-      !leftTable ||
-      !leftColumn ||
-      !rightTable ||
-      !rightColumn ||
-      !newTableName
-    ) {
-      setMessageTitle("error");
-      setMessage("Please fill out all fields before creating join.");
-      return;
+  // useEffect(() => {
+  //   if (message || typeof errors === "string") {
+  //     const timer = setTimeout(() => {
+  //       setMessage(null);
+  //       if (typeof errors === "string") setErrors({});
+  //     }, 3000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [message, errors]);
+
+  const validateFields = () => {
+    const newErrors = {};
+    if (!newTableName.trim())
+      newErrors.newTableName = "Joined table name is required.";
+    if (!leftTable) newErrors.leftTable = "Left table is required.";
+    if (!leftColumn) newErrors.leftColumn = "Left column is required.";
+    if (!rightTable) newErrors.rightTable = "Right table is required.";
+    if (!rightColumn) newErrors.rightColumn = "Right column is required.";
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      if (firstErrorField === "newTableName") newTableNameRef.current?.focus();
+      else if (firstErrorField === "leftTable") leftTableRef.current?.focus();
+      else if (firstErrorField === "leftColumn") leftColumnRef.current?.focus();
+      else if (firstErrorField === "rightTable") rightTableRef.current?.focus();
+      else if (firstErrorField === "rightColumn")
+        rightColumnRef.current?.focus();
+      return false;
     }
+    return true;
+  };
+
+  const handleCreateJoin = async () => {
+    if (!validateFields()) return;
 
     const payload = {
       table1: leftTable,
@@ -72,13 +91,14 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
     setIsLoading(true);
     try {
       const response = await joinTables(payload);
-      if (response && response.preview?.length > 0) {
+
+      if (response) {
         const newFile = {
           name: response.joined_table_name?.trim(),
           createdDate: new Date().toISOString().split("T")[0],
         };
-
-        const storedUploadedFile = localStorage.getItem("uploadedFile");
+        setMessage(response.message);
+        const storedUploadedFile = localStorage.getItem("uploadedFiles");
         const storedTablePreview = localStorage.getItem("tablePreview");
 
         const updatedFile = storedUploadedFile
@@ -90,24 +110,17 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
           : {};
         existingPreview[response.joined_table_name.trim()] = response.preview;
 
-        localStorage.setItem("uploadedFile", JSON.stringify(updatedFile));
+        localStorage.setItem("uploadedFiles", JSON.stringify(updatedFile));
         localStorage.setItem("tablePreview", JSON.stringify(existingPreview));
-
-        setTimeout(() => {
-          setMessageTitle("success");
-          setMessage(
-            "Joined table created. You can now run cross-table queries."
-          );
-        }, 1500);
       } else {
-        setMessageTitle("error");
-        setMessage("Join failed");
+        console.error("Join failed");
+        setErrors("Something went wrong on server, Join failed!");
       }
     } catch {
-      setMessageTitle("error");
-      setMessage("Join failed!");
+      setErrors("Something went wrong on server, Join failed!");
+      console.error("Join failed!");
     } finally {
-      setTimeout(() => setIsLoading(false), 2000);
+      setTimeout(() => setIsLoading(false), 1000);
     }
   };
 
@@ -133,13 +146,17 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
           <X className="w-6 h-6" />
         </button>
 
-        {/* 🔔 Notification */}
-        {message && (
-          <CustomNotificationCard
-            title={messageTitle}
-            text={message}
-            onClose={() => setMessage("")}
-          />
+        {/* 🌟 Global Messages */}
+        {(message || typeof errors === "string") && (
+          <div
+            className={`w-full px-4 py-2 rounded-md text-sm font-medium text-center ${
+              message
+                ? "bg-green-100 text-green-800 border border-green-300"
+                : "bg-red-100 text-red-800 border border-red-300"
+            }`}
+          >
+            {message || errors}
+          </div>
         )}
 
         {/* 🔧 Header */}
@@ -161,12 +178,20 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
             Joined Table Name
           </label>
           <input
+            ref={newTableNameRef}
             type="text"
             value={newTableName}
             onChange={(e) => setNewTableName(e.target.value)}
             placeholder="e.g., orders_customers"
-            className="w-full border border-gray-300 rounded-md py-2 px-3 focus:ring-2 focus:ring-indigo-500 text-sm"
+            className={`w-full border rounded-md py-2 px-3 focus:ring-2 text-sm ${
+              errors.newTableName
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-indigo-500"
+            }`}
           />
+          {errors.newTableName && (
+            <p className="text-red-500 text-xs mt-1">{errors.newTableName}</p>
+          )}
         </div>
 
         {/* 🔗 Join Builder */}
@@ -178,6 +203,9 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
             selectedColumn={leftColumn}
             setSelectedTable={setLeftTable}
             setSelectedColumn={setLeftColumn}
+            tableRef={leftTableRef}
+            columnRef={leftColumnRef}
+            errors={errors}
           />
 
           <div className="flex flex-col items-center gap-4">
@@ -203,6 +231,9 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
             selectedColumn={rightColumn}
             setSelectedTable={setRightTable}
             setSelectedColumn={setRightColumn}
+            tableRef={rightTableRef}
+            columnRef={rightColumnRef}
+            errors={errors}
           />
         </div>
 
@@ -230,7 +261,6 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
   );
 };
 
-// 🔽 Dropdown Selector Component
 const DropdownSelector = ({
   title,
   tables,
@@ -238,6 +268,9 @@ const DropdownSelector = ({
   selectedColumn,
   setSelectedTable,
   setSelectedColumn,
+  tableRef,
+  columnRef,
+  errors,
 }) => {
   const columns =
     tables.find((table) => table.table_name === selectedTable)?.columns || [];
@@ -249,7 +282,12 @@ const DropdownSelector = ({
           {title}
         </label>
         <select
-          className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-indigo-500"
+          ref={tableRef}
+          className={`w-full border rounded-md py-2 px-3 text-sm focus:ring-2 ${
+            errors[`${title.toLowerCase().split(" ")[0]}Table`]
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 focus:ring-indigo-500"
+          }`}
           value={selectedTable}
           onChange={(e) => {
             setSelectedTable(e.target.value);
@@ -263,13 +301,23 @@ const DropdownSelector = ({
             </option>
           ))}
         </select>
+        {errors[`${title.toLowerCase().split(" ")[0]}Table`] && (
+          <p className="text-red-500 text-xs mt-1">
+            {errors[`${title.toLowerCase().split(" ")[0]}Table`]}
+          </p>
+        )}
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Column
         </label>
         <select
-          className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-indigo-500"
+          ref={columnRef}
+          className={`w-full border rounded-md py-2 px-3 text-sm focus:ring-2 ${
+            errors[`${title.toLowerCase().split(" ")[0]}Column`]
+              ? "border-red-500 focus:ring-red-500"
+              : "border-gray-300 focus:ring-indigo-500"
+          }`}
           value={selectedColumn}
           onChange={(e) => setSelectedColumn(e.target.value)}
           disabled={!selectedTable}
@@ -281,6 +329,11 @@ const DropdownSelector = ({
             </option>
           ))}
         </select>
+        {errors[`${title.toLowerCase().split(" ")[0]}Column`] && (
+          <p className="text-red-500 text-xs mt-1">
+            {errors[`${title.toLowerCase().split(" ")[0]}Column`]}
+          </p>
+        )}
       </div>
     </div>
   );

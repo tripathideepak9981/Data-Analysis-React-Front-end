@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 
 // Deployed backend url: http://35.154.165.174
 // Localhost url : http://127.0.0.1:8000
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "http://69.62.77.122";
 
 const axiosConfig = {
   timeout: 100000,
@@ -316,14 +316,9 @@ export const sendSignUpData = async (formData) => {
     throw (error.message);
   }
 }
-
-
 export const sendSignInData = async (username, password) => {
-  console.log("Here"); // Confirm function is called
+  console.log("Here")
   try {
-    console.log("Preparing API call to:", `${API_BASE_URL}/api/auth/login`);
-    console.log("Payload:", { username, password });
-
     const response = await axios.post(
       `${API_BASE_URL}/api/auth/login`,
       new URLSearchParams({
@@ -334,29 +329,21 @@ export const sendSignInData = async (username, password) => {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        timeout: 5000, // 5 sec timeout so we can catch hangs
       }
     );
+    console.log("Sigin Response : ", response)
+    const { access_token } = response.data;
+    localStorage.setItem("access_token", access_token);
+    localStorage.setItem("username", username);
+      setTimeout(async () => {
+         await getTablesData();
+      })
 
-    console.log("✅ API call success:", response);
     return response.data;
-
   } catch (error) {
-    console.error("❌ API call failed:", error);
-
-    if (error.response) {
-      console.error("Response status:", error.response.status);
-      console.error("Response data:", error.response.data);
-    } else if (error.request) {
-      console.error("No response received. Request was:", error.request);
-    } else {
-      console.error("Error setting up request:", error.message);
-    }
-    throw error;
+    throw (error.message);
   }
 };
-
-
 
 export const logoutUser = async () => {
   try {

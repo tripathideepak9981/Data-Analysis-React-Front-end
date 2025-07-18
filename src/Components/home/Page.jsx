@@ -8,6 +8,7 @@ import Testimonials from "./Testimonials";
 import { FAQSection } from "./FAQSection";
 import { FooterSection } from "./FooterSection";
 import ModernContactSection from "./MorderContactSection";
+import { WhyWeStandOutSection } from "./WhyWeStandOutSection";
 
 export default function Header() {
   const [username, setUsername] = useState(localStorage.getItem("username"));
@@ -24,6 +25,7 @@ export default function Header() {
         isLoggedIn={isLoggedIn}
       />
       <HeroSection isLoggedIn={isLoggedIn} />
+      <WhyWeStandOutSection />
       <HowItWorksSection />
       <LiveDemoSection />
       <KeyFeaturesSection />

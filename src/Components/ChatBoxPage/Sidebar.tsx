@@ -119,7 +119,7 @@ const Sidebar = ({
                           if (item.id === "home") navigate("/");
                         }}
                         className={cn(
-                          "w-full justify-start transition-all duration-300 hover:bg-slate-100/80 rounded-xl font-medium",
+                          "w-full justify-center transition-all duration-300 hover:bg-slate-100/80 rounded-xl font-medium",
                           collapsed ? "px-3 h-12" : "px-5 h-12",
                           activeSection === item.id
                             ? "bg-gradient-to-r from-purple-50 via-blue-50 to-indigo-50 text-purple-700 border border-purple-200/50 shadow-md shadow-purple-500/10"
@@ -127,9 +127,9 @@ const Sidebar = ({
                         )}
                       >
                         <item.icon
-                          className={cn("w-5 h-5", activeSection === item.id ? "text-purple-600" : "")}
+                          className={cn("w-6 h-6", activeSection === item.id ? "text-purple-600" : "")}
                         />
-                        {!collapsed && <span className="ml-4">{item.label}</span>}
+                        {!collapsed && <span className="ml-3">{item.label}</span>}
                       </Button>
                     </TooltipTrigger>
                     {collapsed && (

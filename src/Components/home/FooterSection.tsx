@@ -14,7 +14,7 @@ export const FooterSection = () => {
           {/* Logo and Description */}
           <div className="col-span-1">
             <div className="text-2xl font-bold bg-gradient-to-r from-violet-400 to-blue-400 bg-clip-text text-transparent mb-4">
-              AI Data Analysis
+              AI Asklytics
             </div>
             <p className="text-gray-400 leading-relaxed mb-6">
               Upload Excel or CSV files, connect live databases, and use AI to

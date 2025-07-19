@@ -12,12 +12,14 @@ import Swal from "sweetalert2";
 import { X } from "lucide-react";
 import ConnectDatabaseSection from "./ConnectDatabaseConnection";
 import StaticFilesSection from "./StaticFilesSection";
+import { FaLinesLeaning } from "react-icons/fa6";
 
 const AddDataPopup = ({
   setShowChatNotification,
   setSuggestionQuery,
   closeAddDataPopup,
 }) => {
+  const [fileCleaning, setFileCleaning] = useState();
   const [isLoading, setIsLoading] = useState();
   const [isCleaning, setIsCleaning] = useState();
   const [activeTab, setActiveTab] = useState("static");
@@ -29,12 +31,6 @@ const AddDataPopup = ({
   const [showModal, setShowModal] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [cleaningFile, setCleaningFile] = useState();
-
-  const [DbResponse, setDbResponse] = useState(() => {
-    const stored = sessionStorage.getItem("DbResponse");
-    return stored ? JSON.parse(stored) : {};
-  });
 
   const showNotifications = (title, text) => {
     setNotification({
@@ -43,10 +39,6 @@ const AddDataPopup = ({
       text,
     });
   };
-  const [dbType, setDbType] = useState(() => {
-    const stored = sessionStorage.getItem("DbType");
-    return stored ? JSON.parse(stored) : {};
-  });
 
   const [tablePreview, setTablePreview] = useState(() => {
     const stored = localStorage.getItem("previews");
@@ -87,14 +79,6 @@ const AddDataPopup = ({
   }, []);
 
   useEffect(() => {
-    sessionStorage.setItem("DbResponse", JSON.stringify(DbResponse));
-  }, [DbResponse]);
-
-  useEffect(() => {
-    sessionStorage.setItem("DbType", JSON.stringify(dbType));
-  }, [dbType]);
-
-  useEffect(() => {
     localStorage.setItem("previews", JSON.stringify(tablePreview));
   }, [tablePreview]);
 
@@ -111,8 +95,8 @@ const AddDataPopup = ({
 
     setShowModal(true);
   };
-
   const handleConfirm = async () => {
+    setFileCleaning(true);
     setIsCleaning(true);
     setShowModal(false);
     try {
@@ -139,6 +123,7 @@ const AddDataPopup = ({
       console.error(error);
       Swal.fire("Error", error.message, "error");
     } finally {
+      setFileCleaning(false);
       setSelectedFiles([]);
       setIsCleaning(false);
       setShowModal(false);
@@ -147,7 +132,6 @@ const AddDataPopup = ({
 
   const handleCancel = async () => {
     setIsCleaning(true);
-    setFileCleaning(false);
     setShowModal(false);
     try {
       queueMicrotask(() => setIsCleaning(true));
@@ -567,6 +551,7 @@ const AddDataPopup = ({
       {/* Static Files Tab Content */}
       {activeTab === "static" && (
         <StaticFilesSection
+          fileCleaning={fileCleaning}
           fileInputRef={fileInputRef}
           handleFileUpload={handleFileUpload}
           handleDropBoxClick={handleDropBoxClick}
@@ -591,12 +576,8 @@ const AddDataPopup = ({
       )}
       {activeTab === "connected" && (
         <ConnectDatabaseSection
-          setDbType={setDbType}
           setIsPopupOpen={setIsPopupOpen}
-          dbType={dbType}
-          DbResponse={DbResponse}
           isPopupOpen={isPopupOpen}
-          setDbResponse={setDbResponse}
         />
       )}
     </div>

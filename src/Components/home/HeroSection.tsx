@@ -40,7 +40,7 @@ const HeroSection = ({ isLoggedIn }) => {
 
   return (
     <>
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-violet-50/40 to-blue-50/40 pt-16">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white via-violet-50/40 to-blue-50/40">
         {/* Background elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-24 left-12 w-2 h-2 bg-violet-400 rounded-full animate-pulse"></div>
@@ -74,7 +74,7 @@ const HeroSection = ({ isLoggedIn }) => {
                   <span className="block">On Your Data, Inside Your Network.</span>
                 </h1>
 
-                <p className="text-lg lg:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                <p className="text-lg lg:text-xl animate-pulse text-gray-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Your Data. AI-Powered. Connect via VPN. Generate & Run SQL
                   Instantly. No Analysts. No Waiting. Just Answers. Ask,
                   Analyze, Act — Your Way.

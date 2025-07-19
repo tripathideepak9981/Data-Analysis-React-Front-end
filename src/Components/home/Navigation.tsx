@@ -63,10 +63,10 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">AI</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-base">AI</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">DataAnalyst</span>
+            <span className="text-xl font-bold text-gray-900">Asklytics</span>
           </div>
 <nav className="hidden md:flex items-center space-x-8">
   <a href="#features" className="group relative text-gray-600 transition-colors hover:text-blue-600">

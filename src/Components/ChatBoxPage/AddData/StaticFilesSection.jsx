@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 
 const StaticFilesSection = ({
+  fileCleaning,
   fileInputRef,
   handleFileUpload,
   handleDropBoxClick,
@@ -131,7 +132,7 @@ const StaticFilesSection = ({
     );
   };
 
-  const DataProcessingLoader = ({ fileCleaning = true }) => {
+  const DataProcessingLoader = () => {
     const baseSteps = [
       {
         name: "Uploading file",
@@ -156,6 +157,7 @@ const StaticFilesSection = ({
       description: "Removing inconsistencies and errors",
     };
 
+    // Add cleaning step only if fileCleaning is true
     const steps = fileCleaning
       ? [baseSteps[0], baseSteps[1], cleaningStep, baseSteps[2]]
       : baseSteps;
@@ -174,9 +176,6 @@ const StaticFilesSection = ({
     }, [currentStep, steps.length]);
 
     const allStepsDone = completedSteps.length === steps.length;
-    const progressPercentage = Math.round(
-      (completedSteps.length / steps.length) * 100
-    );
 
     const LoaderStep = ({ step, index, isLast }) => {
       const isCurrent = currentStep === index;
@@ -192,24 +191,23 @@ const StaticFilesSection = ({
           )}
           <div className="relative z-10 flex-shrink-0">
             {isCompleted ? (
-              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg transform transition-all duration-500 hover:scale-105">
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
                 <CheckCircle className="text-white w-6 h-6" />
               </div>
             ) : isCurrent ? (
               <div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
                 <div className="absolute inset-0 bg-blue-400 rounded-xl animate-ping opacity-30" />
-                <div className="absolute inset-1 bg-blue-300 rounded-lg animate-pulse opacity-50" />
                 <StepIcon className="text-white w-6 h-6 z-10 animate-pulse" />
               </div>
             ) : (
-              <div className="flex items-center justify-center w-12 h-12 bg-slate-100 border-2 border-slate-200 rounded-xl shadow-inner transition-all duration-300">
+              <div className="flex items-center justify-center w-12 h-12 bg-slate-100 border-2 border-slate-200 rounded-xl">
                 <StepIcon className="text-gray-700 w-6 h-6" />
               </div>
             )}
           </div>
           <div className="flex-1 min-w-0 pt-1">
             <h3
-              className={`font-semibold text-base transition-all duration-500 ${
+              className={`font-semibold text-base ${
                 isCompleted
                   ? "text-green-700"
                   : isCurrent
@@ -220,7 +218,7 @@ const StaticFilesSection = ({
               {step.name}
             </h3>
             <p
-              className={`text-sm mt-1 transition-all duration-500 ${
+              className={`text-sm mt-1 ${
                 isCompleted
                   ? "text-green-600"
                   : isCurrent
@@ -230,22 +228,6 @@ const StaticFilesSection = ({
             >
               {step.description}
             </p>
-            {isCurrent && (
-              <div className="mt-3 w-full bg-white rounded-full h-1.5 overflow-hidden">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full animate-pulse transition-all duration-1000 ease-out"
-                  style={{ width: "75%" }}
-                />
-              </div>
-            )}
-            {isCompleted && (
-              <div className="mt-2 flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-xs text-green-600 font-medium">
-                  Completed
-                </span>
-              </div>
-            )}
           </div>
         </div>
       );
@@ -253,7 +235,7 @@ const StaticFilesSection = ({
 
     return (
       <div className="w-full max-w-lg mx-auto">
-        <div className="bg-white backdrop-blur-sm border border-slate-200/50 shadow-xl rounded-2xl p-8 mb-6">
+        <div className="bg-white border border-slate-200 shadow-xl rounded-2xl p-8">
           <div className="space-y-6">
             {steps.map((step, index) => (
               <LoaderStep
@@ -264,17 +246,18 @@ const StaticFilesSection = ({
               />
             ))}
           </div>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-slate-500">
-            {allStepsDone
-              ? "Processing complete - preparing final results"
-              : `Step ${currentStep + 1} of ${steps.length} in progress`}
-          </p>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-slate-500">
+              {allStepsDone
+                ? "Processing complete - preparing final results"
+                : `Step ${currentStep + 1} of ${steps.length} in progress`}
+            </p>
+          </div>
         </div>
       </div>
     );
   };
+
   return (
     <div className="py-3 px-8 space-y-3">
       {/* Upload Section */}

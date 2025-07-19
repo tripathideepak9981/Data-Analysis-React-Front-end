@@ -25,6 +25,23 @@ const ChatBox = () => {
   const [openPopupJoin, setOpenPopupJoin] = useState(false);
   const [queryRunning, setQueryRunning] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [dbType, setDbType] = useState(
+    () => localStorage.getItem("dbType") || ""
+  );
+
+  useEffect(() => {
+    const syncDbType = () => {
+      setDbType(localStorage.getItem("dbType") || "");
+    };
+
+    window.addEventListener("storage", syncDbType);
+    window.addEventListener("local-storage", syncDbType);
+
+    return () => {
+      window.removeEventListener("storage", syncDbType);
+      window.removeEventListener("local-storage", syncDbType);
+    };
+  }, []);
 
   useEffect(() => {
     const storedData = localStorage.getItem("suggested_question");
@@ -272,30 +289,12 @@ const ChatBox = () => {
             ref={scrollContainerRef}
             className="flex-1 overflow-y-scroll scrollbar-hide  rounded-lg  relative"
           >
-            {showIcon && (
-              <div
-                className="right-2 top-2 cursor-pointer p-1 rounded-full transition text-gray-800 fixed"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                <MoreVertIcon className="w-[5px] h-[5px]" />
+            {dbType && (
+              <div className="absolute top-4 right-4 bg-green-200 text-green-900 px-4 py-2 rounded-lg shadow">
+                Connected with <span>{dbType.toUpperCase()}</span>
               </div>
             )}
-            {isDropdownOpen && (
-              <div className="absolute right-8 top-8 bg-gray-100 text-message text-gray-800 shadow-lg rounded-md p-2 z-10">
-                <button
-                  onClick={() => setIsDropdownOpen(false)}
-                  className=" px-4 py-2 hover:bg-gray-200 w-full text-left"
-                >
-                  Table Preview
-                </button>
-                <button
-                  onClick={() => setIsDropdownOpen(false)}
-                  className="block px-4 py-2 hover:bg-gray-200 w-full text-left "
-                >
-                  Other Options
-                </button>
-              </div>
-            )}
+
             {showChatNotification && !isAddDataPopupOpen && (
               <motion.div
                 className="fixed top-4 right-3 z-50"
@@ -360,7 +359,7 @@ const ChatBox = () => {
                 className="fixed inset-0 flex items-center 
               justify-center bg-black bg-opacity-40 z-50"
               >
-                <div className="left-14 -top-8  px-6 py-2 max-w-[70%] h-full max-h-[95%] w-full relative">
+                <div className="left-14 -top-4  px-6 py-2 max-w-[65%] h-full max-h-[90%] w-full relative">
                   <AddDataPopup
                     closeAddDataPopup={closeAddDataPopup}
                     setShowChatNotification={setShowChatNotification}

@@ -1,10 +1,7 @@
-import { useState } from "react";
-import { Eye, EyeOff, Database } from "lucide-react";
-import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+import { useState, useEffect } from "react";
+import { Eye, EyeOff, Database, X } from "lucide-react";
 import Swal from "sweetalert2";
 import { connectToDatabase } from "../../../Api";
-
-import { X } from "lucide-react";
 
 const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
   if (!isOpen) return null;
@@ -20,6 +17,13 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("DbResponse"));
+    if (saved && saved.type === dbType && saved.credentials) {
+      setFormData({ ...formData, ...saved.credentials });
+    }
+  }, [dbType]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,8 +42,16 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
           text: "Something went wrong",
           confirmButtonText: "OK",
         });
-      } else {
-        setDbResponse(response);
+      } else if (response.status === "connected") {
+        const updatedResponse = {
+          ...response,
+          type: formData.db_type,
+          credentials: formData,
+        };
+        setDbResponse(updatedResponse);
+        localStorage.setItem("dbType", formData.db_type);
+        localStorage.setItem("DbResponse", JSON.stringify(updatedResponse));
+
         Swal.fire({
           icon: "success",
           title: "Database Connected!",
@@ -62,15 +74,12 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-8">
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl px-8 py-6 relative animate-fadeIn">
-        {/* Close */}
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition"
           onClick={onClose}
         >
           <X className="w-6 h-6" />
         </button>
-
-        {/* Header */}
         <div className="mb-6">
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-1">
             Create Database Connection
@@ -80,10 +89,8 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
             connection.
           </p>
         </div>
-
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Dropdown for DB Type */}
+          {/* DB Type */}
           <div className="space-y-1">
             <label
               htmlFor="db_type"
@@ -105,8 +112,8 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
             </select>
           </div>
 
+          {/* Host & Port */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Host */}
             <div className="space-y-1">
               <label
                 htmlFor="host"
@@ -125,8 +132,6 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
               />
             </div>
-
-            {/* Port */}
             <div className="space-y-1">
               <label
                 htmlFor="port"
@@ -166,8 +171,8 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
             />
           </div>
 
+          {/* User & Password */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Username */}
             <div className="space-y-1">
               <label
                 htmlFor="user"
@@ -186,8 +191,6 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
                 className="w-full px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
               />
             </div>
-
-            {/* Password with toggle */}
             <div className="space-y-1 relative">
               <label
                 htmlFor="password"

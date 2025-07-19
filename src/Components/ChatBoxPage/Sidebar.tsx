@@ -62,7 +62,7 @@ const Sidebar = ({
                   </span>
                 </div>
                 <div>
-                  <h1 className="font-bold text-slate-900 text-xl tracking-tight">Data Analysis</h1>
+                  <h1 className="font-bold text-slate-900 text-xl tracking-tight">AI Asklytics</h1>
                 </div>
               </div>
             )}

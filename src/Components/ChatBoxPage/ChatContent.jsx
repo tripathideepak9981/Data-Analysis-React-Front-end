@@ -75,37 +75,17 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
             style={{ fontSize: "clamp(10px, 2vw, 20px)" }}
           >
             {chatMessages.map((chat, index) => {
-              const isLast = index === chatMessages.length - 1;
-
               return (
-                <div
-                  key={index}
-                  // ref={isLast ? responseEndRef : null} // Apply ref only to last item
-                >
+                <div key={index}>
                   <ResponseCard
                     response={chat}
+                    index={index}
+                    setChatMessages={setChatMessages}
                     showInterruptMessage={chat.interrupted === true}
-                    onUpdateSQL={(updatedSQL) => {
-                      setChatMessages((prevMessages) =>
-                        prevMessages.map((msg, i) =>
-                          i === index
-                            ? {
-                                ...msg,
-                                aiResponse: {
-                                  ...msg.aiResponse,
-                                  sql_query: updatedSQL,
-                                },
-                              }
-                            : msg
-                        )
-                      );
-                    }}
                   />
                 </div>
               );
             })}
-
-            {/* <div ref={responseEndRef}></div>? */}
           </div>
         </div>
       </div>

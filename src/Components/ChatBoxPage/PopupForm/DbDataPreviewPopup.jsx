@@ -3,11 +3,15 @@ import TableDropdown from "../Dropdowns/TableDropDown";
 import { loadTablesApi } from "../../../Api";
 import Swal from "sweetalert2";
 import { X, FileText } from "lucide-react";
+import CustomNotificationCard from "../../Card/CustomNotificationCard";
 
 const DbDataPreviewPopup = ({ dbType, onClose, DbResponse }) => {
   const [selectedTable, setSelectedTable] = useState([]);
   const [LoadedTable, setLoadedTable] = useState([]);
   const [tablePreview, setTablePreview] = useState({});
+  const [showNotification, setShowNotification] = useState();
+  const [notificationStatus, setNotificationStatus] = useState();
+  const [notificationMessage, setNotificationMessage] = useState();
 
   const handleTableSelection = (table) => {
     setSelectedTable((prev) =>
@@ -126,12 +130,21 @@ const DbDataPreviewPopup = ({ dbType, onClose, DbResponse }) => {
     const loadTables = async () => {
       if (Array.isArray(selectedTable) && selectedTable.length > 0) {
         const response = await loadTablesApi(selectedTable);
-        if (response) {
+        console.log(response);
+        if (response.status == "tables loaded") {
+          setNotificationStatus("Success");
+          setShowNotification(true);
+          setNotificationMessage(`${selectedTable} table loaded successfully`);
           setLoadedTable(response.tables || []);
           setTablePreview((prev) => ({
             ...prev,
             ...response.previews,
           }));
+        } else {
+          setNotificationStatus("Error");
+          setNotificationMessage(`Error in loading ${selectedTable} table`);
+
+          setShowNotification(true);
         }
       } else {
         setLoadedTable([]);
@@ -167,6 +180,13 @@ const DbDataPreviewPopup = ({ dbType, onClose, DbResponse }) => {
               selectedTable={selectedTable}
             />
           </div>
+
+          {showNotification && (
+            <CustomNotificationCard
+              title={notificationStatus}
+              text={notificationMessage}
+            />
+          )}
 
           {/* Table List */}
           <div

@@ -85,7 +85,7 @@ export const FooterSection = () => {
                 <span className="font-medium text-white">Phone:</span> +91 9981633129
               </li>
               <li>
-                <span className="font-medium text-white">Email:</span> tarunk@tanishanalytics.com
+                <span className="font-medium text-white">Email:</span> sample@gmail.com
               </li>
               <li>
                 <span className="font-medium text-white">Location:</span>{" "}

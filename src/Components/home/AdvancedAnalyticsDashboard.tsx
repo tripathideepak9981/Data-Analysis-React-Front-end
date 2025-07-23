@@ -66,7 +66,6 @@ const AdvancedAnalyticsDashboard = () => {
   ];
 
   const currentChartData = chartDataSets[chartDataIndex];
-  const totalRevenue = currentChartData.reduce((sum, item) => sum + item.revenue, 0);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -86,7 +85,7 @@ const AdvancedAnalyticsDashboard = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentInsight((prev) => (prev + 1) % insights.length);
-    }, 3000);
+    }, 2500);
     return () => clearInterval(interval);
   }, [insights.length]);
 
@@ -98,87 +97,105 @@ const AdvancedAnalyticsDashboard = () => {
   }, [chartDataSets.length]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div
-        className="relative w-[40vw] h-[70vh] bg-white rounded-3xl p-6 shadow-lg border border-gray-200 animate-slide-up overflow-hidden"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl flex items-center justify-center">
-              <Brain className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-800">Asklytics</h3>
-              <p className="text-gray-500 text-sm">AI-Powered Analytics Platform</p>
-            </div>
-          </div>
+    <div className="flex items-center justify-center min-h-screen relative">
+  <div
+    className="relative w-[90vw] sm:w-[80vw] md:w-[60vw] lg:w-[40vw] h-full bg-white rounded-3xl p-6 shadow-lg border border-gray-200 animate-slide-up overflow-visible"
+  >
+    {/* Floating Div Top Right - attached to parent */}
+    <div className="absolute -top-8 -right-14 z-10 bg-white/90 backdrop-blur-md rounded-xl p-3 shadow-lg border border-gray-200 animate-bounceSlow">
+      <p className="text-base text-gray-500">Live Insights</p>
+      <p className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+        Real-time
+      </p>
+    </div>
+
+    {/* Floating Div Bottom Left - attached to parent */}
+    <div
+      className="absolute -bottom-8 -left-20 z-10 bg-white/90 backdrop-blur-md rounded-xl p-3 shadow-lg border border-gray-200 animate-bounceSlow"
+      style={{ animationDelay: "1s" }}
+    >
+      <p className="text-base text-gray-500">Accuracy Score</p>
+      <p className="text-2xl text-center font-bold text-green-600">97.3%</p>
+    </div>
+
+    {/* Header */}
+    <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center space-x-4">
+        <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl flex items-center justify-center">
+          <Brain className="h-6 w-6 text-white" />
         </div>
-
-        {/* AI Insight Banner */}
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-4">
-          <div className="flex items-center space-x-2">
-            <Zap className="h-5 w-5 text-blue-500 animate-pulse" />
-            <span className="text-gray-700 font-medium">{insights[currentInsight]}</span>
-            <TrendingUp className="h-4 w-4 text-green-500" />
-          </div>
-        </div>
-
-        {/* Revenue Chart */}
-        <div className="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-100">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-base font-semibold text-gray-700">Revenue by Region</h4>
-            <div className="p-2 bg-gradient-to-r from-purple-400 to-blue-400 rounded-md">
-              <BarChart3 className="h-5 w-5 text-white" />
-            </div>
-          </div>
-
-          <div className="h-40 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={currentChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis
-                  dataKey="region"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#6b7280', fontSize: 12 }}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#6b7280', fontSize: 12 }}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" radius={[6, 6, 0, 0]} animationDuration={1000}>
-                  {currentChartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-2">
-          <div className="bg-gray-100 rounded-lg p-2 text-center">
-            <Users className="h-4 w-4 text-blue-500 mb-1 mx-auto" />
-            <p className="text-xs text-gray-500">Segments</p>
-            <p className="text-lg font-semibold text-gray-700">5</p>
-          </div>
-          <div className="bg-gray-100 rounded-lg p-2 text-center">
-            <AlertCircle className="h-4 w-4 text-purple-500 mb-1 mx-auto" />
-            <p className="text-xs text-gray-500">Quality</p>
-            <p className="text-lg font-semibold text-gray-700">98%</p>
-          </div>
-          <div className="bg-gray-100 rounded-lg p-2 text-center">
-            <TrendingUp className="h-4 w-4 text-green-500 mb-1 mx-auto" />
-            <p className="text-xs text-gray-500">Growth</p>
-            <p className="text-lg font-semibold text-gray-700">+23%</p>
-          </div>
+        <div>
+          <h3 className="text-lg font-bold text-gray-800">Asklytics</h3>
+          <p className="text-sm text-gray-500">AI-Powered Analytics Platform</p>
         </div>
       </div>
     </div>
+
+    {/* AI Insight Banner */}
+    <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 mb-4">
+      <div className="flex items-center space-x-2">
+        <Zap className="h-5 w-5 text-blue-500 animate-pulse" />
+        <span className="text-sm text-gray-700 font-medium">{insights[currentInsight]}</span>
+        <TrendingUp className="h-4 w-4 text-green-500" />
+      </div>
+    </div>
+
+    {/* Revenue Chart */}
+    <div className="bg-gray-50 rounded-xl p-4 mb-4 border border-gray-100">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-base font-semibold text-gray-700">Revenue by Region</h4>
+        <div className="p-2 bg-gradient-to-r from-purple-400 to-blue-400 rounded-md">
+          <BarChart3 className="h-5 w-5 text-white" />
+        </div>
+      </div>
+
+      <div className="h-40 w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={currentChartData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis
+              dataKey="region"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#6b7280', fontSize: 12 }}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#6b7280', fontSize: 12 }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="value" radius={[6, 6, 0, 0]} animationDuration={1000}>
+              {currentChartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+
+    {/* Stats Grid */}
+    <div className="grid grid-cols-3 gap-2">
+      <div className="bg-gray-100 rounded-lg p-2 text-center">
+        <Users className="h-4 w-4 text-blue-500 mb-1 mx-auto" />
+        <p className="text-xs text-gray-500">Segments</p>
+        <p className="text-lg font-semibold text-gray-700">5</p>
+      </div>
+      <div className="bg-gray-100 rounded-lg p-2 text-center">
+        <AlertCircle className="h-4 w-4 text-purple-500 mb-1 mx-auto" />
+        <p className="text-xs text-gray-500">Quality</p>
+        <p className="text-lg font-semibold text-gray-700">98%</p>
+      </div>
+      <div className="bg-gray-100 rounded-lg p-2 text-center">
+        <TrendingUp className="h-4 w-4 text-green-500 mb-1 mx-auto" />
+        <p className="text-xs text-gray-500">Growth</p>
+        <p className="text-lg font-semibold text-gray-700">+23%</p>
+      </div>
+    </div>
+  </div>
+</div>
+
   );
 };
 

@@ -40,6 +40,7 @@ export const deleteTable = async (tableName) => {
         Authorization: `Bearer ${token}`, // if using JWT
       },
     });
+    console.log("Delete Table Response : ", response)
 
     return response.data;
   } catch (error) {
@@ -58,6 +59,7 @@ export const getTablesData = async () => {
           Authorization: `Bearer ${token}`,
       }}
     )
+    console.log("Get tables Data Response : ", response)
     if (response.data && response.data.tables) {
   const previews = {};
   const tableNames = [];
@@ -96,6 +98,7 @@ export const avilableTables = async () => {
 
       }
     })
+    console.log("Avalable Table Response : ", response)
     return response.data;
   } catch (error) {
     console.log("Error Avalilable Tables", error)
@@ -123,6 +126,7 @@ const response = await axios.post(
   }
 );
 
+    console.log("Validate Query Response : ", response)
 
     return response.data;
   } catch (error) {
@@ -131,24 +135,6 @@ const response = await axios.post(
   }
 };
 
-const handleError = (error, action = "processing-request") => {
-  console.error(`Error ${action}:`, error.response?.data || error.message);
-  let errorMessage = "Something went wrong";
-  if (error.code === "ECONNABORTED") {
-    errorMessage = "Network issue. Try again later.";
-  } else if (error.response?.data?.detail) {
-    errorMessage = error.response?.data?.detail;
-  }
-  // Swal.fire({
-  //   icon: "error",
-  //   title: "Error",
-  //   text: errorMessage,
-  //   confirmButtonText: "OK",
-  //   width: "30vw",
-  // });
-  console.log(errorMessage)
-  return { success: false, error: error.message };
-}
 
 export const uploadFilesAPI = async (selectedFiles) => {
   if (!selectedFiles.length) return;
@@ -170,6 +156,7 @@ export const uploadFilesAPI = async (selectedFiles) => {
         }
       }
     );
+    console.log("File Upload Response : " , response)
 
     return response.data;
   } catch (error) {
@@ -177,6 +164,7 @@ export const uploadFilesAPI = async (selectedFiles) => {
     return error;
   }
 };
+
 
 
 export const suggestedQueryResponse = async () => {
@@ -226,6 +214,7 @@ export const cleanFile = async (table_name) => {
         "Content-Type": "application/json",
       }
     });
+    console.log("Clean file : " , response)
     return response.data;
   } catch (error) {
     console.log("error in cleaning File : ", error);
@@ -244,6 +233,7 @@ export const cancel_clean_file = async (table_name) => {
       }
     }
     );
+    console.log("Cancel Clean Response : ", response)
 
     return response.data;
   } catch (error) {
@@ -265,7 +255,6 @@ export const connectToDatabase = async (dbParams) => {
         },
       }
     );
-
     console.log("Database connection response:", response.data);
     return response.data;
   } catch (error) {
@@ -299,6 +288,30 @@ export const loadTablesApi = async (table_name) => {
   }
 };
 
+export const sendOtp = async (email) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/auth/send-otp`, { email });
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw error.response.data.detail;
+    }
+    throw { message: "Failed to send OTP. Try again later." };
+  }
+};
+
+export const verifyOtp = async (email, otp) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/auth/verify-otp`, { email, otp });
+    return response.data;
+  } catch (error) {
+    if (error.response && error.response.data) {
+      throw error.response.data.detail;
+    }
+    throw { message: "Invalid or expired OTP." };
+  }
+};
+
 
 export const sendSignUpData = async (formData) => {
   try {
@@ -306,16 +319,20 @@ export const sendSignUpData = async (formData) => {
       headers: {
         "Content-Type": "application/json"
       }
-    })
+    });
     const { access_token } = response.data;
-    console.log(response)
-    localStorage.setItem("access_token", access_token)
-    localStorage.setItem("username", formData.email)
+    localStorage.setItem("access_token", access_token);
+    localStorage.setItem("username", formData.email);
     return response.data;
   } catch (error) {
-    throw (error.message);
+    if (error.response && error.response.data) {
+      // Pass backend error response back to frontend
+      throw error.response.data.detail;
+    }
+    throw { message: "Network Error. Try again later!" };
   }
-}
+};
+
 export const sendSignInData = async (username, password) => {
   console.log("Here")
   try {
@@ -338,6 +355,7 @@ export const sendSignInData = async (username, password) => {
       setTimeout(async () => {
          await getTablesData();
       })
+      console.log("Sign In : ", response)
 
     return response.data;
   } catch (error) {
@@ -360,7 +378,7 @@ export const logoutUser = async () => {
         }
       }
     );
-    console.log(response)
+    console.log("Logout : ", response)
     return response.data;
   } catch (error) {
     console.error("Logout failed:", error);
@@ -376,5 +394,5 @@ export const logoutUser = async () => {
     localStorage.removeItem("DbResponse")
     localStorage.removeItem("tablePreview")
 
-  }
+  } 
 };

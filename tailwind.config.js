@@ -20,8 +20,7 @@ module.exports = {
       animation: {
         
         gradientMove: 'gradientMove 1.2s linear infinite',
-        bounceSlow: 'bounceSlow 1s infinite ease-in-out', 
-        
+        bounceSlow: 'bounceSlow 2s infinite ease-in-out', 
         blink: 'blink 1.5s ease-in-out infinite',
         rotate4: 'rotate4 1.4s linear infinite',
         dash4: 'dash4 1.4s ease-in-out infinite',
@@ -40,7 +39,7 @@ module.exports = {
         },
         bounceSlow: {
           '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-0.5rem)' },
+          '60%': { transform: 'translateY(-4.5rem)' },
         },
         blink: {
           '0%, 100%': { opacity: '1' },

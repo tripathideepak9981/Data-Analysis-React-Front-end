@@ -36,8 +36,8 @@ const HeroSection = ({ isLoggedIn }) => {
     <>
       <main className="flex flex-col lg:flex-row items-center min-h-[100vh] px-6 py-6 max-w-8xl gap-32 ml-14 mx-auto">
         {/* Left Hero Content */}
-        <section className="flex-1 max-w-[600px]">
-          <h1 className="text-4xl md:text-5xl font-extrabold leading-tight mb-6 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+        <section className="flex-1 max-w-full mb-20">
+          <h1 className="text-5xl md:text-6xl lg:text-[55px] font-extrabold leading-tight mb-6 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
             Beyond Generic AI.
             <br />
             <span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
@@ -81,7 +81,7 @@ const HeroSection = ({ isLoggedIn }) => {
         </section>
 
         {/* Right Advanced Analytics Dashboard */}
-        <section className="flex justify-center items-center">
+        <section className="flex justify-center items-center mr-10">
           <AdvancedAnalyticsDashboard />
         </section>
       </main>

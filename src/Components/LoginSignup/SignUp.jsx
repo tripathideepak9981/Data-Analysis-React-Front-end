@@ -1,14 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  User,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  BarChart3,
-  Sparkles,
-} from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { sendSignUpData } from "../../Api";
 
 const SignUpPage = () => {
@@ -20,15 +12,96 @@ const SignUpPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false); // Track if submit clicked
 
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => setError(""), 5000);
-      return () => clearTimeout(timer);
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const fullNameRegex = /^[A-Za-z\s]+$/; // Allow letters and spaces
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,15}$/;
+
+  const MAX_NAME_EMAIL_LENGTH = 45;
+  const MAX_PASSWORD_LENGTH = 15;
+
+  const validateFields = () => {
+    const validationErrors = {};
+
+    // Full Name Validation
+    if (!fullName.trim()) {
+      validationErrors.fullName = "Full name is required";
+    } else if (fullName.trim().length > MAX_NAME_EMAIL_LENGTH) {
+      validationErrors.fullName = `Full name must not exceed ${MAX_NAME_EMAIL_LENGTH} characters`;
+    } else if (!fullNameRegex.test(fullName.trim())) {
+      validationErrors.fullName = "Name must only contain letters and spaces";
+    } else if (/^\d+$/.test(fullName.trim())) {
+      validationErrors.fullName = "Name cannot be only numbers";
     }
-  }, [error]);
+
+    // Email Validation
+    if (!email.trim()) {
+      validationErrors.email = "Email is required";
+    } else if (email.trim().length > MAX_NAME_EMAIL_LENGTH) {
+      validationErrors.email = `Email must not exceed ${MAX_NAME_EMAIL_LENGTH} characters`;
+    } else if (!emailRegex.test(email.trim())) {
+      validationErrors.email = "Enter a valid email address";
+    }
+
+    // Password Validation
+    if (!password) {
+      validationErrors.password = "Password is required";
+    } else if (password.length > MAX_PASSWORD_LENGTH) {
+      validationErrors.password = `Password must not exceed ${MAX_PASSWORD_LENGTH} characters`;
+    } else if (!passwordRegex.test(password)) {
+      validationErrors.password =
+        "Password must have 8-15 chars, upper, lower, number, special char";
+    }
+
+    // Confirm Password Validation
+    if (!confirmPassword) {
+      validationErrors.confirmPassword = "Confirm password is required";
+    } else if (password !== confirmPassword) {
+      validationErrors.confirmPassword = "Passwords do not match";
+    }
+
+    return validationErrors;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+
+    const validationErrors = validateFields();
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length > 0) return;
+
+    const formData = {
+      username: fullName.replace(/\s+/g, ""), // Remove spaces
+      email: email.trim(),
+      password,
+    };
+
+    setLoading(true);
+
+    try {
+      await sendSignUpData(formData);
+      navigate("/");
+    } catch (err) {
+      console.error("Error here : ", err);
+      if (err.error_type === "USERNAME_EXISTS") {
+        setErrors({ fullName: "Username already exists. Try another." });
+      } else if (err.error_type === "EMAIL_EXISTS") {
+        setErrors({ email: err.message });
+      } else {
+        setErrors({
+          global: err.message || "Something went wrong. Try again.",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const Spinner = () => (
     <svg viewBox="25 25 50 50" className="w-5 h-5 animate-spin text-white">
@@ -41,70 +114,9 @@ const SignUpPage = () => {
     </svg>
   );
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (fullName.trim() === "") return setError("Full name cannot be empty");
-    if (email.trim() === "") return setError("Email cannot be empty");
-    if (password.trim() === "") return setError("Password cannot be empty");
-    if (password.length < 8)
-      return setError("Password must be at least 8 characters long");
-    if (password !== confirmPassword) return setError("Passwords do not match");
-
-    const formData = {
-      username: fullName.replace(/\s+/g, ""),
-      email: email,
-      password: password,
-    };
-
-    setLoading(true);
-
-    try {
-      const response = await sendSignUpData(formData);
-      if (!error) {
-        navigate("/");
-      }
-    } catch (err) {
-      setError("Network Error. Try again later!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 py-2 relative overflow-hidden">
-      {/* Floating Elements */}
-      <div className="absolute top-20 left-20 w-72 h-70 bg-gradient-to-br from-violet-400/20 to-blue-400/20 rounded-full blur-3xl animate-float z-0" />
-      <div
-        className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-teal-400/20 rounded-full blur-3xl animate-float z-0"
-        style={{ animationDelay: "2s" }}
-      />
-      <div className="absolute inset-0 bg-grid-pattern opacity-30 z-0" />
-
-      {/* Main Card */}
       <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
-        {/* <div className="text-center mb-8">
-          <div className="inline-flex items-center space-x-3 group cursor-pointer">
-            <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-violet-500 via-blue-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-violet-500/25 transition-all duration-300 group-hover:scale-110">
-                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                  <BarChart3 className="w-5 h-5 text-violet-600" />
-                </div>
-              </div>
-              <div className="absolute -inset-1 bg-gradient-to-br from-violet-500 to-teal-500 rounded-xl blur opacity-0 group-hover:opacity-30 transition-all duration-300"></div>
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-              Data Whisperer
-            </span>
-          </div>
-          <p className="text-gray-600 mt-2">
-            AI-Powered Data Analysis Platform
-          </p>
-        </div> */}
-
-        {/* Auth Card */}
         <div className="rounded-xl backdrop-blur-lg bg-white/90 border border-white/20 shadow-2xl p-6 space-y-6">
           <div className="text-center">
             <h1 className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-blue-600 bg-clip-text text-transparent">
@@ -115,9 +127,9 @@ const SignUpPage = () => {
             </p>
           </div>
 
-          {error && (
-            <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm text-center border border-red-300 animate-fade-in shadow">
-              {error}
+          {errors.global && (
+            <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-sm text-center border border-red-300 shadow">
+              {errors.global}
             </div>
           )}
 
@@ -128,16 +140,22 @@ const SignUpPage = () => {
                 Full Name
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type="text"
                   placeholder="Enter full name"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={(e) =>
+                    setFullName(e.target.value.slice(0, MAX_NAME_EMAIL_LENGTH))
+                  } // Limit input length
                   disabled={loading}
+                  maxLength={MAX_NAME_EMAIL_LENGTH}
                   className="pl-10 w-full rounded-xl py-2 border border-gray-300 bg-gray-50 focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition text-sm"
                 />
               </div>
+              {submitted && errors.fullName && (
+                <p className="text-red-500 text-xs">{errors.fullName}</p>
+              )}
             </div>
 
             {/* Email */}
@@ -146,16 +164,24 @@ const SignUpPage = () => {
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type="email"
                   placeholder="Enter email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    setEmail(
+                      e.target.value.trimStart().slice(0, MAX_NAME_EMAIL_LENGTH)
+                    )
+                  } // Limit input length
                   disabled={loading}
+                  maxLength={MAX_NAME_EMAIL_LENGTH}
                   className="pl-10 w-full rounded-xl py-2 border border-gray-300 bg-gray-50 focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition text-sm"
                 />
               </div>
+              {submitted && errors.email && (
+                <p className="text-red-500 text-xs">{errors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -164,13 +190,16 @@ const SignUpPage = () => {
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) =>
+                    setPassword(e.target.value.slice(0, MAX_PASSWORD_LENGTH))
+                  } // Limit input length
                   disabled={loading}
+                  maxLength={MAX_PASSWORD_LENGTH}
                   className="pl-10 pr-10 w-full rounded-xl py-2 border border-gray-300 bg-gray-50 focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition text-sm"
                 />
                 <button
@@ -182,6 +211,9 @@ const SignUpPage = () => {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {submitted && errors.password && (
+                <p className="text-red-500 text-xs">{errors.password}</p>
+              )}
             </div>
 
             {/* Confirm Password */}
@@ -190,13 +222,14 @@ const SignUpPage = () => {
                 Confirm Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={loading}
+                  maxLength={MAX_PASSWORD_LENGTH}
                   className="pl-10 pr-10 w-full rounded-xl py-2 border border-gray-300 bg-gray-50 focus:bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition text-sm"
                 />
                 <button
@@ -212,6 +245,9 @@ const SignUpPage = () => {
                   )}
                 </button>
               </div>
+              {submitted && errors.confirmPassword && (
+                <p className="text-red-500 text-xs">{errors.confirmPassword}</p>
+              )}
             </div>
 
             {/* Submit */}

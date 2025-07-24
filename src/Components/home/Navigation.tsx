@@ -2,7 +2,6 @@ import { Button } from "./ui/button";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LuCircleUser } from "react-icons/lu";
 import { logoutUser } from "../../Api";
 
 const Navigation = ({ isLoggedIn, username, setUsername }) => {
@@ -22,7 +21,7 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Click outside for dropdown
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -66,36 +65,36 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
           <span className="text-xl font-bold text-gray-900">Asklytics</span>
         </div>
 
-        {/* Center: Navigation Links */}
-        <nav className="hidden md:flex items-center space-x-8">
-          <a href="#features" className="group relative text-gray-600 transition-colors hover:text-blue-600">
-            Features
-            <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
-          </a>
-          <a href="#demo" className="group relative text-gray-600 transition-colors hover:text-blue-600">
-            Demo
-            <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
-          </a>
-          <a href="#about" className="group relative text-gray-600 transition-colors hover:text-blue-600">
-            About
-            <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
-          </a>
-          <a href="#contact" className="group relative text-gray-600 transition-colors hover:text-blue-600">
-            Contact
-            <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
-          </a>
-        </nav>
+        {/* Right: Navigation + Buttons */}
+        <div className="hidden md:flex items-center space-x-5">
+          {/* Nav Links */}
+          <nav className="flex items-center space-x-8 text-base">
+            <a href="#features" className="group relative text-gray-700 font-semibold transition-colors hover:text-blue-600">
+              Features
+              <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="#demo" className="group relative text-gray-700 font-semibold transition-colors hover:text-blue-600">
+              Demo
+              <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="#about" className="group relative  text-gray-700 font-semibold transition-colors hover:text-blue-600">
+              About
+              <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="#contact" className="group relative  text-gray-700 font-semibold transition-colors hover:text-blue-600">
+              Contact
+              <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-gradient-to-r from-purple-600 to-teal-400 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+          </nav>
 
-        {/* Right: Buttons or User */}
-        <div className="flex items-center space-x-4">
+          {/* Auth Buttons */}
           {isLoggedIn() ? (
-            <div ref={userIconRef} className="relative">
+            <div ref={userIconRef} className="relative pl-3">
               <User
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 size={24}
                 className="w-10 h-10 p-2 rounded-full cursor-pointer transition hover:scale-105 bg-gray-100 text-gray-500 border border-gray-300"
               />
-
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
@@ -121,7 +120,7 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
             </div>
           ) : (
             <>
-              <Button variant="ghost" className="text-gray-600 hover:text-blue-600" onClick={handleSignIn}>
+              <Button variant="ghost" className="text-gray-700 font-semibold text-base hover:text-blue-600" onClick={handleSignIn}>
                 Sign In
               </Button>
               <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleSignUp}>
@@ -137,40 +136,45 @@ const Navigation = ({ isLoggedIn, username, setUsername }) => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="md:hidden py-4 border-t border-gray-200">
+        <div className="md:hidden py-4 border-t border-gray-200 px-6">
           <nav className="flex flex-col space-y-4">
-            <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors">
+            <a href="#features" className=" text-gray-700 font-semibold hover:text-blue-600 transition-colors">
               Features
             </a>
-            <a href="#demo" className="text-gray-600 hover:text-blue-600 transition-colors">
+            <a href="#demo" className=" text-gray-700 font-semibold hover:text-blue-600 transition-colors">
               Demo
             </a>
-            <a href="#about" className="text-gray-600 hover:text-blue-600 transition-colors">
+            <a href="#about" className=" text-gray-700 font-semibold hover:text-blue-600 transition-colors">
               About
             </a>
-            <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">
+            <a href="#contact" className=" text-gray-700 font-semibold hover:text-blue-600 transition-colors">
               Contact
             </a>
+
             <div className="flex flex-col space-y-2 pt-4">
               {isLoggedIn() ? (
                 <>
-                  <a href="#settings" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <span className="flex items-center px-4 py-2 text-sm text-gray-700">
                     <User size={16} className="mr-3" />
                     {username}
-                  </a>
-                  <a
+                  </span>
+                  <button
                     onClick={handleLogout}
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
                     <LogOut size={16} className="mr-3" />
                     Logout
-                  </a>
+                  </button>
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" className="justify-start font-semibold" onClick={handleSignIn}>
+                  <Button
+                    variant="ghost"
+                    className="justify-start font-semibold w-full text-left"
+                    onClick={handleSignIn}
+                  >
                     Sign In
                   </Button>
                   <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleSignUp}>

@@ -287,30 +287,44 @@ export const loadTablesApi = async (table_name) => {
     return error;
   }
 };
-
-export const sendOtp = async (email) => {
+// Send OTP during signup
+export const sendOtp = async ({ email, mobile_number, password }) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/auth/send-otp`, { email });
+    const response = await axios.post(`${API_BASE_URL}/api/auth/signup/request_otp`, {
+      email,
+      mobile_number,
+      password,
+    });
     return response.data;
   } catch (error) {
     if (error.response && error.response.data) {
       throw error.response.data.detail;
     }
-    throw { message: "Failed to send OTP. Try again later." };
+    throw { message: "Failed to send OTP. Please try again later." };
   }
 };
 
-export const verifyOtp = async (email, otp) => {
+export const verifyOtp = async (otp_code) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/auth/verify-otp`, { email, otp });
+    const response = await axios.post(`${API_BASE_URL}/api/auth/signup/verify_otp`, {
+      otp_code,
+    });
+
+    console.log(response)
+    
+    const { access_token, email } = response.data;
+    localStorage.setItem("access_token", access_token);
+    localStorage.setItem("username", email);
+    
     return response.data;
   } catch (error) {
     if (error.response && error.response.data) {
       throw error.response.data.detail;
     }
-    throw { message: "Invalid or expired OTP." };
+    throw { message: "Invalid or expired OTP. Please try again." };
   }
 };
+
 
 
 export const sendSignUpData = async (formData) => {

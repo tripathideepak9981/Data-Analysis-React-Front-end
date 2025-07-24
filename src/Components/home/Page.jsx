@@ -11,7 +11,10 @@ import ModernContactSection from "./MorderContactSection";
 import { WhyWeStandOutSection } from "./WhyWeStandOutSection";
 
 export default function Header() {
-  const [username, setUsername] = useState(localStorage.getItem("username"));
+  const [username, setUsername] = useState(() => {
+    const email = localStorage.getItem("username");
+    return email?.match(/^[a-zA-Z]+/g)?.[0] || "";
+  });
 
   const isLoggedIn = () => {
     return !!username;

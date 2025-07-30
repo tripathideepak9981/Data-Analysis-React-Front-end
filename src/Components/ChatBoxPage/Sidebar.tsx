@@ -82,7 +82,7 @@ const Sidebar = ({
         </div>
 
         {/* New Analysis Button */}
-        <div className="px-6 py-4">
+        <div className="flex items-center justify-center px-4 py-4">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -92,8 +92,8 @@ const Sidebar = ({
                   collapsed ? "w-8 h-8 p-0" : "w-full justify-start h-12"
                 )}
               >
-                <Plus className="w-5 h-5" />
-                {!collapsed && <span className="ml-3">New Analysis</span>}
+                <Plus className="w-6 h-6 " />
+                {!collapsed && <span className="ml-2">New Analysis</span>}
               </Button>
             </TooltipTrigger>
             {collapsed && (

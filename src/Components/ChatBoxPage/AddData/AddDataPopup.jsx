@@ -123,7 +123,6 @@ const AddDataPopup = ({
       console.error(error);
       Swal.fire("Error", error.message, "error");
     } finally {
-      setFileCleaning(false);
       setSelectedFiles([]);
       setIsCleaning(false);
       setShowModal(false);
@@ -131,6 +130,7 @@ const AddDataPopup = ({
   };
 
   const handleCancel = async () => {
+    setFileCleaning(false);
     setIsCleaning(true);
     setShowModal(false);
     try {
@@ -551,6 +551,7 @@ const AddDataPopup = ({
       {/* Static Files Tab Content */}
       {activeTab === "static" && (
         <StaticFilesSection
+          setShowNotification={setShowNotification}
           fileCleaning={fileCleaning}
           fileInputRef={fileInputRef}
           handleFileUpload={handleFileUpload}

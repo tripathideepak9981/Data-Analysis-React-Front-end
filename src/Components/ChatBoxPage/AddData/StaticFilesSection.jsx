@@ -12,6 +12,7 @@ import { CheckCircle } from "lucide-react";
 
 const StaticFilesSection = ({
   fileCleaning,
+  setShowNotification,
   fileInputRef,
   handleFileUpload,
   handleDropBoxClick,
@@ -33,25 +34,19 @@ const StaticFilesSection = ({
   showNotification,
   card,
 }) => {
-  const steps = [
-    "Execution is in Progress",
-    "Collecting data",
-    "Cleaning data",
-    "Storing data",
-  ];
-
   const UploadingLoadingEffect = () => {
     return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200 max-w-sm w-full mx-4">
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="bg-white rounded-xl px-6 py-5 shadow-lg border border-gray-200 w-80 mx-4">
           <div className="text-center">
-            <div className="relative inline-flex items-center justify-center w-16 h-16 mb-6">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full animate-pulse"></div>
+            {/* Animated Icon */}
+            <div className="relative inline-flex items-center justify-center w-12 h-12 mb-4">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-green-400 rounded-full animate-ping opacity-60"></div>
               <svg
-                viewBox="0 0 24 24"
+                viewBox="0 0 32 32"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="animate-spin h-8 w-8 text-white relative z-10"
+                className="animate-spin h-8 w-8 text-blue-600 relative z-10"
               >
                 <circle
                   strokeWidth="3"
@@ -68,71 +63,75 @@ const StaticFilesSection = ({
                 ></path>
               </svg>
             </div>
+
+            {/* Title */}
             <h3 className="text-xl font-semibold text-gray-800 mb-2">
               Uploading Files
             </h3>
-            <p className="text-gray-600 text-sm">
+
+            {/* Description */}
+            <p className="text-gray-600 text-base leading-snug">
               Please wait while we process your files...
             </p>
-            <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full animate-pulse"
-                style={{ width: "70%" }}
-              ></div>
+
+            {/* Progress Bar */}
+            <div className="mt-4 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-400  h-1.5 rounded-full animate-progress-bar"></div>
             </div>
           </div>
         </div>
+
+        {/* Tailwind Custom Animation */}
+        <style>
+          {`
+          @keyframes progressBar {
+            0% { width: 0%; }
+            100% { width: 100%; }
+          }
+
+          .animate-progress-bar {
+            animation: progressBar 3s ease-in-out forwards;
+          }
+        `}
+        </style>
       </div>
     );
   };
 
   const DeletingLoadingEffect = () => {
     return (
-      <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div className="bg-white rounded-2xl p-8 shadow-2xl border border-gray-200 max-w-sm w-full mx-4">
           <div className="text-center">
-            <div className="relative inline-flex items-center justify-center w-16 h-16 mb-6">
-              <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-pink-600 rounded-full animate-pulse"></div>
+            {/* Success Icon */}
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
               <svg
-                viewBox="0 0 24 24"
+                className="w-8 h-8 text-green-600"
                 fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
-                className="animate-spin h-8 w-8 text-white relative z-10"
               >
-                <circle
-                  strokeWidth="3"
-                  stroke="currentColor"
-                  r="10"
-                  cy="12"
-                  cx="12"
-                  className="opacity-25"
-                ></circle>
                 <path
-                  d="M4 12a8 8 0 018-8v8H4z"
-                  fill="currentColor"
-                  className="opacity-75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
                 ></path>
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Removing File
+
+            {/* Message */}
+            <h3 className="text-xl font-semibold text-green-700">
+              File Removed
             </h3>
-            <p className="text-gray-600 text-sm">
-              Please wait while we remove the file...
-            </p>
-            <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-gradient-to-r from-red-500 to-pink-600 h-2 rounded-full animate-pulse"
-                style={{ width: "45%" }}
-              ></div>
-            </div>
           </div>
         </div>
       </div>
     );
   };
 
-  const DataProcessingLoader = () => {
+  const DataProcessingLoader = ({ fileCleaning }) => {
     const baseSteps = [
       {
         name: "Uploading file",
@@ -157,7 +156,6 @@ const StaticFilesSection = ({
       description: "Removing inconsistencies and errors",
     };
 
-    // Add cleaning step only if fileCleaning is true
     const steps = fileCleaning
       ? [baseSteps[0], baseSteps[1], cleaningStep, baseSteps[2]]
       : baseSteps;
@@ -185,45 +183,45 @@ const StaticFilesSection = ({
       const StepIcon = step.icon;
 
       return (
-        <div className="relative flex items-start gap-4">
+        <div className="relative flex items-start gap-3">
           {!isLast && (
-            <div className="absolute left-6 top-14 w-0.5 h-10 bg-gradient-to-b from-white" />
+            <div className="absolute left-5 top-10 w-0.5 h-8 bg-gray-300"></div>
           )}
-          <div className="relative z-10 flex-shrink-0">
+          <div className="z-10 flex-shrink-0">
             {isCompleted ? (
-              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
-                <CheckCircle className="text-white w-6 h-6" />
+              <div className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-full shadow-md">
+                <CheckCircle className="text-white w-5 h-5" />
               </div>
             ) : isCurrent ? (
-              <div className="relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
-                <div className="absolute inset-0 bg-blue-400 rounded-xl animate-ping opacity-30" />
-                <StepIcon className="text-white w-6 h-6 z-10 animate-pulse" />
+              <div className="relative flex items-center justify-center w-10 h-10 bg-blue-500 rounded-full shadow-md">
+                <div className="absolute inset-0 rounded-full animate-ping bg-blue-400 opacity-30" />
+                <StepIcon className="text-white w-5 h-5 z-10 animate-pulse" />
               </div>
             ) : (
-              <div className="flex items-center justify-center w-12 h-12 bg-slate-100 border-2 border-slate-200 rounded-xl">
-                <StepIcon className="text-gray-700 w-6 h-6" />
+              <div className="flex items-center justify-center w-10 h-10 bg-slate-100 border border-slate-300 rounded-full">
+                <StepIcon className="text-gray-500 w-5 h-5" />
               </div>
             )}
           </div>
-          <div className="flex-1 min-w-0 pt-1">
-            <h3
-              className={`font-semibold text-base ${
+          <div className="flex-1 min-w-0 pt-0.5">
+            <h4
+              className={`font-semibold text-lg ${
                 isCompleted
                   ? "text-green-700"
                   : isCurrent
                   ? "text-blue-700"
-                  : "text-slate-500"
+                  : "text-gray-600"
               }`}
             >
               {step.name}
-            </h3>
+            </h4>
             <p
-              className={`text-sm mt-1 ${
+              className={`text-xs mt-0.5 leading-snug ${
                 isCompleted
                   ? "text-green-600"
                   : isCurrent
                   ? "text-blue-600"
-                  : "text-gray-600"
+                  : "text-gray-500"
               }`}
             >
               {step.description}
@@ -234,9 +232,9 @@ const StaticFilesSection = ({
     };
 
     return (
-      <div className="w-full max-w-lg mx-auto">
-        <div className="bg-white border border-slate-200 shadow-xl rounded-2xl p-8">
-          <div className="space-y-6">
+      <div className="w-full max-w-sm mx-auto">
+        <div className="bg-white border border-gray-200 shadow-lg rounded-xl p-6">
+          <div className="space-y-5">
             {steps.map((step, index) => (
               <LoaderStep
                 key={index}
@@ -247,9 +245,9 @@ const StaticFilesSection = ({
             ))}
           </div>
           <div className="mt-6 text-center">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-gray-500 font-medium">
               {allStepsDone
-                ? "Processing complete - preparing final results"
+                ? "Processing complete — finalizing data..."
                 : `Step ${currentStep + 1} of ${steps.length} in progress`}
             </p>
           </div>
@@ -321,7 +319,7 @@ const StaticFilesSection = ({
         {/* Loading States */}
         {isCleaning && (
           <div className="fixed inset-0 bg-black/50 flex justify-center -top-20 items-center z-50">
-            <DataProcessingLoader />
+            <DataProcessingLoader fileCleaning={fileCleaning} />
           </div>
         )}
         {isLoading && <UploadingLoadingEffect />}

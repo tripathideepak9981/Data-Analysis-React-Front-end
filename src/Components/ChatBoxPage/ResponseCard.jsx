@@ -738,23 +738,16 @@ const ResponseCard = ({
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.3 }}
-                    className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-6"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
                   >
-                    <div className="bg-white w-full max-w-5xl h-[85vh] rounded-3xl shadow-2xl border border-slate-200 flex flex-col relative overflow-hidden">
+                    <div className="bg-white w-full max-w-3xl h-[65vh] rounded-2xl shadow-xl border border-slate-200 flex flex-col overflow-hidden">
                       {/* Header */}
-                      <div className="bg-gradient-to-r from-indigo-100 via-blue-100 to-indigo-100 px-8 py-3 flex items-center justify-between border-b border-slate-200 shadow-sm">
-                        <div className="flex items-center gap-5">
-                          <div className="py-1 px-2">
-                            <BsFiletypeSql className="w-7 h-7  text-indigo-600" />
-                          </div>
-                          <div>
-                            <h2 className="text-xl font-semibold text-slate-800 tracking-tight">
-                              SQL Query Viewer
-                            </h2>
-                            <p className="text-slate-600 text-sm font-medium mt-1">
-                              Edit, validate and execute your database queries
-                            </p>
-                          </div>
+                      <div className="flex items-center justify-between bg-gray-200 px-5 py-3 border-b border-slate-200">
+                        <div className="flex items-center gap-3">
+                          <BsFiletypeSql className="w-6 h-6 text-indigo-600" />
+                          <h2 className="text-lg font-semibold text-slate-800">
+                            SQL Query Editor
+                          </h2>
                         </div>
                         <button
                           onClick={() => {
@@ -765,51 +758,47 @@ const ResponseCard = ({
                             setShowSQL(false);
                             setIsEditing(false);
                           }}
-                          className="text-slate-500 hover:text-indigo-600 hover:bg-indigo-100 rounded-xl p-2 transition-all duration-200"
+                          className="text-slate-500 hover:text-gray-600 hover:bg-indigo-100 p-1.5 rounded-lg transition"
                         >
-                          <X className="w-5 h-5" />
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
 
-                      {/* Query Editor Section */}
-                      <div className="flex-1 flex flex-col bg-gradient-to-br from-slate-50 via-white to-slate-50 overflow-hidden">
-                        <div className="px-8 py-2 mt-2 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div className="p-1 bg-indigo-100 rounded-lg">
-                              <Code2 className="w-4 h-4 text-indigo-600" />
-                            </div>
-                            <label className="text-base font-semibold text-slate-800">
-                              SQL Query Editor
-                            </label>
-                            {isEditing && (
-                              <span className="px-3 py-1 bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-800 text-sm font-semibold rounded-full border border-indigo-200">
-                                ✏️ Editing Mode
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                      {/* Editor Section */}
+                      <div className="flex-1 bg-gradient-to-br from-slate-50 via-white to-slate-50 overflow-hidden">
+                        {/* <div className="px-5 py-3 border-b border-slate-200 flex items-center gap-2">
+                          <Code2 className="w-5 h-5 text-green-600 bg-indigo-100 p-1 rounded-lg" />
+                          <span className="text-sm font-semibold text-slate-800">
+                            SQL Query
+                          </span>
+                          {isEditing && (
+                            <span className="ml-2 px-2 py-0.5 bg-indigo-50 border border-indigo-200 text-green-700 text-xs font-medium rounded-full">
+                              ✏️ Editing Mode
+                            </span>
+                          )}
+                        </div> */}
 
-                        <div className="flex-1 py-10 px-8 overflow-hidden">
-                          <div className="h-[28vh] relative">
+                        <div className="flex-1 px-5 py-4 overflow-y-auto">
+                          <div className="h-[38vh] relative">
                             {isEditing ? (
-                              <div className="h-full relative group">
+                              <div className="h-full relative">
                                 <textarea
                                   value={editableSQL}
                                   onChange={handleChange}
-                                  className="w-full h-full p-6 text-lg font-mono bg-white border-2 border-indigo-300 rounded-2xl resize-none focus:outline-none text-gray-800 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 shadow-lg hover:shadow-xl"
+                                  className="w-full h-full p-4 px-6 font-mono text-lg text-gray-800 bg-white border-2 border-indigo-300 rounded-xl resize-none focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 shadow"
                                   placeholder="Edit your SQL query here..."
                                 />
-                                <div className="absolute top-4 right-4 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-2.5 shadow-lg">
-                                  <Edit3 className="w-4 h-4 text-white" />
+                                <div className="absolute top-3 right-3 bg-yellow-200 text-black p-2 rounded-lg shadow">
+                                  <Edit3 className="w-4 h-4" />
                                 </div>
                               </div>
                             ) : (
-                              <div className="h-[28vh] relative group">
-                                <pre className="w-full h-full py-4 px-6 overflow-auto font-mono text-lg text-slate-800 bg-white border-2 border-slate-200 rounded-2xl whitespace-pre-wrap shadow-lg hover:shadow-xl transition-all duration-200 leading-relaxed">
+                              <div className="h-full relative">
+                                <pre className="w-full h-full overflow-auto p-4 font-mono text-lg text-slate-800 bg-white border-2 border-slate-200 rounded-xl shadow whitespace-pre-wrap">
                                   {editableSQL}
                                 </pre>
-                                <div className="absolute top-4 right-4 bg-gradient-to-r from-indigo-200 to-blue-300 rounded-xl p-2.5 shadow-md">
-                                  <Database className="w-4 h-4 text-indigo-700" />
+                                <div className="absolute top-3 right-3 bg-amber-200 p-2 rounded-lg shadow">
+                                  <Database className="w-4 h-4 text-gray-900" />
                                 </div>
                               </div>
                             )}
@@ -817,61 +806,68 @@ const ResponseCard = ({
                         </div>
                       </div>
 
-                      {/* Status Bar */}
+                      {/* Status */}
                       <div
-                        className={`mx-8 mb-5 py-3 px-5 rounded-2xl border-l-4 transition-all duration-200 shadow-sm ${
+                        className={`mx-5 my-2 px-4 py-2.5 rounded-xl border-l-4 text-sm font-medium shadow-sm ${
                           statusMessage.type === "error"
-                            ? "bg-red-50 border-red-200 text-red-800 border-l-red-400"
+                            ? "bg-red-50 border-red-400 text-red-800"
                             : statusMessage.type === "success"
-                            ? "bg-emerald-50 border-emerald-200 text-emerald-800 border-l-emerald-400"
-                            : "bg-indigo-50 border-indigo-200 text-indigo-800 border-l-indigo-400"
+                            ? "bg-emerald-50 border-emerald-400 text-emerald-800"
+                            : "bg-gray-200 border-gray-400 text-gray-800"
                         }`}
                       >
-                        <div className="flex items-center gap-4">
-                          <div className="flex-shrink-0">
-                            {statusMessage.type === "error" ? (
-                              <AlertCircle className="w-4 h-4 text-red-500" />
-                            ) : statusMessage.type === "success" ? (
-                              <CheckCircle className="w-4 h-4 text-emerald-500" />
-                            ) : (
-                              <Code2 className="w-4 h-4 text-indigo-600" />
-                            )}
-                          </div>
-                          <p className="text-sm font-medium whitespace-pre-line flex-1 leading-relaxed">
+                        <div className="flex items-center gap-3">
+                          {statusMessage.type === "error" ? (
+                            <AlertCircle className="w-4 h-4 text-red-500" />
+                          ) : statusMessage.type === "success" ? (
+                            <CheckCircle className="w-4 h-4 text-emerald-500" />
+                          ) : (
+                            <Code2 className="w-4 h-4 text-gray-600" />
+                          )}
+                          <span className="leading-relaxed">
                             {statusMessage.text}
-                          </p>
+                          </span>
                         </div>
                       </div>
 
-                      {/* Action Buttons Footer */}
-                      <div className="px-8 py-3 bg-gradient-to-r from-indigo-50 to-blue-50 border-t border-slate-200 flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-sm text-slate-600 font-medium">
-                          <div className="w-2 h-2 bg-indigo-400 rounded-full"></div>
+                      {/* Footer */}
+                      <div className="flex items-center justify-between px-5 py-3 bg-gradient-to-r from-indigo-50 to-blue-50 border-t border-slate-200 text-sm">
+                        <div className="flex items-center gap-2 text-slate-600">
+                          <div className="w-2 h-2 bg-indigo-500 rounded-full" />
                           <span>
-                            Tip: Use the Edit button to modify your query, then
-                            Validate to check syntax
+                            Tip: Edit your query then click Validate to check
+                            syntax.
                           </span>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex gap-3 flex-wrap">
                           <button
                             onClick={() => {
-                              setIsEditing(!isEditing);
-                              setStatusMessage({
-                                text: "Now you're in Editing Mode, edit SQL query and click on Validate",
-                                type: "info",
-                              });
+                              const newEditingState = !isEditing;
+                              setIsEditing(newEditingState);
+
+                              if (newEditingState) {
+                                setStatusMessage({
+                                  text: "Now you're in Editing Mode, edit SQL query and click on Validate",
+                                  type: "info",
+                                });
+                              } else {
+                                setStatusMessage({
+                                  text: "View your SQL. You can edit or validate the query.",
+                                  type: "info",
+                                });
+                              }
                             }}
-                            className="bg-white hover:bg-indigo-50 border-2 border-indigo-400 hover:border-indigo-500 text-indigo-700 hover:text-indigo-800 px-4 py-1 rounded-2xl font-semibold transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105 flex items-center justify-center text-base gap-4"
+                            className="px-4 py-2 text-indigo-700 font-semibold border-2 border-indigo-400 rounded-xl hover:bg-indigo-50 hover:border-indigo-500 transition-all text-sm flex items-center gap-2"
                           >
-                            <Edit3 className="w-4 h-4 text-indigo-600" />
+                            <Edit3 className="w-4 h-4" />
                             {isEditing ? "View Mode" : "Edit Query"}
                           </button>
 
                           <button
                             onClick={() => handleValidate(editableSQL)}
                             disabled={isValidating}
-                            className="bg-gradient-to-r from-indigo-700 to-blue-800 hover:from-indigo-800 hover:to-blue-900 text-white px-8 text-base py-2 rounded-2xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                            className="px-6 py-2 text-white bg-gradient-to-r from-indigo-700 to-blue-800 hover:from-indigo-800 hover:to-blue-900 font-semibold rounded-xl transition shadow-lg text-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {isValidating ? (
                               <>
@@ -880,7 +876,7 @@ const ResponseCard = ({
                               </>
                             ) : (
                               <>
-                                <Play className="w-4 h-4 text-white" />
+                                <Play className="w-4 h-4" />
                                 Validate Query
                               </>
                             )}

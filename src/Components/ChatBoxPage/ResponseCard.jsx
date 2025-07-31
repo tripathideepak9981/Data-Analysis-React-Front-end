@@ -321,7 +321,7 @@ const ResponseCard = ({
 
               {/* User Message Bubble */}
               <div className="rounded-2xl px-6 py-3 shadow-lg backdrop-blur-sm transition-all duration-300 hover:shadow-xl bg-white text-gray-800 rounded-tr-md">
-                <p className="text-sm leading-relaxed break-words whitespace-pre-wrap font-sans font-semibold">
+                <p className="text-base leading-relaxed break-words whitespace-pre-wrap font-sans font-semibold">
                   {response?.userQuery}
                 </p>
               </div>
@@ -331,16 +331,20 @@ const ResponseCard = ({
       </div>
 
       <div className="flex flex-row items-start space-x-3">
-        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 shadow-lg shadow-purple-400/30">
-          <BarChart3 className="w-5 h-5 text-white" />
-        </div>
-
         {showLoading && (
-          <div className="flex relative left-2 mt-2  items-center  space-x-3 animate-blink">
+          <div className="flex relative mr-3 left-4 mt-2  items-center space-x-3 animate-blink">
+            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 shadow-lg shadow-purple-400/30 ">
+              <BarChart3 className="w-5 h-5 text-white " />
+            </div>
             <Loader2 className="w-5 h-5 text-gray-700 animate-spin" />
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-gray-700 w-[30vw]">
               {loaderMessage}
             </span>
+          </div>
+        )}
+        {!showLoading && (
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 shadow-lg shadow-purple-400/30 ">
+            <BarChart3 className="w-5 h-5 text-white " />
           </div>
         )}
 

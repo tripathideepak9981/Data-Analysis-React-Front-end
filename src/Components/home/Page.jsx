@@ -12,7 +12,7 @@ import { WhyWeStandOutSection } from "./WhyWeStandOutSection";
 
 export default function Header() {
   const [username, setUsername] = useState(() => {
-    const email = localStorage.getItem("username");
+    const email = sessionStorage.getItem("username");
     return email?.match(/^[a-zA-Z]+/g)?.[0] || "";
   });
 

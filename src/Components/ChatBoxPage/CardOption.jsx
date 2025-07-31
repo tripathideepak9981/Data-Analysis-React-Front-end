@@ -34,11 +34,11 @@ const CardOption = ({ setCardSelected }) => {
       </motion.div>
 
       {/* Cards Section */}
-      <div className="flex flex-col lg:flex-row gap-8 items-center justify-center">
+      <div className="flex flex-col lg:flex-row gap-32 items-center justify-center">
         {/* Upload Excel File Card */}
         <motion.div
           onClick={() => setCardSelected("File")}
-          className="group relative bg-white w-80 h-52 rounded-3xl shadow-xl border border-gray-100 p-8 flex flex-col items-center justify-center cursor-pointer overflow-hidden"
+          className="group relative bg-white w-80 h-48 rounded-3xl shadow-xl border border-gray-100 p-8 flex flex-col items-center justify-center cursor-pointer overflow-hidden"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
@@ -93,7 +93,7 @@ const CardOption = ({ setCardSelected }) => {
         {/* Connect Database Card */}
         <motion.div
           onClick={() => setCardSelected("Database")}
-          className="group relative bg-white w-80 h-52 rounded-3xl shadow-xl border border-gray-100 p-8 flex flex-col items-center justify-center cursor-pointer overflow-hidden"
+          className="group relative bg-white w-80 h-48 rounded-3xl shadow-xl border border-gray-100 p-8 flex flex-col items-center justify-center cursor-pointer overflow-hidden"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}

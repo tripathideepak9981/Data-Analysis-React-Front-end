@@ -5,68 +5,104 @@ import { BarChart3 } from "lucide-react";
 import CardOption from "./CardOption";
 
 const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
-  const [cardSelected, setCardSelected] = useState(null);
-  const aiResponseRef = useRef(null);
+  const [selectedCards, setSelectedCards] = useState([]);
+  const [renderedCards, setRenderedCards] = useState([]);
+  const [firstRenderedCard, setFirstRenderedCard] = useState(null);
+
+  const fileRef = useRef(null);
+  const dbRef = useRef(null);
   const chatContainerRef = useRef(null);
+  useEffect(() => {
+    if (Array.isArray(chatMessages) && chatMessages.length === 0) {
+      setSelectedCards([]);
+      setRenderedCards([]); // Optional: reset rendered animation
+      setFirstRenderedCard(null);
+    }
+  }, [chatMessages]);
+
+  const typedContent = {
+    File: {
+      ref: fileRef,
+      strings: [
+        `📊 <strong>Upload Excel/CSV File</strong><br><br>
+        <div style="margin-bottom: 8px;">• <span style="color: #10b981;">Upload Excel/CSV files</span> for instant data parsing</div>
+        <div style="margin-bottom: 8px;">• <span style="color: #10b981;">Automatic column detection</span> and data preview</div>
+        <div style="margin-bottom: 8px;">• <span style="color: #10b981;">No database setup required</span> - just drag and drop</div>
+        <div style="margin-bottom: 8px;">• <span style="color: #10b981;">Quick insights and summaries</span> powered by AI</div>
+        <div style="margin-bottom: 12px;">• <span style="color: #10b981;">Multiple file format support</span> (.xlsx, .csv, .xls)</div>
+        🚀 <em>Please Upload your First File and Start Analysis</em>`,
+      ],
+    },
+    Database: {
+      ref: dbRef,
+      strings: [
+        `🔗 <strong>Connect to Database</strong><br><br>
+        <div style="margin-bottom: 8px;">• <span style="color: #3b82f6;">SQL, PostgreSQL, MongoDB</span> and more supported</div>
+        <div style="margin-bottom: 8px;">• <span style="color: #3b82f6;">Secure credential-based access</span> with encryption</div>
+        <div style="margin-bottom: 8px;">• <span style="color: #3b82f6;">Real-time query and analysis</span> capabilities</div>
+        <div style="margin-bottom: 8px;">• <span style="color: #3b82f6;">Large, live dataset handling</span> with optimization</div>
+        <div style="margin-bottom: 12px;">• <span style="color: #3b82f6;">Continuous data syncing</span> for up-to-date insights</div>
+        ⚡ <em>Connect any database and start Analysis</em>`,
+      ],
+    },
+  };
 
   useEffect(() => {
-    if (!aiResponseRef.current || !cardSelected) return;
+    const intervals = [];
 
-    let stringsToType = [];
+    selectedCards.forEach((type) => {
+      const content = typedContent[type];
+      if (!content?.ref?.current) return;
 
-    if (cardSelected === "File") {
-      stringsToType = [
-        `📊 <strong >Upload Excel/CSV File</strong><br><br>
-  <div style="margin-bottom: 8px;">• <span style="color: #10b981;">Upload Excel/CSV files</span> for instant data parsing</div>
-  <div style="margin-bottom: 8px;">• <span style="color: #10b981;">Automatic column detection</span> and data preview</div>
-  <div style="margin-bottom: 8px;">• <span style="color: #10b981;">No database setup required</span> - just drag and drop</div>
-  <div style="margin-bottom: 8px;">• <span style="color: #10b981;">Quick insights and summaries</span> powered by AI</div>
-  <div style="margin-bottom: 12px;">• <span style="color: #10b981;">Multiple file format support</span> (.xlsx, .csv, .xls)</div>
-  🚀 <em>Perfect for quick analysis and one-time reports!</em>`,
-      ];
-    } else if (cardSelected === "Database") {
-      stringsToType = [
-        `🔗 <strong>Connect to Database</strong><br><br>
-  <div style="margin-bottom: 8px;">• <span style="color: #3b82f6;">SQL, PostgreSQL, MongoDB</span> and more supported</div>
-  <div style="margin-bottom: 8px;">• <span style="color: #3b82f6;">Secure credential-based access</span> with encryption</div>
-  <div style="margin-bottom: 8px;">• <span style="color: #3b82f6;">Real-time query and analysis</span> capabilities</div>
-  <div style="margin-bottom: 8px;">• <span style="color: #3b82f6;">Large, live dataset handling</span> with optimization</div>
-  <div style="margin-bottom: 12px;">• <span style="color: #3b82f6;">Continuous data syncing</span> for up-to-date insights</div>
-  ⚡ <em>Best for enterprise-level data operations!</em>`,
-      ];
-    }
+      // Skip if already rendered
+      if (renderedCards.includes(type)) return;
 
-    let scrollInterval;
-
-    const typedAI = new Typed(aiResponseRef.current, {
-      strings: stringsToType,
-      typeSpeed: 10,
-      showCursor: false,
-      smartBackspace: true,
-      onBegin: () => {
-        scrollInterval = setInterval(() => {
-          if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTo({
-              top: chatContainerRef.current.scrollHeight,
-              behavior: "smooth",
-            });
+      const typed = new Typed(content.ref.current, {
+        strings: content.strings,
+        typeSpeed: 10,
+        showCursor: false,
+        smartBackspace: true,
+        onBegin: () => {
+          if (type === firstRenderedCard) {
+            const interval = setInterval(() => {
+              if (chatContainerRef.current) {
+                chatContainerRef.current.scrollTo({
+                  top: chatContainerRef.current.scrollHeight,
+                  behavior: "smooth",
+                });
+              }
+            }, 50);
+            intervals.push(interval);
           }
-        }, 50);
-      },
-      onComplete: () => {
-        if (scrollInterval) clearInterval(scrollInterval);
-      },
-    });
+        },
+        onComplete: () => {
+          intervals.forEach(clearInterval);
+          setRenderedCards((prev) => [...new Set([...prev, type])]);
+        },
+      });
 
-    return () => {
-      typedAI.destroy();
-      if (scrollInterval) clearInterval(scrollInterval);
-    };
-  }, [cardSelected]);
+      return () => {
+        typed.destroy();
+        intervals.forEach(clearInterval);
+      };
+    });
+  }, [selectedCards, firstRenderedCard, renderedCards]);
+
+  const handleCardSelect = (card) => {
+    setSelectedCards((prev) => {
+      if (!prev.includes(card)) {
+        if (prev.length === 0) {
+          setFirstRenderedCard(card);
+        }
+        return [...prev, card];
+      }
+      return prev;
+    });
+  };
 
   return (
     <div
-      className={`w-full border-rounded min-h-[40vh] mx-auto space-x-0 flex flex-col justify-start user-query ${
+      className={`w-full min-h-[40vh] mx-auto space-x-0 flex flex-col justify-start user-query ${
         isSliderVisible ? "w-[100%]" : "w-[100%]"
       }`}
     >
@@ -76,24 +112,44 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
           isSliderVisible ? "lg:max-w-[78vw]" : "lg:max-w-[94vw]"
         }`}
       >
-        {/* Card selection UI */}
-        <CardOption setCardSelected={setCardSelected} />
+        {chatMessages.length == 0 && (
+          <>
+            <CardOption setCardSelected={handleCardSelect} />
 
-        {/* AI Response Area */}
-        {cardSelected && (
-          <div className="flex flex-row justify-start mt-1">
-            <div className="flex flex-row gap-3">
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 shadow-lg shadow-purple-400/30">
-                <BarChart3 className="w-5 h-5 text-white" />
+            {selectedCards.length > 0 && (
+              <div className="flex w-full justify-between items-start px-10 gap-4 flex-wrap">
+                {selectedCards.includes("File") && (
+                  <div className="flex gap-3">
+                    <div
+                      className={`border-l-4 border-l-green-500 hover:shadow-2xl transition-all duration-500 bg-white border-gray-200 rounded-2xl py-4 px-10 max-w-[35vw] font-sans shadow-xl border w-full ${
+                        isSliderVisible ? "min-w-[32vw]" : "min-w-[40vw]"
+                      }`}
+                    >
+                      <h2
+                        className="font-semibold text-gray-800 "
+                        ref={fileRef}
+                      ></h2>
+                    </div>
+                  </div>
+                )}
+
+                {selectedCards.includes("Database") && (
+                  <div className="flex gap-3 justify-end ml-auto">
+                    <div
+                      className={`border-l-4 border-l-blue-500 shadow-xl hover:shadow-2xl transition-all duration-500 bg-white border-gray-200 rounded-2xl py-4 px-10 max-w-[35vw] font-sans  border w-full ${
+                        isSliderVisible ? "min-w-[32vw]" : "min-w-[40vw]"
+                      }`}
+                    >
+                      <h2
+                        className="font-semibold text-gray-800"
+                        ref={dbRef}
+                      ></h2>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="bg-white border-gray-200 rounded-tl-sm py-4 px-4 max-w-[50vw] font-sans rounded-2xl  shadow-lg border w-full min-w-[40vw] mb-4">
-                <h2
-                  className="font-semibold text-gray-800"
-                  ref={aiResponseRef}
-                ></h2>
-              </div>
-            </div>
-          </div>
+            )}
+          </>
         )}
 
         {/* Chat Messages */}
@@ -109,8 +165,8 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
                   index={index}
                   setChatMessages={setChatMessages}
                   showInterruptMessage={chat.interrupted === true}
-                  isTypingCard={!!cardSelected}
-                  isSelectedCard={index === cardSelected?.id}
+                  isTypingCard={!!selectedCards.length}
+                  isSelectedCard={index === selectedCards?.id}
                 />
               </div>
             ))}

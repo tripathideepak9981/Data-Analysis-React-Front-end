@@ -1,5 +1,5 @@
-import axios from 'axios'
-import Swal from 'sweetalert2';
+import axios from "axios";
+import Swal from "sweetalert2";
 
 // Deployed backend url: http://35.154.165.174
 // Localhost url : http://127.0.0.1:8000
@@ -7,7 +7,7 @@ const API_BASE_URL = "http://69.62.77.122";
 
 const axiosConfig = {
   timeout: 100000,
-}
+};
 
 export const joinTables = async (data) => {
   const token = localStorage.getItem("access_token");
@@ -23,24 +23,26 @@ export const joinTables = async (data) => {
         },
       }
     );
-    
-      console.log("Joined Response : " , response)
+
+    console.log("Joined Response : ", response);
     return response.data;
   } catch (error) {
     return error.response?.data || { error: "Request failed" };
   }
 };
 
-
 export const deleteTable = async (tableName) => {
-  const token = localStorage.getItem("access_token")
+  const token = localStorage.getItem("access_token");
   try {
-    const response = await axios.delete(`${API_BASE_URL}/api/delete_table/${tableName}`, {
-      headers: {
-        Authorization: `Bearer ${token}`, // if using JWT
-      },
-    });
-    console.log("Delete Table Response : ", response)
+    const response = await axios.delete(
+      `${API_BASE_URL}/api/delete_table/${tableName}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // if using JWT
+        },
+      }
+    );
+    console.log("Delete Table Response : ", response);
 
     return response.data;
   } catch (error) {
@@ -49,62 +51,63 @@ export const deleteTable = async (tableName) => {
   }
 };
 
-
 export const getTablesData = async () => {
   const token = localStorage.getItem("access_token");
-  console.log("token" , token)
-  try{
-    const response = await axios.get(`${API_BASE_URL}/api/load_user_tables_with_preview`, 
-      {headers: {
+  console.log("token", token);
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/api/load_user_tables_with_preview`,
+      {
+        headers: {
           Authorization: `Bearer ${token}`,
-      }}
-    )
-    console.log("Get tables Data Response : ", response)
+        },
+      }
+    );
+    console.log("Get tables Data Response : ", response);
     if (response.data && response.data.tables) {
-  const previews = {};
-  const tableNames = [];
+      const previews = {};
+      const tableNames = [];
 
-  response.data.tables.forEach((table) => {
-    previews[table.table_name] = table.preview;
+      response.data.tables.forEach((table) => {
+        previews[table.table_name] = table.preview;
 
-    // Add metadata
-    tableNames.push({
-      name: table.table_name,
-      createdDate: new Date().toISOString().split("T")[0], // You can customize date format
-    });
-  });
+        // Add metadata
+        tableNames.push({
+          name: table.table_name,
+          createdDate: new Date().toISOString().split("T")[0], // You can customize date format
+        });
+      });
 
-  localStorage.setItem("previews", JSON.stringify(previews));
-  localStorage.setItem("uploadedFiles", JSON.stringify(tableNames));
-}
+      localStorage.setItem("previews", JSON.stringify(previews));
+      localStorage.setItem("uploadedFiles", JSON.stringify(tableNames));
+    }
 
-    console.log(response.data)
-  }catch (error) {
-  console.error("Error fetching tables:", error.response?.data || error.message);
-  throw error;
-}
-
-}
-
+    console.log(response.data);
+  } catch (error) {
+    console.error(
+      "Error fetching tables:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 
 export const avilableTables = async () => {
-  const token = localStorage.getItem("access_token")
+  const token = localStorage.getItem("access_token");
   try {
     const response = await axios.get(`${API_BASE_URL}/api/available_tables`, {
       headers: {
-        
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-
-      }
-    })
-    console.log("Avalable Table Response : ", response)
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Avalable Table Response : ", response);
     return response.data;
   } catch (error) {
-    console.log("Error Avalilable Tables", error)
+    console.log("Error Avalilable Tables", error);
     return error;
   }
-}
+};
 export const validateSQLQuery = async (sql_query, original_question = "") => {
   try {
     const token = localStorage.getItem("access_token");
@@ -112,21 +115,21 @@ export const validateSQLQuery = async (sql_query, original_question = "") => {
     console.log("Original Question:", original_question);
     console.log("Token:", token);
     console.log("Sql Query : ", sql_query);
-const response = await axios.post(
-  `${API_BASE_URL}/api/validate_sql`,
-  {
-    sql_query: String(sql_query),               // force string if needed
-    original_question: original_question || "", // fallback to empty string
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    }
-  }
-);
+    const response = await axios.post(
+      `${API_BASE_URL}/api/validate_sql`,
+      {
+        sql_query: String(sql_query), // force string if needed
+        original_question: original_question || "", // fallback to empty string
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    console.log("Validate Query Response : ", response)
+    console.log("Validate Query Response : ", response);
 
     return response.data;
   } catch (error) {
@@ -135,28 +138,22 @@ const response = await axios.post(
   }
 };
 
-
 export const uploadFilesAPI = async (selectedFiles) => {
   if (!selectedFiles.length) return;
   const formData = new FormData();
   selectedFiles.forEach((file) => {
     formData.append("files", file);
   });
-  const access_token = localStorage.getItem("access_token");
+  const access_token = sessionStorage.getItem("access_token");
 
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}/api/upload`,
-      formData,
-      {
-       headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "multipart/form-data",
-
-        }
-      }
-    );
-    console.log("File Upload Response : " , response)
+    const response = await axios.post(`${API_BASE_URL}/api/upload`, formData, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log("File Upload Response : ", response);
 
     return response.data;
   } catch (error) {
@@ -164,8 +161,6 @@ export const uploadFilesAPI = async (selectedFiles) => {
     return error;
   }
 };
-
-
 
 export const suggestedQueryResponse = async () => {
   // const token = localStorage.getItem("access_token")
@@ -176,74 +171,85 @@ export const suggestedQueryResponse = async () => {
   // )
   // console.log("Suggested Response : ", suggestedQueryResponse.data)
   // return response.data;
-}
+};
 
 export const exceuteQuery = async (query, signal) => {
   try {
-    const token = localStorage.getItem("access_token");
+    const token = sessionStorage.getItem("access_token");
     console.log("Query:", query);
     console.log("Token:", token);
 
-    const response = await axios.post(`${API_BASE_URL}/api/execute_query`,
-      { "query": query },
+    const response = await axios.post(
+      `${API_BASE_URL}/api/execute_query`,
+      { query: query },
       {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-        }
-      },
+        },
+      }
     );
-    console.log("Execute Query : ", response.data)
+    console.log("Execute Query : ", response.data);
 
     return response.data;
   } catch (error) {
     console.log("Error in execute query : ", error);
-    return error;
+    throw error;
   }
-}
-
+};
 
 export const cleanFile = async (table_name) => {
-  const token = localStorage.getItem("access_token");
-  console.log("Access token: " + token)
+  const token = sessionStorage.getItem("access_token");
+  console.log("Access token: " + token);
   try {
-    console.log("Table Name : " + table_name)
-    const response = await axios.post(`${API_BASE_URL}/api/clean_file?table_name=${encodeURIComponent(table_name)}`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+    console.log("Table Name : " + table_name);
+    const response = await axios.post(
+      `${API_BASE_URL}/api/clean_file?table_name=${encodeURIComponent(
+        table_name
+      )}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
-    });
-    console.log("Clean file : " , response)
+    );
+    console.log("Clean file : ", response);
     return response.data;
   } catch (error) {
     console.log("error in cleaning File : ", error);
     return error;
   }
-}
+};
 
 export const cancel_clean_file = async (table_name) => {
-  const token = localStorage.getItem("access_token");
+  const token = sessionStorage.getItem("access_token");
   try {
     console.log("Table name:", table_name);
-    const response = await axios.post(`${API_BASE_URL}/api/cancel_clean?table_name=${encodeURIComponent(table_name)}`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+    const response = await axios.post(
+      `${API_BASE_URL}/api/cancel_clean?table_name=${encodeURIComponent(
+        table_name
+      )}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
-    }
     );
-    console.log("Cancel Clean Response : ", response)
+    console.log("Cancel Clean Response : ", response);
 
     return response.data;
   } catch (error) {
-     console.log("Error Cancel Cleaning files :", error);
-     return error;
+    console.log("Error Cancel Cleaning files :", error);
+    return error;
   }
-}
+};
 
 export const connectToDatabase = async (dbParams) => {
-  const token = localStorage.getItem("access_token");
+  const token = sessionStorage.getItem("access_token");
 
   try {
     const response = await axios.post(
@@ -263,10 +269,9 @@ export const connectToDatabase = async (dbParams) => {
   }
 };
 
-
 export const loadTablesApi = async (table_name) => {
   try {
-    const token = localStorage.getItem("access_token"); // 🔑 Get token
+    const token = sessionStorage.getItem("access_token"); // 🔑 Get token
 
     console.log("Loading Tables : " + table_name);
 
@@ -276,8 +281,8 @@ export const loadTablesApi = async (table_name) => {
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}` // ✅ Send token
-        }
+          Authorization: `Bearer ${token}`, // ✅ Send token
+        },
       }
     );
 
@@ -290,11 +295,14 @@ export const loadTablesApi = async (table_name) => {
 // Send OTP during signup
 export const sendOtp = async ({ email, mobile_number, password }) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/auth/signup/request_otp`, {
-      email,
-      mobile_number,
-      password,
-    });
+    const response = await axios.post(
+      `${API_BASE_URL}/api/auth/signup/request_otp`,
+      {
+        email,
+        mobile_number,
+        password,
+      }
+    );
     return response.data;
   } catch (error) {
     if (error.response && error.response.data) {
@@ -306,16 +314,19 @@ export const sendOtp = async ({ email, mobile_number, password }) => {
 
 export const verifyOtp = async (otp_code) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/auth/signup/verify_otp`, {
-      otp_code,
-    });
+    const response = await axios.post(
+      `${API_BASE_URL}/api/auth/signup/verify_otp`,
+      {
+        otp_code,
+      }
+    );
 
-    console.log(response)
-    
+    console.log(response);
+
     const { access_token, email } = response.data;
-    localStorage.setItem("access_token", access_token);
-    localStorage.setItem("username", email);
-    
+    sessionStorage.setItem("access_token", access_token);
+    sessionStorage.setItem("username", email);
+
     return response.data;
   } catch (error) {
     if (error.response && error.response.data) {
@@ -325,18 +336,20 @@ export const verifyOtp = async (otp_code) => {
   }
 };
 
-
-
 export const sendSignUpData = async (formData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, formData, {
-      headers: {
-        "Content-Type": "application/json"
+    const response = await axios.post(
+      `${API_BASE_URL}/api/auth/signup`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
       }
-    });
+    );
     const { access_token } = response.data;
-    localStorage.setItem("access_token", access_token);
-    localStorage.setItem("username", formData.email);
+    sessionStorage.setItem("access_token", access_token);
+    sessionStorage.setItem("username", formData.email);
     return response.data;
   } catch (error) {
     if (error.response && error.response.data) {
@@ -348,7 +361,7 @@ export const sendSignUpData = async (formData) => {
 };
 
 export const sendSignInData = async (username, password) => {
-  console.log("Here")
+  console.log("Here");
   try {
     const response = await axios.post(
       `${API_BASE_URL}/api/auth/login`,
@@ -362,25 +375,25 @@ export const sendSignInData = async (username, password) => {
         },
       }
     );
-    console.log("Sigin Response : ", response)
+    console.log("Sigin Response : ", response);
     const { access_token } = response.data;
-    localStorage.setItem("access_token", access_token);
-    localStorage.setItem("username", username);
-      setTimeout(async () => {
-         await getTablesData();
-      })
-      console.log("Sign In : ", response)
+    sessionStorage.setItem("access_token", access_token);
+    sessionStorage.setItem("username", username);
+    setTimeout(async () => {
+      await getTablesData();
+    });
+    console.log("Sign In : ", response);
 
     return response.data;
   } catch (error) {
-    throw (error.message);
+    throw error.message;
   }
 };
 
 export const logoutUser = async () => {
   try {
-    console.log("I am here!")
-    const token = localStorage.getItem("access_token"); // store before removal
+    console.log("I am here!");
+    const token = sessionStorage.getItem("access_token"); // store before removal
 
     const response = await axios.post(
       `${API_BASE_URL}/api/auth/logout`,
@@ -388,25 +401,16 @@ export const logoutUser = async () => {
       {
         withCredentials: true,
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       }
     );
-    console.log("Logout : ", response)
+    console.log("Logout : ", response);
     return response.data;
   } catch (error) {
     console.error("Logout failed:", error);
   } finally {
-    localStorage.removeItem("username");
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("uploadedFile")
-    localStorage.removeItem("uploadedFiles")
-    localStorage.removeItem("suggested_question")
-    localStorage.removeItem("selectedDataSource")
-    localStorage.removeItem("DbType")
-    localStorage.removeItem("DbResponse")
-    localStorage.removeItem("tablePreview")
-
-  } 
+    sessionStorage.removeItem("username");
+    sessionStorage.removeItem("access_token");
+  }
 };

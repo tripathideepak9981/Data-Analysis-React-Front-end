@@ -1,7 +1,24 @@
 import TypeWriter from "../Components/ChatBoxPage/typeWriter";
 import { TypeWriterProvider } from "../Components/ChatBoxPage/typeWriterContext";
+
 export default function formatSummary(summaryObj, ref = null) {
   if (!summaryObj) return null;
+
+  // 🧠 Convert the summaryObj to a clean, usable string
+  const getSummaryString = (obj) => {
+    if (typeof obj === "string") {
+      return obj.trim();
+    }
+
+    if (obj && typeof obj === "object") {
+      if ("message" in obj) {
+        return String(obj.message).trim();
+      }
+      return JSON.stringify(obj, null, 2);
+    }
+
+    return String(obj).trim();
+  };
 
   const formatText = (text) => {
     text = text.replace(
@@ -16,15 +33,12 @@ export default function formatSummary(summaryObj, ref = null) {
     return text;
   };
 
-  const summary = summaryObj.trim();
+  const summary = getSummaryString(summaryObj);
   const paragraphs = summary.split("\n").filter((para) => para.trim() !== "");
 
   return (
     <TypeWriterProvider>
-      <div
-        ref={ref} // ✅ Pass it from outside
-        className="bg-white py-2 px-4 space-y-3 text-gray-900"
-      >
+      <div ref={ref} className="bg-white py-2 px-4 space-y-3 text-gray-900">
         {paragraphs.map((para, index) => {
           let className = " leading-relaxed text-gray-800 ";
 

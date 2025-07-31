@@ -305,7 +305,7 @@ const AddDataPopup = ({
         continue;
       }
 
-      if (file.name.length > 20) {
+      if (file.name.length > 40) {
         invalidFiles.push(`Filename too long (MAX: 20 charcter): ${file.name}`);
         continue;
       }

@@ -118,7 +118,7 @@ const ChatBox = () => {
       chart: null,
       chartType: null,
       interrupted: false,
-      timestamp: new Date(), // ✅ Add current time
+      timestamp: new Date(),
     };
 
     let newMessageIndex = 0;
@@ -133,64 +133,50 @@ const ChatBox = () => {
 
     try {
       const response = await exceuteQuery(query);
-
-      if (response) {
-        console.log("Response : ", response);
-      }
-
-      if (response.name == "AxiosError") {
-        setChatMessages((prevMessages) =>
-          prevMessages.map((message, index) => {
-            if (index !== newMessageIndex) return message;
-            if (message.interrupted) return message;
-
-            return {
-              ...message,
-              aiResponse: {
-                error: "Your session has been experied, Relogin again to query",
-              },
-              interrupted: false,
-            };
-          })
+      console.log("From send : ", response);
+      const hasNumericData =
+        Array.isArray(response.result) &&
+        response.result.some((obj) =>
+          Object.values(obj).some((value) => typeof value === "number")
         );
-      } else {
-        const hasNumericData =
-          Array.isArray(response.result) &&
-          response.result.some((obj) =>
-            Object.values(obj).some((value) => typeof value === "number")
-          );
 
-        setChatMessages((prevMessages) =>
-          prevMessages.map((message, index) => {
-            if (index !== newMessageIndex) return message;
-            if (message.interrupted) return message;
-
-            return {
-              ...message,
-              aiResponse: response,
-              ...(response?.result?.length > 3 &&
-                hasNumericData && {
-                  chart: transformChartData(response.result),
-                  chartType: "bar",
-                }),
-              interrupted: false,
-            };
-          })
-        );
-      }
-    } catch (e) {
-      console.error("Error fetching AI response:", e);
       setChatMessages((prevMessages) =>
         prevMessages.map((message, index) => {
           if (index !== newMessageIndex) return message;
+          if (message.interrupted) return message;
           return {
             ...message,
-            aiResponse: message.interrupted
-              ? message.aiResponse
-              : "Error fetching response.",
+            aiResponse: response,
+            ...(response?.result?.length > 3 &&
+              hasNumericData && {
+                chart: transformChartData(response.result),
+                chartType: "bar",
+              }),
+            interrupted: false,
           };
         })
       );
+    } catch (error) {
+      console.log("Error fetching AI response:", error);
+
+      setChatMessages((prevMessages) => {
+        const updatedMessages = [...prevMessages];
+        const lastMessage = updatedMessages[updatedMessages.length - 1];
+
+        updatedMessages[updatedMessages.length - 1] = {
+          ...lastMessage,
+          aiResponse: {
+            query: lastMessage.query || "",
+            resolved_query: "",
+            response: "Server is not responding, try again later!",
+            result: [],
+            sql_query: "",
+            status: "error",
+          },
+        };
+
+        return updatedMessages;
+      });
     } finally {
       setQueryRunning(false);
     }

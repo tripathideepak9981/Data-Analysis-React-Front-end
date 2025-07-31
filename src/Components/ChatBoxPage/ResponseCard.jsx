@@ -229,7 +229,7 @@ const ResponseCard = ({
       } else {
         console.log("Validated Response: ", response);
 
-        // Determine if chart should be added
+        // Determine if result has numeric data
         const hasNumericData =
           Array.isArray(response.result) &&
           response.result.some((obj) =>
@@ -244,7 +244,8 @@ const ResponseCard = ({
             return {
               ...msg,
               aiResponse: response, // Replace with validated response
-              ...(response?.result?.length > 3 &&
+              ...(Array.isArray(response.result) &&
+                response.result.length > 3 &&
                 hasNumericData && {
                   chart: transformChartData(response.result),
                   chartType: "bar",
@@ -255,6 +256,7 @@ const ResponseCard = ({
         );
 
         setEditableSQL(editableSQL); // Update local state too
+
         setStatusMessage({
           text: "Calculation is correct",
           type: "success",
@@ -570,7 +572,7 @@ const ResponseCard = ({
                         transition={{ delay: 0.5, duration: 0.5 }}
                         className="bg-white rounded-tl-sm font-sans"
                       >
-                        <p className="text-label chat-ui text-gray-800 px-4 mt-1">
+                        <p className="text-label chat-ui text-gray-800 px-4 mt-3">
                           {formatSummary(
                             response.aiResponse.response,
                             responseEndRef
@@ -727,7 +729,7 @@ const ResponseCard = ({
                           </div>
                         ) : (
                           <TypeWriterProvider>
-                            <p className="text-label chat-ui text-gray-800 px-2 pb-2">
+                            <p className="text-label chat-ui text-gray-800 px-5 pb-2 pt-4">
                               {response.aiResponse.result}
                             </p>
                           </TypeWriterProvider>

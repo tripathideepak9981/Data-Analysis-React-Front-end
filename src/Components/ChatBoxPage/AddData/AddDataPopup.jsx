@@ -277,13 +277,12 @@ const AddDataPopup = ({
       }
     });
   };
-
   const handleFileUpload = async (event) => {
     const input = event.target;
     const files = Array.from(input.files || event.dataTransfer.files);
-
     input.value = null;
-    if (uploadedFiles.length >= 3) {
+
+    if (uploadedFiles.length + files.length > 3) {
       setNotification({
         visible: true,
         title: "error",
@@ -292,9 +291,50 @@ const AddDataPopup = ({
       return;
     }
 
-    const oversizedFile = files.find((file) => file.size > 10 * 1024 * 1024);
-    if (oversizedFile) {
-      showNotifications("Error", "File size exceeded the limit of 10 MB.");
+    const allowedExtensions = [".csv", ".xlsx", ".xls"];
+    const invalidFiles = [];
+
+    // Basic file checks before API call
+    for (const file of files) {
+      const fileExtension = file.name
+        .slice(file.name.lastIndexOf("."))
+        .toLowerCase();
+
+      if (!allowedExtensions.includes(fileExtension)) {
+        invalidFiles.push(`Unsupported file type: ${file.name}`);
+        continue;
+      }
+
+      if (file.name.length > 20) {
+        invalidFiles.push(`Filename too long (MAX: 20 charcter): ${file.name}`);
+        continue;
+      }
+
+      if (file.size === 0) {
+        invalidFiles.push(`Empty file selected: ${file.name}`);
+        continue;
+      }
+
+      if (file.size > 200 * 1024 * 1024) {
+        invalidFiles.push(`File size exceeds 200 MB: ${file.name}`);
+        continue;
+      }
+
+      // Try reading file to detect corruption (basic)
+      try {
+        await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve();
+          reader.onerror = () => reject(new Error("Corrupted file"));
+          reader.readAsArrayBuffer(file);
+        });
+      } catch (e) {
+        invalidFiles.push(`Corrupted file: ${file.name}`);
+      }
+    }
+
+    if (invalidFiles.length > 0) {
+      showNotifications("Error", invalidFiles.join("\n"));
       return;
     }
 
@@ -316,7 +356,7 @@ const AddDataPopup = ({
 
     try {
       const data = await uploadFilesAPI(newFiles);
-      const uploadedTableName = data.files[0].table_name;
+      const uploadedTableName = data.files[0]?.table_name;
 
       const isDuplicate = uploadedFiles.some(
         (f) => f.name === uploadedTableName
@@ -332,6 +372,7 @@ const AddDataPopup = ({
         console.log("From add Data ", response);
         setSuggestionQuery(response);
       }
+
       setResponseData(data);
       setTablePreview((prevPreview) => ({
         ...prevPreview,
@@ -347,7 +388,10 @@ const AddDataPopup = ({
       }
     } catch (error) {
       setSelectedFiles([]);
-      showNotifications("Error", "Something wrong on server, try again later.");
+      showNotifications(
+        "Error",
+        "Something went wrong on the server, try again later."
+      );
     } finally {
       input.value = null;
       setSelectedFiles([]);

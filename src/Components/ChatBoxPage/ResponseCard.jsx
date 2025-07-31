@@ -37,6 +37,7 @@ const ResponseCard = ({
   showInterruptMessage,
   index,
   setChatMessages,
+  isTypingCard,
 }) => {
   const [showSQL, setShowSQL] = useState(false);
   const [showLoading, setShowLoading] = useState(true);
@@ -175,13 +176,10 @@ const ResponseCard = ({
     response?.interrupted,
   ]);
   useEffect(() => {
-    if (response?.userQuery && responseEndRef.current) {
-      responseEndRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  }, [response?.userQuery]);
+    if (isTypingCard) return; // ⛔ Don’t scroll during card typing
+
+    responseEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [response, isTypingCard]);
 
   const closeErrorAlert = () => {
     setShowError(false);
@@ -338,7 +336,7 @@ const ResponseCard = ({
         </div>
 
         {showLoading && (
-          <div className="flex absolute left-12 mt-2 w-[90%] items-center  space-x-3 animate-blink">
+          <div className="flex relative left-2 mt-2  items-center  space-x-3 animate-blink">
             <Loader2 className="w-5 h-5 text-gray-700 animate-spin" />
             <span className="text-sm font-medium text-gray-700">
               {loaderMessage}

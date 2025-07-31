@@ -10,7 +10,7 @@ const axiosConfig = {
 };
 
 export const joinTables = async (data) => {
-  const token = localStorage.getItem("access_token");
+  const token = sessionStorage.getItem("access_token");
 
   try {
     const response = await axios.post(
@@ -52,7 +52,7 @@ export const deleteTable = async (tableName) => {
 };
 
 export const getTablesData = async () => {
-  const token = localStorage.getItem("access_token");
+  const token = sessionStorage.getItem("access_token");
   console.log("token", token);
   try {
     const response = await axios.get(
@@ -93,7 +93,7 @@ export const getTablesData = async () => {
 };
 
 export const avilableTables = async () => {
-  const token = localStorage.getItem("access_token");
+  const token = sessionStorage.getItem("access_token");
   try {
     const response = await axios.get(`${API_BASE_URL}/api/available_tables`, {
       headers: {
@@ -110,7 +110,7 @@ export const avilableTables = async () => {
 };
 export const validateSQLQuery = async (sql_query, original_question = "") => {
   try {
-    const token = localStorage.getItem("access_token");
+    const token = sessionStorage.getItem("access_token");
     console.log("SQL Query:", sql_query);
     console.log("Original Question:", original_question);
     console.log("Token:", token);

@@ -163,13 +163,13 @@ const Sidebar = ({
               >
                 <div className="w-8 h-8 bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/25">
                   <span className="text-white text-sm font-bold">
-                    {localStorage.getItem("username")?.charAt(0) || "U"}
+                    {sessionStorage.getItem("username")?.charAt(0) || "U"}
                   </span>
                 </div>
                 {!collapsed && (
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-slate-900 truncate">
-                      {localStorage.getItem("username") || "Guest"}
+                      {sessionStorage.getItem("username") || "Guest"}
                     </p>
                   </div>
                 )}
@@ -178,7 +178,7 @@ const Sidebar = ({
             {collapsed && (
               <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
                 <div>
-                  <p className="font-medium">{localStorage.getItem("username") || "Guest"}</p>
+                  <p className="font-medium">{sessionStorage.getItem("username") || "Guest"}</p>
                 </div>
               </TooltipContent>
             )}

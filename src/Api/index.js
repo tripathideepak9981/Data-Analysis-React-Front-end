@@ -32,7 +32,7 @@ export const joinTables = async (data) => {
 };
 
 export const deleteTable = async (tableName) => {
-  const token = localStorage.getItem("access_token");
+  const token = sessionStorage.getItem("access_token");
   try {
     const response = await axios.delete(
       `${API_BASE_URL}/api/delete_table/${tableName}`,
@@ -163,7 +163,7 @@ export const uploadFilesAPI = async (selectedFiles) => {
 };
 
 export const suggestedQueryResponse = async () => {
-  // const token = localStorage.getItem("access_token")
+  // const token = sessionStorage.getItem("access_token")
   // const response = await axios.get(
   //   `${API_BASE_URL}/api/initial_suggestions`, {headers: {
   //       Authorization: `Bearer ${token}`,

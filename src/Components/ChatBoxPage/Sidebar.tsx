@@ -176,9 +176,12 @@ const Sidebar = ({
               </div>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
+              <TooltipContent side="right"
+  align="start"          // aligns to the top of the icon
+  alignOffset={-10}       // move tooltip slightly upwards
+  className="bg-slate-900 text-white border-slate-700">
                 <div>
-                  <p className="font-medium">{sessionStorage.getItem("username") || "Guest"}</p>
+                  <p className="font-medium ">{sessionStorage.getItem("username") || "Guest"}</p>
                 </div>
               </TooltipContent>
             )}
@@ -203,7 +206,10 @@ const Sidebar = ({
               </Button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
+              <TooltipContent side="right"
+  align="start"          // aligns to the top of the icon
+  alignOffset={-4}       // move tooltip slightly upwards
+  className="bg-slate-900 text-white border-slate-700">
                 <p className="font-medium">Logout</p>
               </TooltipContent>
             )}

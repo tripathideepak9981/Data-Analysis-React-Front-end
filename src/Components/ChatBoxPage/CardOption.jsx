@@ -1,4 +1,4 @@
-import { Database, FileSpreadsheet, Sparkles } from "lucide-react";
+import { Database, FileSpreadsheet, Sparkles, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const CardOption = ({ setCardSelected }) => {
@@ -11,25 +11,15 @@ const CardOption = ({ setCardSelected }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <motion.div
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
-          animate={{
-            scale: [1, 1.02, 1],
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <Sparkles className="h-8 w-8 text-blue-600" />
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <div className="inline-flex items-center justify-center gap-3">
+          <BarChart3 className="h-8 w-8 text-gray-700" />
+          <h1 className="text-4xl font-bold text-gray-800 tracking-tight">
             AI Data Analysis
           </h1>
-        </motion.div>
-        <p className="text-lg text-gray-600 font-light max-w-3xl">
-          Connect your data sources and start intelligent conversations with
-          your data
+        </div>
+        <p className="text-base text-gray-600 max-w-2xl mx-auto">
+          Upload your files or connect a database to begin smart analysis with
+          your data.
         </p>
       </motion.div>
 

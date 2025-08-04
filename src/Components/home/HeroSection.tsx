@@ -34,10 +34,10 @@ const HeroSection = ({ isLoggedIn }) => {
 
   return (
     <>
-      <main className="flex flex-col lg:flex-row items-center min-h-[100vh] px-6 py-6 max-w-8xl gap-32 ml-14 mx-auto">
+      <main className="flex flex-col lg:flex-row items-center min-h-screen px-6 py-4 lg:py-8 max-w-[90vw] gap-20 mx-auto">
         {/* Left Hero Content */}
         <section className="flex-1 max-w-full mb-20">
-          <h1 className="text-5xl md:text-6xl lg:text-[55px] font-extrabold leading-tight mb-6 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+          <h1 className="text-[clamp(2.5rem,3.5vw,5rem)] font-extrabold leading-tight mb-6 bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
             Beyond Generic AI.
             <br />
             <span className="bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
@@ -46,7 +46,7 @@ const HeroSection = ({ isLoggedIn }) => {
             <br />
             For Your Private Data.
           </h1>
-          <p className="text-lg text-slate-500 leading-relaxed mb-8">
+          <p className="text-[clamp(1rem,1.2vw,1.125rem)] text-slate-500 leading-relaxed mb-8 max-w-2xl">
             Connect securely to your databases, analyze your business data
             instantly, and get AI-powered insights without compromising privacy.
             No data leaves your network.

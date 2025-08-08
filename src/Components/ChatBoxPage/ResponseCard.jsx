@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { FaTable } from "react-icons/fa6";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import {
+  Copy,
   X,
   Edit3,
   CheckCircle,
@@ -11,6 +11,7 @@ import {
   Database,
   Code2,
   Play,
+  Maximize,
 } from "lucide-react";
 import { BarChart3 } from "lucide-react";
 import { User } from "lucide-react";
@@ -50,6 +51,11 @@ const ResponseCard = ({
     text: "View your SQL. You can edit or validate the query.",
     type: "info",
   });
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const handleCloseFullScreen = () => {
+    setIsFullscreen(false);
+  };
 
   const closeDropdown = () => setAnchorEl(null);
 
@@ -59,16 +65,8 @@ const ResponseCard = ({
   const [editableSQL, setEditableSQL] = useState(
     response?.aiResponse?.sql_query
   );
-  const [downloadMenuAnchorEl, setDownloadMenuAnchorEl] = useState(null);
-  const isDownloadMenuOpen = Boolean(downloadMenuAnchorEl);
 
-  const handleDownloadClick = (event) => {
-    setDownloadMenuAnchorEl(event.currentTarget);
-  };
-
-  const handleDownloadClose = () => {
-    setDownloadMenuAnchorEl(null);
-  };
+  const [copied, setCopied] = useState(false);
 
   const chartTypes = [
     {
@@ -142,12 +140,6 @@ const ResponseCard = ({
       isActive: response.chartType === "line" && response.chart?.multi_value,
     },
   ];
-
-  const handleDownload = (format) => {
-    // Replace this with actual download logic
-    console.log(`Download as ${format}`);
-    handleDownloadClose();
-  };
 
   const handleChange = (e) => {
     setEditableSQL(e.target.value);
@@ -298,6 +290,39 @@ const ResponseCard = ({
     };
   }, [setStatusMessage]);
 
+  const handleCopy = () => {
+    const result = response?.aiResponse?.result;
+    const extraResponse = response?.aiResponse?.response || "";
+
+    let formattedResult = "";
+
+    if (Array.isArray(result) && result.length > 0) {
+      formattedResult = result
+        .map((row) =>
+          Object.entries(row)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join(", ")
+        )
+        .join("\n");
+    } else if (typeof result === "string") {
+      formattedResult = result;
+    }
+
+    const textToCopy = [formattedResult, extraResponse]
+      .filter(Boolean)
+      .join("\n\n");
+
+    navigator.clipboard
+      .writeText(textToCopy)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000); // Hide after 1.5s
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+      });
+  };
+
   useEffect(() => {
     if (showSQL && response?.aiResponse?.sql_query) {
       setEditableSQL(response.aiResponse.sql_query);
@@ -387,13 +412,18 @@ const ResponseCard = ({
                   >
                     <PiFileSql className="w-4 h-4 text-gray-600" />
                   </div>
-                  {/* Download Button */}
-                  <button
-                    onClick={handleDownloadClick}
-                    className="flex items-center justify-center w-9 h-9 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition"
-                  >
-                    <BsThreeDotsVertical className="w-4 h-4 text-gray-600" />
-                  </button>
+
+                  {/* Full Screen */}
+                  <div className="relative flex items-center justify-center">
+                    <button
+                      onClick={() => {
+                        setIsFullscreen(true);
+                      }}
+                      className="flex items-center justify-center w-9 h-9 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition"
+                    >
+                      <Maximize className="w-4 h-4 text-gray-600" />
+                    </button>
+                  </div>
 
                   <Menu
                     anchorEl={anchorEl}
@@ -473,75 +503,6 @@ const ResponseCard = ({
                       >
                         <FaTable className="w-5 h-5 hover:scale-105 text-blue-500" />
                       </div>
-                    </div>
-                  </Menu>
-                  <Menu
-                    anchorEl={downloadMenuAnchorEl}
-                    open={isDownloadMenuOpen}
-                    onClose={handleDownloadClose}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "right",
-                    }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                    PaperProps={{
-                      sx: {
-                        overflow: "visible",
-                        borderRadius: "8px",
-                        boxShadow: 4,
-                        width: 180,
-                        backgroundColor: "white",
-                        "&::before": {
-                          content: '""',
-                          position: "absolute",
-                          top: -6,
-                          right: 12,
-                          width: 12,
-                          height: 12,
-                          backgroundColor: "white",
-                          transform: "rotate(45deg)",
-                          zIndex: 1,
-                          boxShadow: "-2px -2px 3px rgba(0,0,0,0.1)",
-                          borderTop: "1px solid #e5e7eb",
-                          borderLeft: "1px solid #e5e7eb",
-                        },
-                      },
-                    }}
-                  >
-                    <div className="flex flex-col">
-                      <button
-                        onClick={() => handleDownload("png")}
-                        disabled={
-                          !response.aiResponse.chart &&
-                          !response.aiResponse.chartType
-                        }
-                        className={`text-left w-full px-4 py-2 text-sm ${
-                          !response.aiResponse.chart &&
-                          !response.aiResponse.chartType
-                            ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                            : "hover:bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        Download as PNG
-                      </button>
-                      <button
-                        onClick={() => handleDownload("jpg")}
-                        disabled={
-                          !response.aiResponse.chart &&
-                          !response.aiResponse.chartType
-                        }
-                        className={`text-left w-full px-4 py-2 text-sm ${
-                          !response.aiResponse.chart &&
-                          !response.aiResponse.chartType
-                            ? "text-gray-400 cursor-not-allowed bg-gray-50"
-                            : "hover:bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        Download as JPG
-                      </button>
                     </div>
                   </Menu>
                 </div>
@@ -640,7 +601,10 @@ const ResponseCard = ({
                                             key={colIndex}
                                             className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
                                           >
-                                            {value}
+                                            {typeof value === "number" &&
+                                            !Number.isInteger(value)
+                                              ? value.toFixed(2)
+                                              : value}
                                           </td>
                                         )
                                       )}
@@ -666,6 +630,8 @@ const ResponseCard = ({
                   {response?.chart && !showResult && (
                     <div className="w-full bg-white sm:px-2 sm:py-2 animate-fadeIn px-4">
                       <Chart
+                        handleClose={handleCloseFullScreen}
+                        isFullscreen={isFullscreen}
                         chartResponse={response.chart}
                         chartType={response.chartType}
                       />
@@ -717,7 +683,10 @@ const ResponseCard = ({
                                             key={colIndex}
                                             className="text-message px-4 py-2 border border-gray-300 whitespace-nowrap"
                                           >
-                                            {value}
+                                            {typeof value === "number" &&
+                                            !Number.isInteger(value)
+                                              ? value.toFixed(2)
+                                              : value}
                                           </td>
                                         )
                                       )}

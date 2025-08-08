@@ -158,7 +158,7 @@ export const uploadFilesAPI = async (selectedFiles) => {
     return response.data;
   } catch (error) {
     console.log("Error in uploading file : ", error);
-    return error;
+    throw error;
   }
 };
 
@@ -265,7 +265,7 @@ export const connectToDatabase = async (dbParams) => {
     return response.data;
   } catch (error) {
     console.error("Error connecting to database:", error);
-    return error;
+    throw error;
   }
 };
 

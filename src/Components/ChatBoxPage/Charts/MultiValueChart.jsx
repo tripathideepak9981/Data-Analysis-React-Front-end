@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
+import ReactDOM from "react-dom";
+import { Minimize } from "lucide-react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -25,7 +27,12 @@ ChartJS.register(
   LineElement
 );
 
-const MultiValueChart = ({ chartResponse, chartType }) => {
+const MultiValueChart = ({
+  chartResponse,
+  chartType,
+  isFullscreen,
+  handleClose,
+}) => {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
 
   useEffect(() => {
@@ -36,48 +43,59 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
 
     const { labels, data, keys } = chartResponse;
     const colorPalette = ["#2caffe", "#544fc5", "rgb(255, 183, 15)"];
+    const datasets = data.map((values, index) => {
+      const alignOptions = ["end", "start"]; // alternate alignments
+      const anchorOptions = ["end", "start"];
 
-    const datasets = data.map((values, index) => ({
-      label: keys[index]
-        ?.replace(/_/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase()),
-      data: values,
-      backgroundColor: colorPalette[index % colorPalette.length],
-      borderColor: colorPalette[index % colorPalette.length],
-      borderWidth: 1,
-      pointBackgroundColor: colorPalette[index % colorPalette.length],
-      pointRadius: 5,
-      pointHoverRadius: 8,
-      borderRadius: 5,
-    }));
+      return {
+        label: keys[index]
+          ?.replace(/_/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase()),
+        data: values,
+        backgroundColor: colorPalette[index % colorPalette.length],
+        borderColor: colorPalette[index % colorPalette.length],
+        borderWidth: 1,
+        pointBackgroundColor: colorPalette[index % colorPalette.length],
+        pointRadius: 5,
+        pointHoverRadius: 8,
+        borderRadius: 5,
+        datalabels: {
+          align: alignOptions[index % alignOptions.length],
+          anchor: anchorOptions[index % anchorOptions.length],
+        },
+      };
+    });
 
     setChartData({ labels, datasets });
   }, [chartResponse, chartType]);
 
   const maxDataValue = Math.max(...(chartResponse?.data?.flat?.() || [0]));
+  const getDynamicYAxisScale = (data, minSteps = 5, maxSteps = 6) => {
+    const flatData = Array.isArray(data) ? data.flat() : [0];
+    const maxVal = Math.max(...flatData);
 
-  const getDynamicYAxisScale = (data, minSteps = 4, maxSteps = 8) => {
-    const maxVal = Math.max(...(Array.isArray(data) ? data.flat() : [0]));
     if (maxVal === 0) return { adjustedMax: 100, stepSize: 20 };
 
-    const rawStep = Math.pow(8, Math.floor(Math.log10(maxVal)));
+    const rawStep = Math.pow(10, Math.floor(Math.log10(maxVal)));
     let stepSize = rawStep;
 
-    for (let factor of [1, 2, 5, 10]) {
+    for (let factor of [1, 2, 2.5, 5]) {
       const candidateStep = rawStep * factor;
       const steps = Math.ceil(maxVal / candidateStep);
+
       if (steps >= minSteps && steps <= maxSteps) {
         stepSize = candidateStep;
         break;
       }
     }
 
-    const adjustedMax = Math.ceil(maxVal / stepSize) * stepSize + stepSize;
+    // ✅ Always add 1 extra step to give breathing space
+    const adjustedMax = (Math.ceil(maxVal / stepSize) + 1) * stepSize;
 
-    return { adjustedMax };
+    return { adjustedMax, stepSize };
   };
 
-  const { adjustedMax } = getDynamicYAxisScale(chartResponse?.data);
+  const { adjustedMax, stepSize } = getDynamicYAxisScale(chartResponse?.data);
 
   const commonOptions = {
     responsive: true,
@@ -180,13 +198,13 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
         y: {
           ticks: {
             color: "#1e293b",
-            font: { size: 12 },
+            font: { size: 14 },
             callback: (value) => (value >= 1000 ? value / 1000 + "K" : value),
+            stepSize: stepSize,
           },
           grid: { color: "#e2e8f0" },
           beginAtZero: true,
-          suggestedMax: adjustedMax,
-          grace: "20%",
+          max: adjustedMax,
         },
       },
     },
@@ -211,13 +229,13 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
         y: {
           ticks: {
             color: "#1e293b",
-            font: { size: 12 },
+            font: { size: 14 },
             callback: (value) => (value >= 1000 ? value / 1000 + "K" : value),
+            stepSize: stepSize,
           },
           grid: { color: "#e2e8f0" },
           beginAtZero: true,
-          suggestedMax: adjustedMax,
-          grace: "20%",
+          max: adjustedMax,
         },
       },
     },
@@ -226,14 +244,15 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
   const ChartComponent = chartType === "bar" ? Bar : Line;
 
   return (
-    <div className="relative w-full bg-white shadow-lg rounded-md px-2">
-      <div className="overflow-x-auto">
+    <div className="relative w-full bg-white shadow-lg rounded-md px-6">
+      {/* 🧾 Normal Chart */}
+      <div className="overflow-x-auto scrollbar-xy py-2">
         <div
           style={{
             width: `${Math.max(1000, chartData.labels.length * 120)}px`,
-            height: "260px",
+            height: "310px",
           }}
-          className="mb-2"
+          className="pb-8"
         >
           {chartData.labels.length > 0 && (
             <ChartComponent
@@ -245,9 +264,10 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
         </div>
       </div>
 
+      {/* 🏷️ Legend */}
       {chartData.datasets && chartData.datasets.length > 0 && (
         <div
-          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-white mb-3 flex gap-2"
+          className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-white mb-3 flex gap-2"
           style={{ zIndex: 10 }}
         >
           {chartData.datasets.map((dataset, index) => (
@@ -280,6 +300,74 @@ const MultiValueChart = ({ chartResponse, chartType }) => {
           ))}
         </div>
       )}
+
+      {/* 🖥️ Fullscreen Portal */}
+      {isFullscreen &&
+        ReactDOM.createPortal(
+          <div className="fixed inset-0 z-[9999] isolate flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
+            <div className="relative bg-white rounded-lg shadow-xl w-[90vw] h-[80vh] p-4 flex flex-col">
+              <Minimize
+                onClick={handleClose}
+                className="absolute top-4 right-4 w-6 h-6 cursor-pointer text-gray-700 hover:text-black"
+              />
+              <div className="overflow-x-auto scrollbar-xy flex-grow pt-10">
+                <div
+                  style={{
+                    width: `${Math.max(1200, chartData.labels.length * 120)}px`,
+                    height: "95%",
+                  }}
+                >
+                  <ChartComponent
+                    key={chartType + "-fullscreen"}
+                    data={chartData}
+                    options={chartOptions[chartType]}
+                  />
+                </div>
+              </div>
+
+              {/* 🏷️ Legend */}
+              {chartData.datasets && chartData.datasets.length > 0 && (
+                <div
+                  className="absolute bottom-6 left-1/2 transform -translate-x-1/2 bg-white mb-3 flex gap-2"
+                  style={{ zIndex: 10 }}
+                >
+                  {chartData.datasets.map((dataset, index) => (
+                    <span
+                      key={index}
+                      className="flex items-center gap-1 top-1 px-3 text-sm font-medium text-gray-700"
+                    >
+                      <span className="relative w-4 h-2 flex items-center justify-center pt-1">
+                        <span
+                          className="absolute top-1.5 left-0 right-0 h-0.5 transform -translate-y-1/2 rounded"
+                          style={{
+                            backgroundColor:
+                              dataset.borderColor === "transparent"
+                                ? dataset.backgroundColor
+                                : dataset.borderColor ||
+                                  dataset.backgroundColor,
+                          }}
+                        ></span>
+                        <span
+                          className="w-2 h-2 rounded-full z-10"
+                          style={{
+                            backgroundColor:
+                              dataset.borderColor === "transparent"
+                                ? dataset.backgroundColor
+                                : dataset.borderColor ||
+                                  dataset.backgroundColor,
+                          }}
+                        ></span>
+                      </span>
+                      {dataset.label}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>,
+
+          document.body
+        )}
     </div>
   );
 };

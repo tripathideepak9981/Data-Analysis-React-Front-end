@@ -14,11 +14,7 @@ import ConnectDatabaseSection from "./ConnectDatabaseConnection";
 import StaticFilesSection from "./StaticFilesSection";
 import { FaLinesLeaning } from "react-icons/fa6";
 
-const AddDataPopup = ({
-  setShowChatNotification,
-  setSuggestionQuery,
-  closeAddDataPopup,
-}) => {
+const AddDataPopup = ({ setSuggestionQuery, closeAddDataPopup }) => {
   const [fileCleaning, setFileCleaning] = useState();
   const [isLoading, setIsLoading] = useState();
   const [isCleaning, setIsCleaning] = useState();
@@ -65,7 +61,6 @@ const AddDataPopup = ({
     if (showNotification) {
       const timer = setTimeout(() => {
         setShowNotification(false);
-        setShowChatNotification(true);
       }, 4000);
 
       return () => clearTimeout(timer);
@@ -121,7 +116,7 @@ const AddDataPopup = ({
       }
     } catch (error) {
       console.error(error);
-      Swal.fire("Error", error.message, "error");
+      showNotifications("Error", "Error in cleaning File, Try again Later!");
     } finally {
       setSelectedFiles([]);
       setIsCleaning(false);
@@ -156,7 +151,7 @@ const AddDataPopup = ({
       }
     } catch (error) {
       console.error(error);
-      Swal.fire("Error", error.message, "error");
+      showNotifications("Error", "Error in saving file, Try again Later!");
     } finally {
       setSelectedFiles([]);
       setIsCleaning(false);
@@ -315,8 +310,8 @@ const AddDataPopup = ({
         continue;
       }
 
-      if (file.size > 200 * 1024 * 1024) {
-        invalidFiles.push(`File size exceeds 200 MB: ${file.name}`);
+      if (file.size > 20 * 1024 * 1024) {
+        invalidFiles.push(`File size exceeds 20 MB: ${file.name}`);
         continue;
       }
 

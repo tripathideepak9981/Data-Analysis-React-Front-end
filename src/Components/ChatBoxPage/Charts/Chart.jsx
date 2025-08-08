@@ -8,7 +8,7 @@ import DoughnutChart from "./DoughnutChart";
 import ScatterChart from "./ScatterChart";
 import Loader from "./Loader";
 
-const Chart = ({ chartResponse, chartType }) => {
+const Chart = ({ chartResponse, chartType, isFullscreen, handleClose }) => {
   const [isLoading, setIsLoading] = useState(true);
   const chartRef = useRef(null);
 
@@ -47,6 +47,8 @@ const Chart = ({ chartResponse, chartType }) => {
           <Loader />
         ) : chartResponse?.multi_value ? (
           <MultiValueChart
+            handleClose={handleClose}
+            isFullscreen={isFullscreen}
             chartResponse={chartResponse}
             chartType={chartType}
           />
@@ -54,6 +56,8 @@ const Chart = ({ chartResponse, chartType }) => {
           <>
             {(chartType === "bar" || chartType === "line") && (
               <SingleValueChart
+                handleClose={handleClose}
+                isFullscreen={isFullscreen}
                 chartResponse={chartResponse}
                 chartType={chartType}
               />

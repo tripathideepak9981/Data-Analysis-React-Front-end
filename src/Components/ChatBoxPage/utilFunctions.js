@@ -4,7 +4,6 @@ import PieChartIcon from "@mui/icons-material/PieChart";
 import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 import GroupedBar from "../../assets/icons/GroupedBar.svg";
 import GroupedLine from "../../assets/icons/GroupedLine.svg";
-
 export function transformChartData(result) {
   if (!Array.isArray(result) || result.length === 0) {
     return {
@@ -23,9 +22,20 @@ export function transformChartData(result) {
 
   const multi_value = valueKeys.length > 1;
 
+  const formatValue = (value) => {
+    if (typeof value === "number") {
+      return Number.isInteger(value) ? value : Number(value.toFixed(2));
+    }
+    return null;
+  };
+
   const data = multi_value
-    ? valueKeys.map((key) => result.map((item) => item[key]))
-    : result.map((item) => item[valueKeys[0]]);
+    ? valueKeys.map((key) =>
+        result.map((item) => formatValue(item[key])).filter((v) => v !== null)
+      )
+    : result
+        .map((item) => formatValue(item[valueKeys[0]]))
+        .filter((v) => v !== null);
 
   return {
     labels,
@@ -39,4 +49,3 @@ export const loaderMessages = [
   "AI is Analyzing your data...",
   "AI is generating a response...",
 ];
-

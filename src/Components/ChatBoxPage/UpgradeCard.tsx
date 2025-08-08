@@ -5,7 +5,7 @@ import { Card } from "./ui/card";
 
 export function UpgradeCard() {
   return (
-    <Card className="bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 text-white border-0 shadow-2xl shadow-purple-500/25 overflow-hidden">
+    <Card className="bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 text-white border-0  overflow-hidden">
       <div className="p-3 relative">
         {/* Background decorations */}
         <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -translate-y-8 translate-x-8 blur-sm" />

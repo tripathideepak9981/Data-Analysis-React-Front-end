@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Eye, EyeOff, Database, X } from "lucide-react";
 import Swal from "sweetalert2";
 import { connectToDatabase } from "../../../Api";
+import CustomNotificationCard from "../../Card/CustomNotificationCard";
 
 const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
   if (!isOpen) return null;
@@ -17,6 +18,11 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [error, setError] = useState();
+
+  const handleCloseError = () => {
+    setError(null);
+  };
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("DbResponse"));
@@ -61,11 +67,7 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
         onClose();
       }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Something went wrong",
-        text: error.message,
-      });
+      setError(error);
     } finally {
       setIsConnecting(false);
     }
@@ -247,6 +249,13 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
             </button>
           </div>
         </form>
+        {error && (
+          <CustomNotificationCard
+            title="Error"
+            text="Error happens in the server, Check the credential"
+            onClose={handleCloseError}
+          />
+        )}
       </div>
     </div>
   );

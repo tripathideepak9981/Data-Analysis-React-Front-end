@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Bar, Line } from "react-chartjs-2";
+import { Minimize } from "lucide-react";
 import "../../../CoustomCss/Scrollbar.css";
+import ReactDOM from "react-dom";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,10 +29,14 @@ ChartJS.register(
   LineElement
 );
 
-const SingleValueChart = ({ chartResponse, chartType }) => {
+const SingleValueChart = ({
+  chartResponse,
+  chartType,
+  isFullscreen,
+  handleClose,
+}) => {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
 
-  // 🔧 Format metric key (e.g., total_admission → Total Admission)
   const formattedMetricLabel =
     chartResponse?.keys?.[0]
       ?.replace(/_/g, " ")
@@ -155,19 +162,14 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
       },
     },
   };
-
-  const maxDataValue = Math.max(
-    ...(Array.isArray(chartResponse?.data) ? chartResponse.data : [0])
-  );
-
-  const getDynamicYAxisScale = (data, minSteps = 4, maxSteps = 8) => {
+  const getDynamicYAxisScale = (data, minSteps = 4, maxSteps = 6) => {
     const maxDataValue = Math.max(...(Array.isArray(data) ? data : [0]));
     if (maxDataValue === 0) return { adjustedMax: 100, stepSize: 20 };
 
-    const rawStep = Math.pow(8, Math.floor(Math.log10(maxDataValue)));
+    const rawStep = Math.pow(10, Math.floor(Math.log10(maxDataValue)));
     let stepSize = rawStep;
 
-    for (let factor of [1, 2, 5, 10]) {
+    for (let factor of [1, 2, 2.5, 5, 10]) {
       const candidateStep = rawStep * factor;
       const steps = Math.ceil(maxDataValue / candidateStep);
       if (steps >= minSteps && steps <= maxSteps) {
@@ -176,13 +178,13 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
       }
     }
 
-    const adjustedMax =
-      Math.ceil(maxDataValue / stepSize) * stepSize + stepSize;
+    // ✅ Add one extra step to give space above the tallest bar
+    const adjustedMax = (Math.ceil(maxDataValue / stepSize) + 1) * stepSize;
 
-    return { adjustedMax };
+    return { adjustedMax, stepSize };
   };
 
-  const { adjustedMax } = getDynamicYAxisScale(chartResponse?.data);
+  const { adjustedMax, stepSize } = getDynamicYAxisScale(chartResponse?.data);
 
   const chartOptions = {
     bar: {
@@ -203,14 +205,14 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
         x: {
           title: {
             display: true,
-            font: { size: 14, weight: "bold" },
+            font: { size: 4, weight: "bold" },
             color: "#1e293b",
           },
           ticks: {
             color: "#1e293b",
             font: { size: 14 },
             maxRotation: 20,
-            minRotation: 20,
+            minRotation: 25,
             autoSkip: false,
           },
           grid: { color: "#e2e8f0" },
@@ -223,12 +225,13 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
             color: "#1e293b",
           },
           ticks: {
+            stepSize: stepSize,
             color: "#1e293b",
-            font: { size: 12 },
+            font: { size: 14 },
             callback: (value) => (value >= 1000 ? value / 1000 + "K" : value),
           },
           grid: { color: "#e2e8f0" },
-          suggestedMax: adjustedMax,
+          max: adjustedMax,
         },
       },
     },
@@ -274,12 +277,13 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
             color: "#1e293b",
           },
           ticks: {
+            stepSize: stepSize,
             color: "#1e293b",
             font: { size: 12 },
             callback: (value) => (value >= 1000 ? value / 1000 + "K" : value),
           },
           grid: { color: "#e2e8f0" },
-          suggestedMax: adjustedMax,
+          max: adjustedMax,
         },
       },
     },
@@ -288,14 +292,14 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
   const ChartComponent = chartType === "bar" ? Bar : Line;
 
   return (
-    <div className="w-full overflow-x-auto scrollbar-hide bg-white">
+    <div className="relative w-full overflow-x-auto scrollbar-xy bg-white p-4 rounded shadow">
       <div
         style={{
           width: `${Math.max(1000, chartData.labels.length * 100)}px`,
-          height: "260px",
+          height: "320px",
         }}
       >
-        {chartData.labels.length && (
+        {chartData.labels.length > 0 && (
           <ChartComponent
             key={chartType}
             data={chartData}
@@ -304,16 +308,16 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
         )}
       </div>
 
-      {/* Fixed Dynamic Legend */}
+      {/* Legend */}
       {chartData.datasets && chartData.datasets.length >= 0 && (
         <div
-          className="absolute  bottom-0 left-1/2 transform -translate-x-1/2 bg-white flex gap-2"
+          className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white flex gap-2"
           style={{ zIndex: 10 }}
         >
           {chartData.datasets.map((dataset, index) => (
             <span
               key={index}
-              className="flex items-center gap-1 top-1 px-3 text-sm font-medium text-gray-700"
+              className="flex items-center gap-1 px-3 text-sm font-medium text-gray-700"
             >
               <span className="relative w-4 h-2 flex items-center justify-center pt-1">
                 <span
@@ -340,6 +344,53 @@ const SingleValueChart = ({ chartResponse, chartType }) => {
           ))}
         </div>
       )}
+
+      {/* Fullscreen view */}
+      {isFullscreen &&
+        ReactDOM.createPortal(
+          <div className="fixed inset-0 z-[9999] isolate flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm">
+            <div className="relative bg-white rounded-lg shadow-xl w-[90vw] h-[80vh] p-4 flex flex-col">
+              <Minimize
+                onClick={handleClose}
+                className="absolute top-4 right-4 w-6 h-6 cursor-pointer text-gray-700 hover:text-black"
+              />
+              <div className="overflow-x-auto scrollbar-xy flex-grow pt-10">
+                <div
+                  style={{
+                    width: `${Math.max(1200, chartData.labels.length * 100)}px`,
+                    height: "95%",
+                  }}
+                >
+                  <ChartComponent
+                    key={chartType + "-fullscreen"}
+                    data={chartData}
+                    options={chartOptions[chartType]}
+                  />
+                </div>
+              </div>
+              <div className="mt-2 flex justify-center flex-wrap gap-4">
+                {chartData.datasets.map((dataset, index) => (
+                  <span
+                    key={index}
+                    className="flex items-center gap-2 text-sm font-medium text-gray-700"
+                  >
+                    <span
+                      className="w-3 h-3 rounded-full"
+                      style={{
+                        backgroundColor:
+                          dataset.borderColor === "transparent"
+                            ? dataset.backgroundColor
+                            : dataset.borderColor || dataset.backgroundColor,
+                      }}
+                    />
+                    {dataset.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

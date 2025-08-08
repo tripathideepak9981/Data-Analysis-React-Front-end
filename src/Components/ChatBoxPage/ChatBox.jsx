@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from "react";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Sidebar from "./Sidebar";
 import ChatContent from "./ChatContent";
 import { exceuteQuery, logoutUser } from "../../Api";
@@ -7,19 +6,17 @@ import TextAreaBox from "./TextAreaBox";
 import AddDataPopup from "./AddData/AddDataPopup";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 import PopupJoin from "./PopupForm/PopupJoin";
-import { CheckCircle, X } from "lucide-react"; // or use any icon library
+import { CheckCircle, X } from "lucide-react";
 import { transformChartData } from "./utilFunctions";
+import AlertModal from "../Card/AlertModal";
 
 const ChatBox = () => {
   const [query, setQuery] = useState("");
   const [isSliderVisible, setIsSliderVisible] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showChatNotification, setShowChatNotification] = useState(false);
   const [isAddDataPopupOpen, setIsAddDataPopupOpen] = useState(false);
-  const [showIcon, setShowIcon] = useState(true);
   const lastScrollTop = useRef(0);
   const scrollContainerRef = useRef(null);
   const [suggestionQuery, setSuggestionQuery] = useState();
@@ -29,6 +26,11 @@ const ChatBox = () => {
   const [dbType, setDbType] = useState(
     () => localStorage.getItem("dbType") || ""
   );
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const [showNewChatNotification, setShowNewChatNotification] = useState(false);
 
   useEffect(() => {
     const syncDbType = () => {
@@ -68,12 +70,6 @@ const ChatBox = () => {
     const handleScroll = () => {
       const scrollTop = scrollEl.scrollTop;
 
-      if (scrollTop > lastScrollTop.current) {
-        setShowIcon(false); // Scrolling down
-      } else {
-        setShowIcon(true); // Scrolling up
-      }
-
       lastScrollTop.current = scrollTop <= 0 ? 0 : scrollTop;
     };
 
@@ -87,8 +83,21 @@ const ChatBox = () => {
   const openAddDataPopup = () => {
     setIsAddDataPopupOpen(true);
   };
+  const handleAlertClose = () => {
+    sessionStorage.removeItem("access_token");
+    sessionStorage.removeItem("username");
+
+    navigate("/signInPage");
+  };
 
   const closeAddDataPopup = () => {
+    const uploadedFile = localStorage.getItem("uploadedFiles");
+    if (uploadedFile.length > 0) {
+      setShowChatNotification(true);
+      setTimeout(() => {
+        setShowChatNotification(false);
+      }, 3000);
+    }
     setIsAddDataPopupOpen(false);
   };
 
@@ -101,12 +110,7 @@ const ChatBox = () => {
   };
 
   const handleNewChatClick = () => {
-    toast.success("New analysis started", {
-      hideProgressBar: true,
-      toastId: "new-analysis",
-      autoClose: 2000,
-      closeOnClick: true,
-    });
+    setShowNewChatNotification(true);
     setChatMessages([]);
   };
   const sendMessage = async () => {
@@ -133,7 +137,7 @@ const ChatBox = () => {
 
     try {
       const response = await exceuteQuery(query);
-      console.log("From send : ", response);
+
       const hasNumericData =
         Array.isArray(response.result) &&
         response.result.some((obj) =>
@@ -144,6 +148,7 @@ const ChatBox = () => {
         prevMessages.map((message, index) => {
           if (index !== newMessageIndex) return message;
           if (message.interrupted) return message;
+
           return {
             ...message,
             aiResponse: response,
@@ -159,24 +164,10 @@ const ChatBox = () => {
     } catch (error) {
       console.log("Error fetching AI response:", error);
 
-      setChatMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages];
-        const lastMessage = updatedMessages[updatedMessages.length - 1];
-
-        updatedMessages[updatedMessages.length - 1] = {
-          ...lastMessage,
-          aiResponse: {
-            query: lastMessage.query || "",
-            resolved_query: "",
-            response: "Server is not responding, try again later!",
-            result: [],
-            sql_query: "",
-            status: "error",
-          },
-        };
-
-        return updatedMessages;
-      });
+      setAlertMessage(
+        "Your session has expired. You will be redirected to Login Page."
+      );
+      setAlertVisible(true); // Show the alert
     } finally {
       setQueryRunning(false);
     }
@@ -287,6 +278,42 @@ const ChatBox = () => {
               </motion.div>
             )}
 
+            {showNewChatNotification && (
+              <motion.div
+                className="fixed top-4 right-3 z-50"
+                initial={{ x: "100%", opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: "100%", opacity: 0 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+              >
+                <div className="relative flex items-start gap-4 bg-white rounded-lg shadow-lg border-l-4 border-green-500 p-4 w-[360px] mt-4">
+                  {/* Success Icon */}
+                  <div className="mt-1 text-green-600">
+                    <CheckCircle size={24} />
+                  </div>
+
+                  {/* Text Content */}
+                  <div className="flex-1">
+                    <h2 className="text-sm font-semibold text-gray-900">
+                      New Analysis Created!
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                      Your data is ready — start your analysis now.
+                    </p>
+                  </div>
+
+                  {/* Close Icon */}
+                  <button
+                    className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                    aria-label="Close"
+                    onClick={() => setShowNewChatNotification(false)}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
             {/* Chat Content Component */}
             <ChatContent
               chatMessages={chatMessages}
@@ -318,7 +345,6 @@ const ChatBox = () => {
                 <div className="left-14 -top-4  px-6 py-2 max-w-[65%] h-full max-h-[90%] w-full relative">
                   <AddDataPopup
                     closeAddDataPopup={closeAddDataPopup}
-                    setShowChatNotification={setShowChatNotification}
                     setSuggestionQuery={setSuggestionQuery}
                   />
                 </div>
@@ -328,6 +354,12 @@ const ChatBox = () => {
             {openPopupJoin && (
               <PopupJoin closeOpenedPopupJoin={closeOpenedPopupJoin} />
             )}
+
+            <AlertModal
+              show={alertVisible}
+              message={alertMessage}
+              onClose={handleAlertClose}
+            />
           </div>
         </div>
       </div>

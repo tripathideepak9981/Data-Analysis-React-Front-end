@@ -80,7 +80,7 @@ const ConnectDatabaseSection = ({ setIsPopupOpen, isPopupOpen }) => {
         ].map(({ icon, name, desc, type, border }) => (
           <Card
             key={type}
-            className={`hover:shadow-lg transition-shadow duration-200 border-2 hover:border-${border}`}
+            className={`hover:shadow-lg transition-shadow duration-200 border-2 hover:border-blue-300 border-transparent`}
           >
             <CardHeader className="flex flex-row items-center space-y-0 pb-3">
               <div className="text-3xl mr-3">{icon}</div>

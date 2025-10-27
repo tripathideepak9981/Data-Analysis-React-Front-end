@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// Deployed backend url: http://35.154.165.174
+// Deployed url: http://72.60.218.98
 // Localhost url : http://127.0.0.1:8000
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "http://72.60.218.98";
 
 const axiosConfig = {
   timeout: 100000,

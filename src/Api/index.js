@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Deployed url: http://72.60.218.98
 // Localhost url : http://127.0.0.1:8000
-const API_BASE_URL = "http://72.60.218.98";
+const API_BASE_URL = "https://api.asklytics.in";
 
 const axiosConfig = {
   timeout: 100000,

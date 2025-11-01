@@ -173,7 +173,7 @@ const Sidebar = ({
               >
                 <div className="w-8 h-8 bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/25">
                   <span className="text-white text-sm font-bold">
-                    {sessionStorage.getItem("username")?.charAt(0) || "U"}
+                     {(sessionStorage.getItem("username")?.charAt(0)?.toUpperCase()) || "U"}
                   </span>
                 </div>
                 {!collapsed && (

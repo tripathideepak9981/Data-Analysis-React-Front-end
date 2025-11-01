@@ -541,8 +541,8 @@ const AddDataPopup = ({ setSuggestionQuery, closeAddDataPopup }) => {
   };
 
   return (
-    <div className="w-full h-full overflow-y-scroll bg-gradient-to-br from-gray-50 via-white to-blue-50 rounded-2xl border border-gray-200/50 shadow-xl scrollbar-hide">
-      {/* Enhanced Header with Tabs */}
+    <div className="w-full h-full flex flex-col bg-gradient-to-br from-gray-50 via-white to-blue-50 border border-gray-200/50 shadow-xl rounded-sm">
+      {/* ✅ Fixed Header */}
       <div className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-200/80 backdrop-blur-sm">
         <div className="flex items-center px-8 pt-4">
           <h1 className="text-3xl font-bold text-gray-900 pr-4 pt-1">
@@ -550,14 +550,8 @@ const AddDataPopup = ({ setSuggestionQuery, closeAddDataPopup }) => {
           </h1>
           <HelpTooltip content="Connect external data sources to pull data directly into your analysis. You can connect to databases, APIs, and other data sources." />
         </div>
-        <div className="flex flex-row px-6 py-1">
-          <button
-            className="fixed top-4 right-4 z-50 text-gray-500 hover:text-gray-700 bg-white rounded-full p-2 transition-all duration-200"
-            onClick={closeAddDataPopup}
-          >
-            <X className="w-6 h-6" />
-          </button>
 
+        <div className="flex flex-row px-6 py-1">
           <button
             onClick={() => setActiveTab("static")}
             className={`relative px-6 py-4 font-semibold text-sm transition-all duration-300 ${
@@ -571,6 +565,7 @@ const AddDataPopup = ({ setSuggestionQuery, closeAddDataPopup }) => {
               My Static Files
             </div>
           </button>
+
           <button
             onClick={() => setActiveTab("connected")}
             className={`relative px-6 py-4 font-semibold text-sm transition-all duration-300 ${
@@ -587,39 +582,58 @@ const AddDataPopup = ({ setSuggestionQuery, closeAddDataPopup }) => {
         </div>
       </div>
 
-      {/* Static Files Tab Content */}
-      {activeTab === "static" && (
-        <StaticFilesSection
-          setShowNotification={setShowNotification}
-          fileCleaning={fileCleaning}
-          fileInputRef={fileInputRef}
-          handleFileUpload={handleFileUpload}
-          handleDropBoxClick={handleDropBoxClick}
-          uploadedFiles={uploadedFiles}
-          handleRemoveFile={handleRemoveFile}
-          getPreviewByFileName={getPreviewByFileName}
-          isCleaning={isCleaning}
-          isLoading={isLoading}
-          isDeleting={isDeleting}
-          showEyeHint={showEyeHint}
-          searchTerm={searchTerm}
-          showModal={showModal}
-          setShowModal={setShowModal}
-          handleConfirm={handleConfirm}
-          handleCancel={handleCancel}
-          cleaningSummary={cleaningSummary}
-          notification={notification}
-          setNotification={setNotification}
-          showNotification={showNotification}
-          card={card}
-        />
-      )}
-      {activeTab === "connected" && (
-        <ConnectDatabaseSection
-          setIsPopupOpen={setIsPopupOpen}
-          isPopupOpen={isPopupOpen}
-        />
-      )}
+      {/* ✅ Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto px-3 scrollbar-hide">
+        {activeTab === "static" && (
+          <StaticFilesSection
+            setShowNotification={setShowNotification}
+            fileCleaning={fileCleaning}
+            fileInputRef={fileInputRef}
+            handleFileUpload={handleFileUpload}
+            handleDropBoxClick={handleDropBoxClick}
+            uploadedFiles={uploadedFiles}
+            handleRemoveFile={handleRemoveFile}
+            getPreviewByFileName={getPreviewByFileName}
+            isCleaning={isCleaning}
+            isLoading={isLoading}
+            isDeleting={isDeleting}
+            showEyeHint={showEyeHint}
+            searchTerm={searchTerm}
+            showModal={showModal}
+            setShowModal={setShowModal}
+            handleConfirm={handleConfirm}
+            handleCancel={handleCancel}
+            cleaningSummary={cleaningSummary}
+            notification={notification}
+            setNotification={setNotification}
+            showNotification={showNotification}
+            card={card}
+          />
+        )}
+
+        {activeTab === "connected" && (
+          <ConnectDatabaseSection
+            setIsPopupOpen={setIsPopupOpen}
+            isPopupOpen={isPopupOpen}
+          />
+        )}
+      </div>
+
+      {/* ✅ Fixed Bottom Button */}
+      <div className="flex justify-end px-8 py-4 border-t bg-white sticky bottom-0">
+        <button
+          onClick={closeAddDataPopup}
+          className="flex items-center gap-2 px-5 py-1.5 rounded-lg 
+         bg-gradient-to-r from-blue-400 via-sky-500 to-blue-400
+         text-white font-semibold shadow-md
+         hover:from-blue-600 hover:via-sky-600 hover:to-blue-700
+         hover:shadow-lg hover:-translate-y-0.5
+         active:scale-95 active:shadow-inner
+         transition-all duration-300 ease-in-out"
+        >
+          Close
+        </button>
+      </div>
     </div>
   );
 };

@@ -41,16 +41,6 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
     fetchTables();
   }, []);
 
-  // useEffect(() => {
-  //   if (message || typeof errors === "string") {
-  //     const timer = setTimeout(() => {
-  //       setMessage(null);
-  //       if (typeof errors === "string") setErrors({});
-  //     }, 3000);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [message, errors]);
-
   const validateFields = () => {
     const newErrors = {};
     if (!newTableName.trim())
@@ -80,11 +70,14 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
     const payload = {
       table1: leftTable,
       table2: rightTable,
-      join_column1: leftColumn,
-      join_column2: rightColumn,
-      join_type: joinType,
+      join_columns: [
+        {
+          table1_col: leftColumn,
+          table2_col: rightColumn,
+        },
+      ],
+      join_type: joinType.toUpperCase(),
       new_table_name: newTableName.trim(),
-      select_columns: [],
       limit: 10,
     };
 
@@ -99,7 +92,7 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
         };
         setMessage(response.message);
         const storedUploadedFile = localStorage.getItem("uploadedFiles");
-        const storedTablePreview = localStorage.getItem("tablePreview");
+        const storedTablePreview = localStorage.getItem("previews");
 
         const updatedFile = storedUploadedFile
           ? [...JSON.parse(storedUploadedFile), newFile]
@@ -111,7 +104,7 @@ const PopupJoin = ({ closeOpenedPopupJoin }) => {
         existingPreview[response.joined_table_name.trim()] = response.preview;
 
         localStorage.setItem("uploadedFiles", JSON.stringify(updatedFile));
-        localStorage.setItem("tablePreview", JSON.stringify(existingPreview));
+        localStorage.setItem("previews", JSON.stringify(existingPreview));
       } else {
         console.error("Join failed");
         setErrors("Something went wrong on server, Join failed!");

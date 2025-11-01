@@ -10,7 +10,14 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
   const [formData, setFormData] = useState({
     db_type: dbType || "postgresql",
     host: "",
-    port: dbType === "mongodb" ? "27017" : dbType === "mysql" ? "3306" : "5432",
+    port:
+      dbType === "mongodb"
+        ? "27017"
+        : dbType === "mysql"
+        ? "3306"
+        : dbType === "vertica"
+        ? "5433"
+        : "5432",
     database: "",
     user: "",
     password: "",
@@ -55,8 +62,9 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
           credentials: formData,
         };
         setDbResponse(updatedResponse);
-        localStorage.setItem("dbType", formData.db_type);
-        localStorage.setItem("DbResponse", JSON.stringify(updatedResponse));
+        sessionStorage.setItem("dbType", formData.db_type);
+        window.dispatchEvent(new Event("session-storage"));
+        sessionStorage.setItem("DbResponse", JSON.stringify(updatedResponse));
 
         Swal.fire({
           icon: "success",
@@ -110,7 +118,7 @@ const PopupForm = ({ dbType, isOpen, onClose, setDbResponse }) => {
               <option value="postgresql">PostgreSQL</option>
               <option value="mysql">MySQL</option>
               <option value="mongodb">MongoDB</option>
-              <option value="sqlite">SQLite</option>
+              <option value="vertica">Vertica</option>
             </select>
           </div>
 

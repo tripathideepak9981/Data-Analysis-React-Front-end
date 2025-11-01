@@ -12,27 +12,29 @@ import DbDataPreviewPopup from "../PopupForm/DbDataPreviewPopup";
 import { useState, useEffect } from "react";
 
 const ConnectDatabaseSection = ({ setIsPopupOpen, isPopupOpen }) => {
-  const [dbType, setDbType] = useState(localStorage.getItem("dbType") || "");
+  const [dbType, setDbType] = useState(sessionStorage.getItem("dbType") || "");
   const [DbResponse, setDbResponse] = useState(
-    JSON.parse(localStorage.getItem("DbResponse")) || null
+    JSON.parse(sessionStorage.getItem("DbResponse")) || null
   );
   const [isDataPreviewPopupOpen, setIsDataPreviewPopupOpen] = useState(false);
 
   useEffect(() => {
     if (DbResponse && dbType) {
-      localStorage.setItem("dbType", dbType);
-      localStorage.setItem("DbResponse", JSON.stringify(DbResponse));
+      sessionStorage.setItem("dbType", dbType);
+      sessionStorage.setItem("DbResponse", JSON.stringify(DbResponse));
     }
   }, [dbType, DbResponse]);
 
   const handleDisconnect = () => {
-    localStorage.removeItem("dbType");
-    localStorage.removeItem("DbResponse");
-    window.dispatchEvent(new Event("local-storage"));
-
+    sessionStorage.removeItem("dbType");
+    sessionStorage.removeItem("DbResponse");
+    window.dispatchEvent(new Event("session-storage"));
     setDbType("");
     setDbResponse(null);
   };
+
+  // ✅ If any DB is connected, disable others
+  const isAnyConnected = !!DbResponse && !!dbType;
 
   return (
     <div className="px-6 py-4 overflow-y-scroll scrollbar-hide bg-gradient-to-br from-white via-purple-50/30 to-pink-50/30 text-gray-800">
@@ -54,88 +56,101 @@ const ConnectDatabaseSection = ({ setIsPopupOpen, isPopupOpen }) => {
             name: "PostgreSQL",
             desc: "Advanced open-source database",
             type: "postgresql",
-            border: "emerald-300",
           },
           {
             icon: "🐬",
             name: "MySQL",
             desc: "Popular relational database",
             type: "mysql",
-            border: "rose-300",
           },
           {
             icon: "🍃",
             name: "MongoDB",
             desc: "NoSQL document database",
             type: "mongodb",
-            border: "green-300",
           },
           {
             icon: "💾",
             name: "Vertica",
             desc: "Lightweight file-based database",
             type: "vertica",
-            border: "gray-300",
           },
-        ].map(({ icon, name, desc, type, border }) => (
-          <Card
-            key={type}
-            className={`hover:shadow-lg transition-shadow duration-200 border-2 hover:border-blue-300 border-transparent`}
-          >
-            <CardHeader className="flex flex-row items-center space-y-0 pb-3">
-              <div className="text-3xl mr-3">{icon}</div>
-              <div className="flex-1">
-                <CardTitle className="text-lg">{name}</CardTitle>
-                <CardDescription>{desc}</CardDescription>
-              </div>
+        ].map(({ icon, name, desc, type }) => {
+          const isConnected = DbResponse && dbType === type;
+          const isDisabled = isAnyConnected && !isConnected; // ✅ disable all others
 
-              {/* ✅ Only show Disconnect for connected dbType */}
-              {DbResponse && dbType === type ? (
+          return (
+            <Card
+              key={type}
+              className={`transition-all duration-200 border-2 rounded-xl ${
+                isDisabled
+                  ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200"
+                  : "hover:shadow-lg hover:border-blue-300 border-transparent"
+              }`}
+            >
+              <CardHeader className="flex flex-row items-center space-y-0 pb-3">
+                <div className="text-3xl mr-3">{icon}</div>
+                <div className="flex-1">
+                  <CardTitle className="text-lg">{name}</CardTitle>
+                  <CardDescription>{desc}</CardDescription>
+                </div>
+
+                {/* ✅ Show Disconnect if connected, otherwise Connect */}
+                {isConnected ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDisconnect}
+                    className="border-red-500 text-red-500 hover:bg-red-50 hover:border-red-600 hover:text-red-600"
+                  >
+                    Disconnect
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isDisabled}
+                    onClick={() => {
+                      if (!isDisabled) {
+                        setDbType(type);
+                        setIsPopupOpen(true);
+                      }
+                    }}
+                    className={`${
+                      isDisabled
+                        ? "cursor-not-allowed opacity-50"
+                        : "hover:bg-indigo-50"
+                    }`}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Connect
+                  </Button>
+                )}
+              </CardHeader>
+
+              <CardContent>
                 <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDisconnect}
-                  className="border-red-500 text-red-500 hover:bg-red-50 hover:border-red-600 hover:text-red-600"
-                >
-                  Disconnect
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
                   onClick={() => {
-                    setDbType(type);
-                    setIsPopupOpen(true);
+                    if (isConnected) {
+                      setIsDataPreviewPopupOpen(true);
+                    }
                   }}
+                  disabled={!isConnected}
+                  className={`w-full mt-2 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all duration-300
+                    ${
+                      isConnected
+                        ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow"
+                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    }
+                  `}
                 >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Connect
+                  <Eye className="w-4 h-4" />
+                  Data Preview
                 </Button>
-              )}
-            </CardHeader>
-
-            <CardContent>
-              <Button
-                onClick={() => {
-                  if (DbResponse && dbType === type) {
-                    setIsDataPreviewPopupOpen(true);
-                  }
-                }}
-                disabled={!(DbResponse && dbType === type)}
-                className={`w-full mt-2 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center gap-2 transition-all duration-300
-                  ${
-                    DbResponse && dbType === type
-                      ? "bg-gradient-to-r from-indigo-600 to-purple-700 text-white hover:from-indigo-700 hover:to-purple-800 shadow"
-                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  }
-                `}
-              >
-                <Eye className="w-4 h-4" />
-                Data Preview
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {isPopupOpen && (

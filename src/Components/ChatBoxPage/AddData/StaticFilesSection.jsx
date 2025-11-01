@@ -34,6 +34,24 @@ const StaticFilesSection = ({
   showNotification,
   card,
 }) => {
+  useEffect(() => {
+    if (notification.visible) {
+      const timer = setTimeout(() => {
+        setNotification({ visible: false, title: "", text: "" });
+      }, 3000); // hide after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [notification.visible]);
+
+  useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => {
+        setShowNotification(false);
+      }, 3000); // hide after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
+
   const UploadingLoadingEffect = () => {
     return (
       <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">

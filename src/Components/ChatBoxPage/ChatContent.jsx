@@ -102,7 +102,7 @@ const ChatContent = ({ chatMessages, setChatMessages, isSliderVisible }) => {
 
   return (
     <div
-      className={`w-full min-h-[40vh] mx-auto space-x-0 flex flex-col justify-start user-query ${
+      className={`w-full pt-6 min-h-[40vh] mx-auto space-x-0 flex flex-col justify-start user-query ${
         isSliderVisible ? "w-[100%]" : "w-[100%]"
       }`}
     >

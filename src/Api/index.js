@@ -1,7 +1,8 @@
 import axios from "axios";
 
-// Deployed url: http://72.60.218.98
+// Deployed url: https://api.asklytics.in
 // Localhost url : http://127.0.0.1:8000
+
 const API_BASE_URL = "https://api.asklytics.in";
 
 const axiosConfig = {
@@ -26,6 +27,7 @@ export const joinTables = async (data) => {
     console.log("Joined Response : ", response);
     return response.data;
   } catch (error) {
+    console.log("Join error : ", error);
     return error.response?.data || { error: "Request failed" };
   }
 };
@@ -253,14 +255,14 @@ export const connectToDatabase = async (dbParams) => {
   try {
     const response = await axios.post(
       `${API_BASE_URL}/api/connect_db`,
-      dbParams, // ✅ send this as body
+      dbParams,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-    console.log("Database connection response:", response.data);
+    console.log("Database connection response:", response);
     return response.data;
   } catch (error) {
     console.error("Error connecting to database:", error);
@@ -271,8 +273,6 @@ export const connectToDatabase = async (dbParams) => {
 export const loadTablesApi = async (table_name) => {
   try {
     const token = sessionStorage.getItem("access_token"); // 🔑 Get token
-
-    console.log("Loading Tables : " + table_name);
 
     const response = await axios.post(
       `${API_BASE_URL}/api/load_tables`,
@@ -285,6 +285,7 @@ export const loadTablesApi = async (table_name) => {
       }
     );
 
+    console.log("Response of Selected Table Preview of file : ", response.data);
     return response.data;
   } catch (error) {
     console.log("Error : ", error.response?.data || error.message);

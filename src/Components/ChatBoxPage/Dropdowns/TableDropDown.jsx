@@ -29,7 +29,7 @@ const TableDropdown = ({ DbResponse, selectedTable, handleTableSelection }) => {
       </div>
 
       {/* Dropdown Always Visible */}
-      <div className="absolute w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-lg max-h-[12rem] overflow-y-auto z-50">
+      <div className="absolute w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-lg max-h-[12rem] overflow-y-auto scrollbar-xy z-50">
         {filteredTables.length > 0 ? (
           filteredTables.map((table) => (
             <label

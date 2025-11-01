@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import PopupJoin from "./PopupForm/PopupJoin";
 import { CheckCircle, X } from "lucide-react";
 import { transformChartData } from "./utilFunctions";
-import AlertModal from "../Card/AlertModal";
+import CustomNotificationCard from "../Card/CustomNotificationCard.jsx";
 
 const ChatBox = () => {
   const [query, setQuery] = useState("");
@@ -24,7 +24,7 @@ const ChatBox = () => {
   const [queryRunning, setQueryRunning] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [dbType, setDbType] = useState(
-    () => localStorage.getItem("dbType") || ""
+    () => sessionStorage.getItem("dbType") || ""
   );
 
   const [alertVisible, setAlertVisible] = useState(false);
@@ -34,15 +34,15 @@ const ChatBox = () => {
 
   useEffect(() => {
     const syncDbType = () => {
-      setDbType(localStorage.getItem("dbType") || "");
+      setDbType(sessionStorage.getItem("dbType") || "");
     };
 
     window.addEventListener("storage", syncDbType);
-    window.addEventListener("local-storage", syncDbType);
+    window.addEventListener("session-storage", syncDbType);
 
     return () => {
       window.removeEventListener("storage", syncDbType);
-      window.removeEventListener("local-storage", syncDbType);
+      window.removeEventListener("session-storage", syncDbType);
     };
   }, []);
 
@@ -127,6 +127,7 @@ const ChatBox = () => {
 
     let newMessageIndex = 0;
 
+    // Add the message to chat
     setChatMessages((prevMessages) => {
       newMessageIndex = prevMessages.length;
       return [...prevMessages, newMessage];
@@ -144,6 +145,7 @@ const ChatBox = () => {
           Object.values(obj).some((value) => typeof value === "number")
         );
 
+      // ✅ Update only the successful message
       setChatMessages((prevMessages) =>
         prevMessages.map((message, index) => {
           if (index !== newMessageIndex) return message;
@@ -164,10 +166,21 @@ const ChatBox = () => {
     } catch (error) {
       console.log("Error fetching AI response:", error);
 
-      setAlertMessage(
-        "Your session has expired. You will be redirected to Login Page."
+      const errorMessage =
+        error?.response?.data?.detail ||
+        "Something went wrong. Please try again.";
+
+      // ✅ Remove the failed message from chat
+      setChatMessages((prevMessages) =>
+        prevMessages.filter((_, index) => index !== newMessageIndex)
       );
-      setAlertVisible(true); // Show the alert
+
+      // ✅ Show notification
+      setAlertMessage(
+        errorMessage + " First Upload File or Connect to Database"
+      );
+      setAlertVisible(true);
+      setTimeout(() => setAlertVisible(false), 4000);
     } finally {
       setQueryRunning(false);
     }
@@ -237,8 +250,9 @@ const ChatBox = () => {
             className="flex-1 overflow-y-scroll scrollbar-hide  rounded-lg  relative"
           >
             {dbType && (
-              <div className="absolute top-4 right-4 bg-green-200 text-green-900 px-4 py-2 rounded-lg shadow">
-                Connected with <span>{dbType.toUpperCase()}</span>
+              <div className="absolute top-1 right-4 flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full shadow-md text-sm font-medium">
+                Connected
+                <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               </div>
             )}
 
@@ -342,7 +356,7 @@ const ChatBox = () => {
                 className="fixed inset-0 flex items-center 
               justify-center bg-black bg-opacity-40 z-50"
               >
-                <div className="left-14 -top-4  px-6 py-2 max-w-[65%] h-full max-h-[90%] w-full relative">
+                <div className="left-14 -top-4  px-8 py-2 max-w-[65%] h-full max-h-[90%] w-full relative rounded-2xl">
                   <AddDataPopup
                     closeAddDataPopup={closeAddDataPopup}
                     setSuggestionQuery={setSuggestionQuery}
@@ -355,11 +369,13 @@ const ChatBox = () => {
               <PopupJoin closeOpenedPopupJoin={closeOpenedPopupJoin} />
             )}
 
-            <AlertModal
-              show={alertVisible}
-              message={alertMessage}
-              onClose={handleAlertClose}
-            />
+            {alertVisible && (
+              <CustomNotificationCard
+                title="Error"
+                text={alertMessage}
+                onClose={() => setAlertVisible(false)}
+              />
+            )}
           </div>
         </div>
       </div>
